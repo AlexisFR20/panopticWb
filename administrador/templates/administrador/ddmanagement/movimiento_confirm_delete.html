@@ -1,0 +1,100 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - D&D Management</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+    <div class="app-page-title">    
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="mini-logo-panoptic">
+                    <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+                </div>
+                <div>D&D Management &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Gestión de Movimientos
+                    <div class="admin-page-title-subheading">
+                    Borrar de Movimiento
+                    </div>
+                </div>
+            </div> 
+            <div class="page-title-actions">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a> D&D Management</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'administrador:admin_movimientos_lista' %}"> Gestión de Movimientos</a>
+                        </li>
+                        <li class="active breadcrumb-item" aria-current="page">
+                            <a href="#">Borrar movimiento</a>  
+                        </li>
+                    </ol>
+                </nav>     
+            </div> <!-- Page title actions -->
+        </div> <!-- Page Title Wrapper -->
+    </div>  <!-- app page title -->
+    
+    <div class="row" >        
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">                                            
+                        <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                        Borrar Movimiento Seleccionado
+                    </div>                                                        
+                </div>
+                <div class="card-body">     
+                    {% if  messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <div class="row mt-3 mb-5">
+                        <div class="col-md-9 mx-auto"> 
+                            <form action="" method="post">
+                                {% csrf_token %}       
+                                {% if object.nombre == None %}
+                                <p>¿Está seguro de borrar el registro <b>{{ object|upper }}</b>?"</p>         
+                                {% else %}
+                                <p>¿Está seguro de borrar el registro <b>{{ object.nombre }}</b>?"</p>         
+                                {% endif %}
+                                {{ form.as_p }}                
+                                <div class="text-left">
+                                    <input type="submit" class="btn-transition btn btn-primary size16" value="Si, borrar registro del Movimiento seleccionado" />
+                                </div>
+                            </form>   
+                        </div>
+                    </div>                                
+                </div>  
+            </div>
+        </div> 
+    </div> 
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

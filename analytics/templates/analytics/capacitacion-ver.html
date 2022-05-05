@@ -1,0 +1,150 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+     {% load static %}    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Capacitaciones
+                <div class="admin-page-title-subheading">
+                   Registro de Capacitación
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Análisis de Riesgo</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'analytics:capacitaciones' %}"> Capacitaciones</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Registro de Capacitación
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+    </div>
+</div>                                
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-xl-10">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Registro de Capacitación
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                <hr>
+                <a href="{%  url 'analytics:capacitaciones' %}" class="btn btn-primary size16">Volver a Historial de Capacitaciones</a>                
+                <hr>
+                <br>         
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form id="paqueteria_detail_form">
+                            <div class="position-relative form-group">
+                                <label for="no_orden" class="">No. Orden</label>
+                                <input name="no_orden" id="no_orden" type="text" class="form-control" readonly value="{{ object.no_orden }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="calificacion" class="">Calificación</label>
+                                <input name="calificacion" id="calificacion" type="text" class="form-control" readonly value="{{ object.calificacion }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="fecha_aplicacion" class="">Fecha de Aplicación</label>
+                                <textarea rows=3 name="fecha_aplicacion" id="fecha_aplicacion" class="form-control" readonly>{{ object.fecha_aplicacion }}</textarea>
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="veces_aplicados" class="">Veces Aplicados</label>
+                                <input name="veces_aplicados" id="veces_aplicados" type="text" class="form-control" readonly value="{{ object.veces_aplicados }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="tiempo_dedicado" class="">Tiempo Dedicado</label>
+                                <input name="tiempo_dedicado" id="tiempo_dedicado" type="text" class="form-control" readonly value="{{ object.tiempo_dedicado }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="user_aguilas" class="">Usuario Aguilas</label>
+                                <input name="user_aguilas" id="user_aguilas" type="text" class="form-control" readonly value="{{ object.user_aguilas.first_name }} {{ object.user_aguilas.last_name }}">
+                            </div>
+
+                            <div class="position-relative form-group">
+                                <label for="puesto" class="">Puesto</label>
+                                <input name="puesto" id="user_aguilas" type="text" class="form-control" readonly value="{{ object.puesto }}">
+                            </div>
+
+                            <div class="position-relative form-group">
+                                <label for="cliente" class="">Cliente</label>
+                                <input name="cliente" id="cliente" type="text" class="form-control" readonly value="{{ object.user_aguilas }}">
+                            </div>
+
+                            <div class="position-relative form-group">
+                                <label for="sitio" class="">Sitio</label>
+                                <input name="sitio" id="sitio" type="text" class="form-control" readonly value="{{ object.sitio }}">
+                            </div>
+
+                            <div class="position-relative form-group">
+                                <label for="curso" class="">Curso</label>
+                                <input name="curso" id="curso" type="text" class="form-control" readonly value="{{ object.curso }}">
+                            </div>
+                            
+                            <div class="position-relative form-group">
+                                <label for="grado" class="">Grado</label>
+                                <input name="grado" id="grado" type="text" class="form-control" readonly value="{{ object.grado }}">
+                            </div>
+
+                            <div class="position-relative form-group">
+                                <label for="categoria" class="">Categoria</label>
+                                <input name="categoria" id="categoria" type="text" class="form-control" readonly value="{{ object.categoria }}">
+                            </div>                            
+                        </form>   
+                    </div>
+                </div>                  
+            </div>  
+        </div>
+    </div> 
+</div>       
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+
+<!-- Ends to include JS list -->
+{% endblock js%}
+

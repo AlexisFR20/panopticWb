@@ -1,0 +1,267 @@
+{% load static %}
+<!-- Geocerca JS category -->
+
+<script>   
+    var drawingManager;
+    var polyCargado;
+    var selectedShape;
+    var selectedColor;
+    var colorButtons = {};
+    var allOverlays = [];
+    var polygonArray = [];
+    var latitud = $('#latitud').attr('data-lat');
+    var longitud = $('#longitud').attr('data-lng');
+    var centro = { lat: Number(latitud), lng:Number(longitud) };           
+    var colors = ['#f3992a', '#FF1493', '#32CD32', '#FF8C00', '#4B0082'];        
+
+    function BorrarFigura() {
+        BorrarFiguraCargada(polyCargado);    
+        if (selectedShape) {          
+            selectedShape.setEditable(false);
+            selectedShape.setMap(null);            
+            loadedPoly.setMap(null);
+        }
+    }
+
+    function clearSelection() {
+        if (selectedShape) {
+                      selectedShape.setEditable(false);
+            selectedShape = null;
+        }
+    }
+
+    function setSelection(shape) {
+        clearSelection();
+        selectedShape = shape;
+        shape.setEditable(true);
+        selectColor(shape.get('fillColor') || shape.get('strokeColor'));        
+    }
+    
+    function BorrarFiguraCargada(polyCargado) {        
+        if (polyCargado) {                    
+            polyCargado.setMap(null);
+        }
+    }          
+
+    function deleteSelectedShape(e) {
+            event.preventDefault();
+        if (selectedShape) {        
+            selectedShape.setMap(null);
+        } 
+        BorrarFiguraCargada(polyCargado);    
+    }
+
+    function selectColor(color) {
+        selectedColor = color;
+        for (var i = 0; i < colors.length; ++i) {
+            var currColor = colors[i];          
+            colorButtons[currColor].style.border = currColor == color ? '2px solid #789' : '2px solid #fff';
+        }
+
+        // Retrieves the current options from the drawing manager and replaces the
+        // stroke or fill color as appropriate.
+        var rectangleOptions = drawingManager.get('rectangleOptions');
+        rectangleOptions.fillColor = color;
+        drawingManager.set('rectangleOptions', rectangleOptions);
+
+        var circleOptions = drawingManager.get('circleOptions');
+        circleOptions.fillColor = color;
+        drawingManager.set('circleOptions', circleOptions);
+
+        var polygonOptions = drawingManager.get('polygonOptions');
+        polygonOptions.fillColor = color;
+        drawingManager.set('polygonOptions', polygonOptions);
+    }
+
+    function setSelectedShapeColor(color) {    
+        if (selectedShape) {
+            if (selectedShape.type == google.maps.drawing.OverlayType.POLYLINE) {
+                selectedShape.set('strokeColor', color);
+            } else {
+                selectedShape.set('fillColor', color);
+            }
+        }
+    }
+
+    function makeColorButton(color) {        
+        var button = document.createElement('button');
+        button.className = 'color-button';
+        button.style.backgroundColor = color;      
+        button.style.width = '20px';      
+        button.style.height = '20px';
+        button.style.cursor = 'pointer';
+
+        google.maps.event.addDomListener(button, 'click', function() {
+            selectColor(color);
+            setSelectedShapeColor(color);          
+        });
+        return button;
+    }
+
+    function buildColorPalette() {        
+        var colorPalette = document.getElementById('color-palette');
+        for (var i = 0; i < colors.length; ++i) {
+            var currColor = colors[i];          
+            var colorButton = makeColorButton(currColor);            
+            colorPalette.appendChild(colorButton);
+            colorButtons[currColor] = colorButton;
+        }
+        selectColor(colors[0]);
+    }
+
+    // Fetches the paths and displays them.
+    function displayPaths(map) {
+        routesHandle = $('#polyradio').val();
+        //console.log(typeof(routesHandle));
+        if(routesHandle == "None") {  
+            console.log ('Sin data');
+            return;
+        } else {
+            routes = JSON.parse(routesHandle);       
+            
+            // Now iterate through all the polylines and draw them on the map.
+            for(var i = 0; i < routes.length; i++) {
+                var newPath = [];
+                for (var j = 0; j < routes[i].length; j++) {
+                    // Format of routes[i][j] [[lat, lng], [lat2, lng2]...]
+                    newPath.push({ lat: routes[i][j][0], lng: routes[i][j][1] });
+                }
+                // Draw saved paths on the map with the same settings as they were drawn.
+                loadedPoly = new google.maps.Polygon({
+                    path: newPath,
+                    strokeColor: '#f3992a',
+                    fillColor: '#f3992a',
+                    strokeWeight: 4,
+                    strokeOpacity: 0.65,
+                    editable: false,
+                    clickable: true,
+                    zIndex: 100,
+                });
+
+                allOverlays.push(loadedPoly);             
+                loadedPoly.setMap(map);            
+            } //  for
+        } 
+        
+        return loadedPoly;      
+    }
+
+    function initMap() {   
+                
+        var latitud = $('#latitud').attr('data-lat');
+        var longitud = $('#longitud').attr('data-lng');     
+        
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 16.4,
+            center: {lat: Number(latitud), lng: Number(longitud)},
+            mapTypeId: 'hybrid'
+        });
+
+        var polyOptions = {
+            strokeWeight: 0,
+            fillOpacity: 0.65,
+            editable: true
+        };
+
+        // Si existe una geocerca para la UN se muestra
+        polyCargado = displayPaths(map);         
+
+        drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.POLYGON,
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: [              
+                google.maps.drawing.OverlayType.POLYGON,              
+                google.maps.drawing.OverlayType.RECTANGLE
+                ]
+            },
+            markerOptions: {
+                draggable: true
+            },
+            polylineOptions: {
+                editable: true
+            },
+            rectangleOptions: polyOptions,
+            circleOptions: polyOptions,
+            polygonOptions: polyOptions,
+            map: map
+        });      
+
+        google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
+            if (e.type != google.maps.drawing.OverlayType.MARKER) {
+                // Switch back to non-drawing mode after drawing a shape.
+                //drawingManager.setDrawingMode(null);
+
+                // Add an event listener that selects the newly-drawn shape when the user
+                // mouses down on it.
+                BorrarFigura();
+                var newShape  = e.overlay;            
+                newShape.type = e.type;
+                google.maps.event.addListener(newShape, 'click', function() {
+                    setSelection(newShape);
+                });
+
+                var new_path = [];
+
+                if (newShape.type == 'rectangle') {
+                var bounds = newShape.getBounds();
+                var ne = bounds.getNorthEast();
+                var sw = bounds.getSouthWest();
+                new_path.push([ne.lat(), ne.lng()]);
+                new_path.push([sw.lat(), sw.lng()]);              
+                } else if (newShape.type == 'polygon') {
+                var arrPaths = newShape.getPath().getArray();                
+                // Construct the new array of paths.
+                for (var i = arrPaths.length - 1; i >= 0; i--) {
+                    new_path.push([arrPaths[i].lat(), arrPaths[i].lng()]);
+                }
+                }
+
+                var routes = [];
+                routes.push(new_path); // Array of arrays [[lat, lng], [lat2, lng2]... ]            
+                console.log('stringify');
+                console.log (JSON.stringify(routes));
+                $('#polyradio').val(JSON.stringify(routes));            
+                setSelection(newShape);
+                
+            } else {
+                drawingManager.setDrawingMode({
+                    polygonOptions: polyOptions
+                });
+                
+            }            
+            
+        });
+
+        // Clear the current selection when the drawing mode is changed, or when the
+        // map is clicked.
+        google.maps.event.addListener(drawingManager, "drawingmode_changed", function() {        
+            BorrarFigura;
+        })
+        google.maps.event.addListener(map, 'click', clearSelection);
+        google.maps.event.addDomListener(document.getElementById('delete-button'), 'click', deleteSelectedShape);
+
+        buildColorPalette();      
+
+        var markerImage = new google.maps.MarkerImage('{% static "core/assets/images/unidad-negocio.png" %}', 
+            new google.maps.Size(48, 48),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(15, 15));      
+
+        marker = new google.maps.Marker({ 
+            map: map,
+            draggable: false,
+            position: centro,
+            icon: markerImage
+        });                                   
+            
+            console.log('hecho');
+        }  
+
+</script>
+
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=drawing&callback=initMap">
+  </script>
+

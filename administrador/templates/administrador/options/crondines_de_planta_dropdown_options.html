@@ -1,0 +1,12 @@
+{% for rondin in crondines_planta %}
+    <button id="{{ rondin.id }}" class="mb-2 mr-2 btn btn-primary btn-lg btn-block size16 mayus block-edit-rondines btn-click-rondin btn-txt-left">                                 
+    <div class="left-ico">                                        
+        <i class="fas fa-qrcode btn-icon-wrapper size32"> </i>     
+    </div>
+    <div class="right-desc">
+        {{ rondin.nombre }} <br> <span class="smaller"?>{{ rondin.planta }}</span>
+    </div>                                                                
+    </button>   
+{% empty %}
+    <p class="size24 text-center" style="line-height: 40px;">No se encontraron rondines para esta Unidad de Negocio</p>
+{% endfor %}           

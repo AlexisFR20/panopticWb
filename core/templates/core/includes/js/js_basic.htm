@@ -1,0 +1,75 @@
+{% load static %}
+<!-- Basic JS category -->
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+{% comment %}
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> {% endcomment %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<!-- Metis Menu JS category -->
+<script src="{% static 'core/assets/plugins/metismenu/metisMenu.min.js' %}"></script>
+<script>
+    // Excepto en login
+    var pathname = window.location.pathname;
+    var urlParams = window.location.search;    
+
+    if (pathname != '/') {
+        $('.vertical-nav-menu').metisMenu({
+            toggle: false // disable the auto collapse. Default: true.
+        });
+    }
+    // Abre/Cierre Sidebar
+    jQuery(".close-sidebar-btn").click(function(){
+        var e=jQuery(".close-sidebar-btn").attr("data-class");
+        jQuery(".app-container").toggleClass(e);
+    });    
+    // Abre/Cierre Sidebar movil
+    jQuery(".hamburger.hamburger--elastic").click(function(){
+        var wq='sidebar-mobile-open';
+        jQuery(".app-container").toggleClass(wq);
+	    jQuery(".hamburger.hamburger--elastic").toggleClass('is-active');
+    });  
+    // Búsqueda
+    jQuery(".search-icon").click(function(){
+        jQuery(".search-icon").parent().parent().addClass("active");
+    });
+    jQuery(".search-wrapper .close").click(function(){
+        jQuery(".search-wrapper .close").parent().removeClass("active");
+    });
+    jQuery('[id^=selUType_]').click(function() {
+        tipoUsuario = jQuery(this).attr('data');
+        
+        switch (tipoUsuario) {
+        case 'ceo':
+            window.location.href = "{% url 'ceo_global' %}";
+            break;
+        case 'vice':
+            window.location.href = "{% url 'vice_global' %}";
+            break;                
+        case 'vicela':
+            window.location.href = "{% url 'vicela_global' %}";
+            break;  
+        case 'gtereg':
+            window.location.href = "{% url 'gtereg_global' %}";
+            break;  
+        case 'gteplanta':
+            window.location.href = "{% url 'gteplanta_global' %}";
+            break;
+        case 'gteplus':
+            window.location.href = "{% url 'gteplus_global' %}";
+            break;  
+        case 'admin':
+            window.location.href = "{% url 'ceo_global' %}";
+            break;        
+        }
+        console.log('Ir a navegación del Usuario Tipo: ' + tipoUsuario);
+    });    
+        
+    setTimeout(function(){ $('a[id^=gcw_]').eq(1).hide(); }, 1000);
+
+    function mostrarMenuPral(mnuName) {
+        jQuery("[id^='mnuUser']").css('display', 'none');
+        jQuery('#'+mnuName).css('display', 'block');        
+    }
+   
+</script>

@@ -1,0 +1,7 @@
+{% for punto in cpuntos_rondin %}
+<div class="mb-2 mr-2 badge badge-primary">{{ punto.nombre }}</div><br/>
+<span class="tasks">{{ punto.tareas }}</span><br/>
+{% empty %}
+<p class="size24 text-center" style="line-height: 40px;">No se encontraron tareas para el rondin</p>
+{% endfor %}           
+<div id="planta_details" lat="{{ planta_lat }}" lng="{{ planta_lng }}" class="escondido"></div>

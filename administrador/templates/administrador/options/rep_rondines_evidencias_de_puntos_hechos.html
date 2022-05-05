@@ -1,0 +1,28 @@
+{% load static %}
+{% if evidencias %}
+    {% for e in evidencias %} 
+        {% if e.evidencia %}
+        <div data-evidencia-id={{ e.id }} class="widget-content p-0">
+            <div class="widget-content-wrapper">
+                <div class="widget-content-left mr-3">
+                    <a href="{{ e.evidencia.url }}" data-fancybox data-caption="{{ e.nota }}" class="avatar-icon-wrapper btn-hover-shine pull-right">
+                        <div class="avatar-icon rounded">
+                            {% if e.tipo != 'video/mp4' %}                            
+                                <img src="{{ e.evidencia.url }}" alt="Evidencia">
+                            {% else %}                            
+                                <img src="{% static 'core/assets/images/video.png' %}" alt="Evidencia">
+                            {% endif %}                            
+                        </div>
+                    </a>                       
+                </div>
+                <div class="widget-content-left">
+                    <div class="widget-heading">Nota:</div>
+                    <div class="widget-subheading">{{ e.nota }}</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}   
+    {% endfor %}
+{% else %}   
+    <p>No existe evidencia levantada en este punto</p>
+{% endif %}   

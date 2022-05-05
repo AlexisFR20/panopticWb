@@ -1,0 +1,44 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Encuestas</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% load render_table from django_tables2 %}
+{% block 'content' %}
+    <a href="{% url 'arnes:list_encuestas' %}" class="btn btn-primary">Volver a lista de encuestas</a>   
+
+    <main role="main">
+        <div class="container">
+            <div>
+                <h2>{{encuesta.nombre}}</h2>
+            </div>
+            <small>creada {{encuesta.created_at}}</small>
+            <br>
+            <small>Categoria {{encuesta.categoria.nombre}}</small>
+
+            <h3>Preguntas</h3>
+            {% render_table table %}
+            <a href="{% url 'arnes:create_pregunta' encuesta.id %}" class="btn btn-success">Agregar pregunta</a>
+        </div>
+    </main>                
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

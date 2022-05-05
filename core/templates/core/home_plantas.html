@@ -1,0 +1,31 @@
+{% extends 'core/bases/base_dashboard.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Gráficas Plotly</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+    {% load plotly_dash %}
+    <div class="{% plotly_class name='dash_plantas' %} card" style="height: 100%; width: 100%">
+    {% plotly_app name='dash_plantas' ratio=0.5 %}
+    </div>
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

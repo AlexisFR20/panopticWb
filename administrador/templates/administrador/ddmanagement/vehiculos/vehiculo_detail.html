@@ -1,0 +1,103 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Encuestas</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% load render_table from django_tables2 %}
+{% block 'content' %}
+    <div class="app-page-title">    
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="mini-logo-panoptic">
+                    <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+                </div>
+                <div>D&D Management&nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Vehículos
+                    <div class="admin-page-title-subheading">
+                    Detalle de Vehículo
+                    </div>
+                </div>
+            </div> 
+
+            <div class="page-title-actions">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a>D&D Management</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'administrador:vehiculo_list' %}"> Vehículos</a>
+                        </li>
+                        <li class="active breadcrumb-item" aria-current="page">
+                            <a href="#">Detalle de Vehículo</a> 
+                        </li>
+                    </ol>
+                </nav>     
+            </div> <!-- Page title actions -->
+
+        </div> <!-- Page Title Wrapper -->
+    </div>  <!-- app page title -->
+
+    <a href="{% url 'administrador:vehiculo_list' %}" class="btn btn-primary size16">Volver a lista de vehículos</a>
+    <br/><br/>
+    <main role="main">
+        <div class="container">
+            <div>
+                <div class="position-relative form-group">
+                    <label class="">Placas</label>
+                    <input name="placas" id="placas" type="text" class="form-control" readonly value="{{ vehiculo.placas }}">
+                </div>
+                <div class="position-relative form-group">
+                    <label class="">Tipo de vehículo</label>
+                    <input name="tipo_vehiculo" id="tipo_vehiculo" type="text" class="form-control" readonly value="{{ vehiculo.tipo_vehiculo }}">
+                </div>
+                <div class="position-relative form-group">
+                    <label class="">Marca</label>
+                    <input name="marca" id="marca" type="text" class="form-control" readonly value="{{ vehiculo.marca }}">
+                </div>
+                <div class="position-relative form-group">
+                    <label class="">Modelo</label>
+                    <input name="modelo" id="modelo" type="text" class="form-control" readonly value="{{ vehiculo.modelo }}">
+                </div>
+                <div class="position-relative form-group">
+                    <label class="">Año</label>
+                    <input name="anio" id="anio" type="text" class="form-control" readonly value="{{ vehiculo.anio }}">
+                </div>
+                <div class="position-relative form-group">
+                    <label class="">No. de serie</label>
+                    <input name="seria" id="seria" type="text" class="form-control" readonly value="{{ vehiculo.seria|default_if_none:"SIN ASIGNAR" }}">
+                </div>
+                <div class="position-relative form-group">
+                    <label class="">No. Económico</label>
+                    <input name="economico" id="economico" type="text" class="form-control" readonly value="{{ vehiculo.economico|default_if_none:"SIN ASIGNAR"  }}">
+                </div>
+
+            
+        </div>
+    </main>       
+            
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

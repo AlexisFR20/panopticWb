@@ -1,0 +1,45 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Rondin</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% load render_table from django_tables2 %}
+{% block 'content' %}
+    <a href="{% url 'analytics:list_rondines' %}" class="btn btn-primary">Volver a lista de rondines</a>   
+
+    <main role="main">
+        <div class="container">
+            <div>
+                <h2>{{rondin.nombre}}</h2>
+                <p><b>Cliente:</b> {{rondin.cliente}}</p>
+                <p><b>Planta:</b> {{rondin.planta}}</p>
+            </div>
+            <hr>
+            <a href="{% url 'analytics:create_punto' pk %}" class="btn btn-success">Nuevo Punto</a>
+            <h3>Puntos</h3>
+            {% render_table table %}
+
+
+        </div>
+    </main>                
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

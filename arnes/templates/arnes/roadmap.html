@@ -1,0 +1,1048 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ROAD MAP &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Resultados de Road Map
+                <div class="admin-page-title-subheading">
+                   Porcentajes de Road Map
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions" style="min-width: 580px;">
+            
+                <div class="input-group">
+				{% comment %}     
+                <select id="tipoanalisis" name="analisis" class="form-control mostrar" style="min-width: 144px;" data-validation="required">
+                    {% for a in analisis %}
+                        <option value="{{ a.id }}">{{ a }}</option>
+                    {% endfor %}
+                </select>  
+				{% endcomment %}    
+                <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+                {% for cliente in clientes.all %}                                                   
+                        <option value="{{ cliente.id }}">{{ cliente }}</option>
+                {% endfor %}
+                </select>            
+                &emsp;
+                <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+                    {% if plantas.count > 1  %}
+                        <option value="">-- Unidad de Negocio (todas) --</option>
+                    {% endif %}
+
+                    {% for planta in plantas %}
+                        <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                    {% endfor %}
+                </select>
+                &emsp;
+                <button id="aplicar" class="btn btn-primary">APLICAR</button>                  
+                &emsp;              
+                </div>   
+            
+        </div> 
+        <div class="page-title-actions escondido">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Análisis de Riesgo</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:admin_resultados_analisis_riesgo' %}"> Resultados de Road Map</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Porcentajes de Road Map
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">            
+            <div class="card-body text-center">                                                                     
+                <img class="img-fluid" src="{% static 'core/assets/images/areas_analisis_riesgo.jpg' %}" alt="">                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-10">
+        <div class="mb-3 card" style="background-color: #fbfbfb;">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    RESULTADO GENERAL EN LAS SIGUIENTES CATEGORÍAS
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}                
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                        <!-- Grafica General de Vulnerabilidad-->
+                        <div id="barChartResultadoGralVulnerabilidad">
+                            <p class="bgp-greymeout small">Generando gráfica...</p>
+                            <div class="loader-wrapper d-flex justify-content-center align-items-center">
+                                <div class="loader">
+                                    <div class="square-spin">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                        <!-- Grafica de Porcentaje por Area -->
+                        <div id="barChartPorcentajePorArea">
+                            <p class="bgp-greymeout small">Generando gráfica...</p>
+                            <div class="loader-wrapper d-flex justify-content-center align-items-center">
+                                <div class="loader">
+                                    <div class="square-spin">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                        <select id="cat-selector" class="form-control selector" style="display: none;">
+                            <option value="entorno">Entorno</option>
+                            <option value="infraestructura">Infraestructura</option>
+                            <option value="seguridad_operativa">Seguridad Operativa</option>
+                            <option value="seguridad_electronica">Seguridad Electronica</option>
+                            <option value="logistica">Logística</option>
+                        </select>
+                        <!-- Grafica de Áreas-->
+                        <div id="barChartResultArea">
+                            <p class="bgp-greymeout small">Generando gráfica...</p>
+                            <div class="loader-wrapper d-flex justify-content-center align-items-center">
+                                <div class="loader">
+                                    <div class="square-spin">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                       
+                </div>
+                <br><br>                                
+            </div>  
+        </div>
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-2">        
+        <a href="#" id="print-pdf" class="btn-transition btn btn-primary btn-lg btn-block size16"><i class="fas fa-file-pdf btn-icon-wrapper size16"> &nbsp;&nbsp; </i>Imprimir Reporte </a>                            
+    </div>
+</div> 
+
+<!-- Barritas -->
+<div class="row" style="position: absolute;left: 4000px;width:100%;">   
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-10">
+        <div class="row">
+            <div id="ip_entorno" class="col-md-3"></div>
+            <div id="ip_infra" class="col-md-3"></div>
+            <div id="ip_opera" class="col-md-3"></div>
+            <div id="ip_elect" class="col-md-3"></div>            
+        </div>
+    </div>    
+</div>
+
+<div class="row" style="position: absolute;left: 4000px;width:100%;">  
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-10">
+        <div class="row">
+            <div id="ip_logis" class="col-md-3"></div>                
+            <div class="col-md-3"></div>
+            <div class="col-md-3"></div>
+            <div class="col-md-3"></div>    
+        </div>
+    </div>    
+</div>
+
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-10">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Categorías de Análisis de Riesgo
+                </div>                                                        
+            </div>
+            <div class="card-body">             
+                <!--  Data Table Start -->
+                <div id="table-container"></div><!-- fin de tabla -->
+                <!-- Data Table End --> 
+                <br><br>   
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    $(document).ready(function() {
+
+        //  Inicialización
+        var grafica1, grafica2, grafica3, grafica4, grafica5, grafica6, grafica7;
+
+        $("#cliente").on('change', function (e) {
+            updatePlantaSelector(this);
+        });
+
+        updatePlantaSelector(document.getElementById("cliente"));
+
+        function setEsperarTxt() {
+            $('#cat-selector').hide();
+            esperarContent = '<p class="bgp-greymeout small">Generando gráfica...</p><div class="loader-wrapper d-flex justify-content-center align-items-center"><div class="loader"><div class="square-spin"><div></div></div></div></div>';
+            $('#barChartResultadoGralVulnerabilidad, #barChartPorcentajePorArea, #barChartResultArea').html(esperarContent);
+        }
+
+        function updatePlantaSelector(selector){
+            var optionSelected = $("option:selected", selector);
+            var valueSelected = selector.value;
+            
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").hide();
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").addClass('hidden');
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").removeClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").show();
+            $("#planta option[data-cliente-id=" + valueSelected + "]").addClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").removeClass('hidden');
+            //agregaba fila en blanco
+            //$("#planta option[value='']").show()
+            //$("#planta option[value='']").addClass('visible')
+            //$("#planta option[value='']").removeClass('hidden')
+            //$('#planta').val('');
+        }
+
+
+        
+        $("#aplicar").on('click', function(){
+            //analisis = document.getElementById("tipoanalisis").value;
+            cliente = document.getElementById("cliente").value;
+            planta = document.getElementById("planta").value;
+            console.log('aplicar', "cliente: "+cliente+", planta: "+planta)
+            setEsperarTxt();
+            loadAjax(cliente, planta);                     
+        });
+
+        $("#print-pdf").on('click', function(){
+            cliente = document.getElementById("cliente").value;
+            planta = document.getElementById("planta").value;            
+            
+            data = grafica1.replace("data:image/png;base64,", "");      
+            data2 =  grafica2.replace("data:image/png;base64,", "");      
+            data3 =  grafica3.replace("data:image/png;base64,", "");      
+            data4 =  grafica4.replace("data:image/png;base64,", "");      
+            data5 =  grafica5.replace("data:image/png;base64,", "");      
+            data6 =  grafica6.replace("data:image/png;base64,", "");      
+            data7 =  grafica7.replace("data:image/png;base64,", "");      
+            
+			console.log(JSON.stringify(p_ids)); 
+            $.ajax({
+                type: "POST",                
+                headers: { "X-CSRFToken": '{{csrf_token}}' },                                
+                url: '{% url "administrador:generate_pdf_analisis_riesgo" %}',
+                data: { 'cliente': cliente, 'planta': planta, 'p_ids': JSON.stringify(p_ids), 'img':  data , 'img2': data2, 'img3': data3, 'img4': data4, 'img5': data5, 'img6': data6, 'img7': data7 },             
+                success: function (response) {     
+                    var blob = new Blob([response], { type: 'application/pdf' });
+                    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                        window.navigator.msSaveOrOpenBlob(blob); // for IE
+                    }
+                    else {
+                        var fileURL = URL.createObjectURL(blob);
+                        var newWin = window.open(fileURL);
+                        newWin.focus();                        
+                    }
+                }
+            });             
+
+        }); 
+
+        var catEntornoAvg = new Array()
+        var catInfraAvg = new Array()
+        var catSegopAvg = new Array()
+        var catSegelecAvg = new Array()
+        var catLogisticaAvg = new Array()
+
+        jQuery("#cat-selector").on('change', function (e) {
+            var optionSelected = $("option:selected", this);
+            var valueSelected = this.value;
+            
+            if(valueSelected == "entorno"){                
+                graficarecuestas(catEntornoAvg);
+            }else if(valueSelected == "infraestructura"){            
+                graficarecuestas(catInfraAvg);
+            }else if(valueSelected == "seguridad_operativa"){
+                graficarecuestas(catSegopAvg);
+            }else if(valueSelected == "seguridad_electronica"){
+                graficarecuestas(catSegelecAvg);
+            }else if(valueSelected == "logistica"){
+                graficarecuestas(catLogisticaAvg);
+            }
+        });
+
+        function graficarecuestas(catArray){
+
+            var values = new Array();
+            var labels = new Array();
+            for (var i = 0; i<catArray.length; i++){
+                var item = catArray[i]
+                values.push(item["avg"].toFixed(2));
+                labels.push(item["nombre"]);
+            }
+
+            document.getElementById('barChartResultArea').innerHTML = '';
+
+            if(labels.length == 0 ){
+                var options = {
+                    series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                }               
+
+                var chartV = new ApexCharts(document.querySelector("#barChartResultArea"), options);
+                var ip_entorno = new ApexCharts(document.querySelector("#ip_entorno"), options);
+                var ip_infra = new ApexCharts(document.querySelector("#ip_infra"), options);
+                var ip_opera = new ApexCharts(document.querySelector("#ip_opera"), options);
+                var ip_elect = new ApexCharts(document.querySelector("#ip_elect"), options);
+                var ip_logis = new ApexCharts(document.querySelector("#ip_logis"), options);
+                
+                chartV.render().then(() => {
+                    window.setTimeout(function() {
+                        chartV.dataURI().then((uri) => {                                
+                            grafica3 = uri;                            
+                        })
+                    }, 390)  
+                });
+
+                return;
+            }
+
+             getCategoría = $('#cat-selector').val();
+             var setColor = '#8A63D8' ;
+
+             switch(getCategoría) {
+                case 'entorno':
+                    setColor = '#8A63D8' ;
+                    break;
+                case 'infraestructura':
+                    setColor = '#ACD7F9' ;
+                    break;
+                case 'seguridad_operativa':
+                    setColor = '#A4CD43' ;
+                    break;                  
+                case 'seguridad_electronica':
+                    setColor = '#F2E700' ;
+                    break;
+                case 'logistica':
+                    setColor = '#FF955B' ;
+                    break;                
+              }             
+
+            var options = {
+                        series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            setColor
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        labels: labels,
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },                        
+                    } // options
+
+            
+            var chartV = new ApexCharts(document.querySelector("#barChartResultArea"), options);
+            chartV.render();
+ 
+
+        } // Para Selector Categorias
+
+        function graficarecuestasEntorno(catArray){
+
+            var values = new Array();
+            var labels = new Array();
+            for (var i = 0; i<catArray.length; i++){
+                var item = catArray[i]
+                values.push(item["avg"].toFixed(2));
+                labels.push(item["nombre"]);
+            }
+            document.getElementById('ip_entorno').innerHTML = '';
+            if(labels.length == 0 ){
+                console.log('ENtro a Entorno');
+                var options = {
+                    series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            '#8A63D8'
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                }               
+
+                var chartV = new ApexCharts(document.querySelector("#ip_entorno"), options);                                
+                chartV.render().then(() => {
+                    window.setTimeout(function() {
+                        chartV.dataURI().then((uri) => {                                
+                            grafica3 = uri;                            
+                        })
+                    }, 390)  
+                });
+
+                return;
+            }
+
+            var options = {
+                series: [{
+                    name: 'Porcentajes vulnerabilidad',
+                    data: values,
+                }],
+                colors: [
+                    '#8A63D8'
+                ],
+                chart: {
+                    type: 'bar',
+                    height: 450
+                },
+                labels: labels,
+                legend: {
+                    position: 'bottom'
+                },
+                plotOptions: {
+                    bar: {                        
+                        columnWidth: '65%',
+                        distributed: true
+                    },
+                },                        
+            } // options
+
+            
+            var chartV = new ApexCharts(document.querySelector("#ip_entorno"), options);
+            chartV.render().then(() => {
+                window.setTimeout(function() {
+                    chartV.dataURI().then((uri) => {          
+                        console.log('ENtro a Entorno AQUI');                      
+                        grafica3 = uri;                        
+                    })
+                }, 390)  
+            });
+
+        } // Para Entorno
+
+        function graficarecuestasInfra(catArray){
+
+            var values = new Array();
+            var labels = new Array();
+            for (var i = 0; i<catArray.length; i++){
+                var item = catArray[i]
+                values.push(item["avg"].toFixed(2));
+                labels.push(item["nombre"]);
+            }
+            document.getElementById('ip_infra').innerHTML = '';
+            if(labels.length == 0 ){
+                console.log('ENtro al if');
+                var options = {
+                    series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            '#ACD7F9'
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                }               
+
+                var chartV = new ApexCharts(document.querySelector("#ip_infra"), options);                                
+                chartV.render().then(() => {
+                    window.setTimeout(function() {
+                        chartV.dataURI().then((uri) => {                                
+                            grafica4 = uri;                            
+                        })
+                    }, 390)  
+                });
+
+                return;
+            }
+
+            var options = {
+                series: [{
+                    name: 'Porcentajes vulnerabilidad',
+                    data: values,
+                }],
+                colors: [
+                    '#ACD7F9'
+                ],
+                chart: {
+                    type: 'bar',
+                    height: 450
+                },
+                labels: labels,
+                legend: {
+                    position: 'bottom'
+                },
+                plotOptions: {
+                    bar: {                        
+                        columnWidth: '65%',
+                        distributed: true
+                    },
+                },                        
+            } // options
+
+            
+            var chartV = new ApexCharts(document.querySelector("#ip_infra"), options);
+            chartV.render().then(() => {
+                window.setTimeout(function() {
+                    chartV.dataURI().then((uri) => {                                
+                        grafica4 = uri;                        
+                    })
+                }, 390)  
+            });
+
+        } // Para Infraestructura
+
+        function graficarecuestasOpera(catArray){
+
+            var values = new Array();
+            var labels = new Array();
+            for (var i = 0; i<catArray.length; i++){
+                var item = catArray[i]
+                values.push(item["avg"].toFixed(2));
+                labels.push(item["nombre"]);
+            }
+            document.getElementById('ip_opera').innerHTML = '';
+            if(labels.length == 0 ){
+                var options = {
+                    series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            '#A4CD43'
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                }               
+
+                var chartV = new ApexCharts(document.querySelector("#ip_opera"), options);                
+                console.log('Generando grafica Operativa');
+                chartV.render().then(() => {
+                    window.setTimeout(function() {
+                        chartV.dataURI().then((uri) => {                                
+                            grafica5 = uri;                            
+                        })
+                    }, 390)  
+                });
+
+                return;
+            }
+
+            var options = {
+                        series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            '#A4CD43'
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        labels: labels,
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },                        
+                    } // options
+
+            
+            var chartV = new ApexCharts(document.querySelector("#ip_opera"), options);
+            chartV.render().then(() => {
+                window.setTimeout(function() {
+                    chartV.dataURI().then((uri) => {                                
+                        grafica5 = uri;                        
+                    })
+                }, 390)  
+            });
+
+        } // Para seguridad Operativa        
+
+        function graficarecuestasElec(catArray){
+
+            var values = new Array();
+            var labels = new Array();
+            for (var i = 0; i<catArray.length; i++){
+                var item = catArray[i]
+                values.push(item["avg"].toFixed(2));
+                labels.push(item["nombre"]);
+            }
+            document.getElementById('ip_elect').innerHTML = '';
+            if(labels.length == 0 ){
+                var options = {
+                    series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            '#F2E700'
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                }               
+
+                var chartV = new ApexCharts(document.querySelector("#ip_elect"), options);
+
+                chartV.render().then(() => {
+                    window.setTimeout(function() {
+                        chartV.dataURI().then((uri) => {                                
+                            grafica6 = uri;                            
+                        })
+                    }, 390)  
+                });
+
+                return;
+            }
+
+            var options = {
+                        series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            '#F2E700'
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        labels: labels,
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },                        
+                    } // options
+
+            
+            var chartV = new ApexCharts(document.querySelector("#ip_elect"), options);
+            chartV.render().then(() => {
+                window.setTimeout(function() {
+                    chartV.dataURI().then((uri) => {                                
+                        grafica6 = uri;                        
+                    })
+                }, 390)  
+            });
+
+        } // Para seguridad Electrónica
+
+        function graficarecuestasLogis(catArray){
+
+            var values = new Array();
+            var labels = new Array();
+            for (var i = 0; i<catArray.length; i++){
+                var item = catArray[i]
+                values.push(item["avg"].toFixed(2));
+                labels.push(item["nombre"]);
+            }
+            document.getElementById('ip_logis').innerHTML = '';
+            if(labels.length == 0 ){
+                var options = {
+                    series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            '#FF955B'
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                }               
+
+                var chartV = new ApexCharts(document.querySelector("#ip_logis"), options);
+
+                chartV.render().then(() => {
+                    window.setTimeout(function() {
+                        chartV.dataURI().then((uri) => {                                
+                            grafica7 = uri;                            
+                        })
+                    }, 390)  
+                });
+
+                return;
+            }
+
+            var options = {
+                        series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: values,
+                        }],
+                        colors: [
+                            '#FF955B'
+                        ],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        labels: labels,
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },                        
+                    } // options
+
+            
+            var chartV = new ApexCharts(document.querySelector("#ip_logis"), options);
+            chartV.render().then(() => {
+                window.setTimeout(function() {
+                    chartV.dataURI().then((uri) => {                                
+                        grafica7 = uri;                        
+                    })
+                }, 390)  
+            });
+
+        } // Para seguridad Logística
+
+
+        var chartVulGral;
+        var chartVulAreas;
+
+        function loadAjax(cliente, planta){
+                
+             $.ajax({
+                 //url: '{url administrador:ajax_roadmap:papeletas}'
+                url:  '{% url "arnes:ajax_roadmap_tabla" %}',
+                data: { 'cliente_id': cliente, 'planta_id': planta},
+                type: 'GET',
+                success: function (result) {
+                    console.log("result cuestionarios", result)
+                    $("#table-container").html(result);
+                } 
+            });
+
+            $.ajax({
+                url:  '{% url "administrador:ajax_analisis_de_riesgo_vulnerabilidadgral" %}',
+                data: { 'cliente_id': cliente, 'planta_id': planta},
+                datatype: 'json',
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (result) {                    
+                    var labelsVul = ["Entorno", "Infraestructura", "Seguridad Operativa", "Seguridad Electrónica", "Logistica"];
+                    var valVul = [result["v_entorno"].toFixed(2), result["v_infraestructura"].toFixed(2), result["v_seguridad_operativa"].toFixed(2), result["v_seguridad_electronica"].toFixed(2), result["v_logistica"].toFixed(2)];                                        
+
+                    var vulGral = (result["v_entorno"]+result["v_infraestructura"]+result["v_seguridad_operativa"]+result["v_seguridad_electronica"]+result["v_logistica"])/5;
+                    vulGral = vulGral.toFixed(2);       
+                    var pre100 = 100 -vulGral;
+                    console.log('cat_entorno_avg');
+
+                    console.log("papeletas_ids");
+                    console.log(result["papeletas_ids"]);
+                    p_ids = result["papeletas_ids"] 
+                    catEntornoAvg = result["cat_entorno_avg"] ;                  
+                    catInfraAvg = result["cat_infraestructura_avg"];  
+                    catSegopAvg = result["cat_seg_operativa_avg"];                 
+                    catSegelecAvg = result["cat_seg_electrica_avg"];                    
+                    catLogisticaAvg = result["cat_logistica_avg"];                
+
+                    var optionsVulGral = {
+                        title: {
+                          text: 'Vulnerabilidad General',
+                          align: 'left'
+                        },
+                        series: [{
+                            name: 'Vulnerabilidad General',
+                            data: [pre100.toFixed(2), vulGral],
+
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        colors: ['#8A63D8','#999'],
+                        labels: ["Seguridad", "Vulnerabilidad"],
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {                              
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                        grid: {
+                            show: true,
+                            yaxis: {
+                                lines: {
+                                    show: false
+                                }
+                            },               
+                        }
+                    } // options 
+                    
+
+                    console.log("vulGral: "+vulGral)
+                    if(chartVulGral == null){
+                        document.getElementById('barChartResultadoGralVulnerabilidad').innerHTML = '';
+                        chartVulGral = new ApexCharts(document.querySelector("#barChartResultadoGralVulnerabilidad"), optionsVulGral);             
+                        chartVulGral.render().then(() => {
+                            window.setTimeout(function() {
+                                chartVulGral.dataURI().then((uri) => {                                
+                                    grafica1 = uri;
+                                })
+                            }, 390) 
+                        });
+                    }else{
+                        chartVulGral.updateSeries([{
+                            name: 'Vulnerabilidad General',
+                            data: [pre100.toFixed(2), vulGral],
+
+                        }]).then(() => {
+                            window.setTimeout(function() {
+                                chartVulGral.dataURI().then((uri) => {                                
+                                    grafica1 = uri;
+                                })
+                            }, 390) 
+                        });
+                    }
+
+                    var optionsVulAreas = {
+                        title: {
+                          text: 'Porcentaje por área',
+                        },
+                        series: [{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: valVul,
+
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        colors: [
+                            '#8A63D8',
+                            '#ACD7F9',
+                            '#A4CD43',
+                            '#F2E700',
+                            '#FF955B'
+                        ],
+                        labels: labelsVul,
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {
+                              horizontal: false,
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                        grid: {
+                            show: true,
+                            yaxis: {
+                                lines: {
+                                    show: false
+                                }
+                            },               
+                        }                        
+                    }
+
+                    console.log("vul por areas:")
+                    console.log(valVul)
+
+                    if(chartVulAreas == null){
+                        document.getElementById('barChartPorcentajePorArea').innerHTML = '';
+                        chartVulAreas = new ApexCharts(document.querySelector("#barChartPorcentajePorArea"), optionsVulAreas);
+                        chartVulAreas.render().then(() => {
+                            window.setTimeout(function() {
+                                chartVulAreas.dataURI().then((uri) => {   
+                                    console.log("render areas")
+                                    console.log(valVul)                             
+                                    grafica2 = uri;
+                                })
+                            }, 500) 
+                        });
+                    }else{
+                        chartVulAreas.updateSeries([{
+                            name: 'Porcentajes vulnerabilidad',
+                            data: valVul,
+                        }]).then(() => {
+                            window.setTimeout(function() {
+                                chartVulAreas.dataURI().then((uri) => {   
+                                    console.log("render areas")
+                                    console.log(valVul)                             
+                                    grafica2 = uri;
+                                })
+                            }, 500) 
+                        });
+                    }
+                    //*
+                    
+                    //*/
+                    //$('#cat-selector').show();
+                    graficarecuestas(catEntornoAvg);       
+                    graficarecuestasEntorno(catEntornoAvg);       
+                    graficarecuestasInfra(catInfraAvg);       
+                    graficarecuestasOpera(catSegopAvg);       
+                    graficarecuestasElec(catSegelecAvg);       
+                    graficarecuestasLogis(catLogisticaAvg);       
+                }
+            });  // Fin de Ajax
+        }
+
+        //analisis = document.getElementById("tipoanalisis").value;
+        cliente = document.getElementById("cliente").value;
+        planta = document.getElementById("planta").value;
+        console.log('aplicar', "cliente: "+cliente+", planta: "+planta);
+        loadAjax(cliente, planta);
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

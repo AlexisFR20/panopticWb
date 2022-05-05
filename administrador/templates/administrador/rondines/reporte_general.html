@@ -1,0 +1,335 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">    
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-wpforms size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Reporte General de Rondines
+                <div class="admin-page-title-subheading">
+                    Puntos, Evidencias y Reportes
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions" style="min-width: 580px;">
+
+          <div class="input-group">                
+            
+            <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+            <option value="" >-- Cliente --</option>
+            {% for cliente in clientes.all %}                                                   
+                    <option value="{{ cliente.id }}">{{ cliente }}</option>
+            {% endfor %}
+            </select>            
+            &emsp;
+            <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+              <option value="">-- Unidad de Negocio --</option>
+              {% for planta in plantas.all %}
+                  <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+              {% endfor %}
+            </select>
+            &emsp;
+            <input name="dates" required="required" class="form-control" style="width: 58px;">                      
+            &emsp;            
+
+          </div>   
+      </div>
+         
+    </div>
+</div>                                
+
+<div class="row escondido">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                                                
+                    Seleccione rango de fecha 
+                </div>                                                        
+            </div>
+            <div class="card-body">  
+                Contenido
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" > 
+    {% if  messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}      
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-5 col-xl-5">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead pe-7s-lintern bgp-color-rojo" aria-hidden="true"></i>
+                    &nbsp;Rondines Realizados
+                </div>                                                        
+            </div>
+            <div class="card-body">
+              <div id="rondines-realizados">
+                <i class="fa fa-cog fa-spin size16"></i> <span class="bgp-greymeout">&emsp; Seleccione algún criterio de búsqueda.</span>
+              </div>
+            </div>  
+        </div>
+
+        <div class="mb-3 card">
+          <div class="card-header-tab card-header-tab-animation card-header">
+              <div class="card-header-title">                                            
+                  <i class="cardhead fas fa-qrcode" aria-hidden="true"></i>
+                  Detalles de Rondín Realizado
+              </div>                                                        
+          </div>
+          <div class="card-body">
+            <div id="puntos-realizados">
+              <i class="fa fa-cog fa-spin size16"></i> <span class="bgp-greymeout">&emsp; Seleccione algún criterio de búsqueda.</span>
+            </div>
+          </div>  
+      </div>
+
+      <div class="mb-3 card">
+          <div class="card-header-tab card-header-tab-animation card-header">
+              <div class="card-header-title">                                            
+                  <i class="cardhead fas fa-archive" aria-hidden="true"></i>
+                  <span id="titulo-evidencias">Evidencias de Rondin</span> 
+              </div>                                                        
+          </div>
+          <div class="card-body">
+            <div id="evidencias">                               
+              <i class="fa fa-cog fa-spin size16"></i> <span class="bgp-greymeout">&emsp; Seleccione algún criterio de búsqueda.</span>
+            </div>
+          </div>  
+      </div>
+
+
+    </div>  <!-- Fin de listados-->
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-7 col-xl-7">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chart-bar" aria-hidden="true"></i>
+                    Incidencias durante rondines realizados
+                </div>                                                        
+            </div>
+            <div class="card-body"> 
+              <div id="logoengrafica" class="text-center"><img class="img-fluid" src="{% static 'core/assets/images/grafica-evdiencias-en-rondines-hechos.jpg' %}" alt="Logo de Panoptic"></div>
+              <canvas id="chart-canvas"></canvas>                
+            </div>  
+        </div>
+    </div> 
+</div> 
+           
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+
+$(document).ready(function() {
+
+  var GraphResult;  
+  
+  // Muestra las unidades de negocio según el cliente seleccionado
+  $('#cliente').on('change', function() {
+      clienteSeleccionado =$("#cliente").val();   
+      console.log(clienteSeleccionado);
+      if ( clienteSeleccionado != 0 ) {
+          $("#planta option").each(function() {               
+            var elSeleccionado = $(this).val();
+            
+            if ( $(this).attr('data-cliente-id') == clienteSeleccionado) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }            
+        });         
+      } else {
+        $('[name="planta"]').val('0').change();
+        $("#planta option").show();
+      }        
+    });  // Fin de Change on Cliente    
+  });
+
+  $('#planta').on('change', function() {
+    var cliente_id = $('option:selected', this).attr('data-cliente-id');
+    console.log('La planta escogida tiene el cliente: ');
+    console.log(cliente_id);
+
+    planta_id =$("#planta").val();   
+    console.log('Planta ID: ');
+    console.log(planta_id);   
+
+    loadRondinReport(cliente_id, planta_id);    
+  });  // Fin de Change on Cliente
+
+  function loadRondinReport(cliente=0, planta=0, rangofecha=null) {
+
+    var planta_id = $('#planta').val();
+    var cliente_id = $('option:selected', $('#planta')).attr('data-cliente-id');
+    var fec_inicio = $('input[name="dates"]').data('daterangepicker').startDate.format("YYYY-MM-DD HH:mm");
+    var fec_fin     = $('input[name="dates"]').data('daterangepicker').endDate.format("YYYY-MM-DD HH:mm");
+
+    $('#puntos-realizados').html('<i class="fa fa-cog fa-spin size16"></i> <span class="bgp-greymeout">&emsp; Seleccione algún criterio de búsqueda.</span>');
+    $('#evidencias').html('<i class="fa fa-cog fa-spin size16"></i> <span class="bgp-greymeout">&emsp; Seleccione algún criterio de búsqueda.</span>');
+
+    // Llamada AJAX para obtener información de reporte  
+    jQuery.get({                       
+      url: '/backstage/ajax/ajax_load_reporte_rondin',
+      data: {
+          'cliente_id': cliente_id,
+          'planta_id': planta_id,
+          'fec_inicio': fec_inicio,
+          'fec_fin': fec_fin
+      },
+      success: function (data) {                           
+          // Llenado de datos en Forma de edición de rondin          
+          $('#rondines-realizados').html(data);
+      }    
+    }); // fin de AJAX       
+
+  }
+</script>
+
+<script>   
+
+</script>
+
+<!-- Gráfica de Incidentes de Rondines -->
+<script>
+  $(document).ready(function() {
+
+    var dataArray, labelsArray = [];
+    var dataSet, labelsSet = [];
+
+    $('input[name="dates"]').daterangepicker(
+      {
+        "timePicker": true,
+        startDate: moment().subtract(2, 'months').format("MM-DD-YYYY"),
+        endDate: moment().add('1', 'day').format("MM-DD-YYYY"),
+        ranges: {
+          'Hoy': [moment(), moment()],
+          'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+          'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+          'Este mes': [moment().startOf('month'), moment().endOf('month')],
+          'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        "locale": {            
+            "applyLabel": "Aplicar",
+            "cancelLabel": "Cancelar",
+            "fromLabel": "Desde",
+            "toLabel": "Hasta",
+            "customRangeLabel": "Personalizar",
+            "daysOfWeek": [
+                "Do",
+                "Lu",
+                "Ma",
+                "Mi",
+                "Ju",
+                "Vi",
+                "Sa"
+            ],
+            "monthNames": [
+                "Enero",
+                "Febrero",
+                "Marzo",
+                "Abril",
+                "Mayo",
+                "Junio",
+                "Julio",
+                "Agosto",
+                "Setiembre",
+                "Octubre",
+                "Noviembre",
+                "Diciembre"
+            ]
+         
+        }
+      },
+      function(start, end) {    
+        //console.log(start + " - " + end);
+        if ($('#planta').val() != "") {
+          loadRondinReport();                             
+        } else {
+          alert('Seleccione la Unidad de Negocio / Cliente primero por favor.');
+        }
+      }
+    );
+        
+    const START_DATE = moment().subtract(1, 'months').format("MM-DD-YYYY");
+    const END_DATE = moment().format("MM-DD-YYYY");
+
+    var chartJsData = function(resultSet) {
+      return {
+        datasets: [
+          {
+            label: 'Incidentes en Puntos Realizados',
+            backgroundColor: '#83131a',
+            borderColor: '#83131a',
+            data: dataArray,
+            fill: false, 
+          }
+        ],
+        labels: labelsArray,
+      };
+    };
+    var options = {
+      scales: {
+        xAxes: [
+          {
+            type: "time",
+            time: {
+              displayFormats: {
+                hour: "MMM DD"
+              },
+              tooltipFormat: "MMM D"
+            }
+          }
+        ],
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true
+            }
+          }
+        ]
+      }
+    };
+  
+  });
+  </script>
+<!-- Ends to include JS list -->
+{% endblock js %}

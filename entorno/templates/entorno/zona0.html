@@ -1,0 +1,1279 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic | {{ userdict.page_name | upper }} - {{ userdic.tipousuario | upper }}</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+    <style>
+        #news_feed {height: 100%;} 
+        #list_news{background: rgba(0,0,0,.8);}   
+        .widget-heading a {color: rgba(255, 255, 255, 0.8) !important;}
+        .p0{padding: 0;}
+    </style>
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">
+    {% load static %}
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/mini-logo-panoptic.png' %}" alt="Logo de Panoptic">                                    
+            </div>
+            <div>Panel de Control <button class="mb-2 mr-2 btn btn-light tipousuario"><span class="badge badge-success badge-dot badge-dot-lg"> </span></button>
+                <div class="page-title-subheading">
+                    Los siguientes módulos están a su disposición; puede utilizar el menú izquierdo para cualquier opción en particular.
+                </div>
+            </div>
+        </div>                 
+    </div>
+</div>                                
+
+
+<div class="tabs-animation">
+    <div class="row" >        
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="mb-3 card">            
+                <div class="card-body text-center">        
+                    <h5 class="card-title size20 bgp-color-azul">Cliente: {{ vcliente.nombre }}</h5>      
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="position-relative form-group">
+                                <label for="exampleSelect" class=""><b>Seleccione una Ciudad</b></label>
+                                <select id="ciudad" name="ciudad" class="form-control mostrar selector" style="min-width: 144px;">
+                                    <option value="" >-- Seleccione una Ciudad --</option>
+                                    {% for ciudad in ciudades %}                                                   
+                                  <option value="{{ ciudad.nombre }}">{{ ciudad.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>                        
+                        </div>
+
+						 <div class="col-md-4">
+                                <div class="position-relative form-group">
+                                    <label for="exampleEmail" class=""><b>Fecha a Actual</b></label>                   
+                                    <input id="dates_now" name="dates_now" required="required" class="form-control">
+	                             </div>
+                          </div>                        
+
+                        <div class="col-md-4">
+                            <div class="position-relative form-group">
+                                <label for="exampleEmail" class=""><b>Fecha a Comparar</b></label>                            
+                                <input id="dates_old" name="dates_old" required="required" class="form-control">
+                            </div>                        
+                        </div>
+
+                    </div>
+
+
+                    <!--div class="input-group"> 
+                        &emsp;   
+                        &emsp;
+                        &emsp;
+                        &emsp;                       
+                    </div-->              
+                </div>  
+            </div>
+        </div> 
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-xl-12">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-azul">                        
+                        <div id="zonaHeader" style="position: relative; margin: 0 auto; text-align: center;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-users size48 en-linea ico-sombra" aria-hidden="true"></i>&nbsp;&nbsp;
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 en-linea">Zona 0</div>                                           
+                            </div>                             
+                        </div>                                             
+                    </div>                
+                </div>
+                <ul class="list-group list-group-flush">                    
+                    <li class="p-0 list-group-item li-sin-borde">
+                        <div class="grid-menu grid-menu-2col">
+                            <div class="no-gutters row">
+                                <div class="col-sm-8">
+                                    <div id='map' style='width: auto; height: 850px;'></div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="col-md-12 col-lg-12 col-xl-12 p0">
+                                        <div class="mb-3 text-white card-border bg-dark card">
+                                            <div  style="padding: 0px 4px">
+                                                <div class="card-header"><i class="header-icon pe-7s-note2 bgp-color-amarillo-intenso"> </i>Alertas externas (Política, Ambiental. Sociales, Tecnológicas…)
+                                                </div>                
+                                                <!-- Noticias de Internet Políticas  -->
+                                                <span class="bgp-color-amarillo-intenso size14 negrita">Políticas</span><hr style="border: 2px solid rgb(214, 214, 214)"/> 
+                                                <div id="news_feed" class="movehere tab-content scrollbar style-1" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+                                                    <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                                                    <ul id="list_news_Politicas" data-criterio="politica" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                                                    </ul>
+                                                </div>
+                                                <!-- Noticias de Internet Sociales  -->
+                                                <span class="bgp-color-amarillo-intenso size14 negrita">Sociales</span><hr style="border: 2px solid rgb(214, 214, 214)"/> 
+                                                <div id="news_feed" class="movehere tab-content scrollbar style-1" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+                                                    <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                                                    <ul id="list_news_Sociales" data-criterio="sociales" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                                                    </ul>
+                                                </div>
+                                                <!-- Noticias de Internet Ambientales  -->
+                                                <span class="bgp-color-amarillo-intenso size14 negrita">Ambientales</span><hr style="border: 2px solid rgb(214, 214, 214)"/> 
+                                                <div id="news_feed" class="movehere tab-content scrollbar style-1" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+                                                    <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                                                    <ul id="list_news_Ambientales" data-criterio="ambientales"  class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                                                    </ul>
+                                                </div>
+                                                <!-- Noticias de Internet Legales  -->
+                                                <span class="bgp-color-amarillo-intenso size14 negrita">Legales</span><hr style="border: 2px solid rgb(214, 214, 214)"/> 
+                                                <div id="news_feed" class="movehere tab-content scrollbar style-1" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+                                                    <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                                                    <ul id="list_news_Legales" data-criterio="legales"  class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>       
+    </div> 
+    
+    <div class="row" >        
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-4">
+            <div id="indicesDelincuenciales" class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">                                            
+                        <i class="header-icon bgp-color-rojo pe-7s-note2"></i>
+                        Índices Delincuenciales 
+                    </div>   
+                    <div class="btn-actions-pane-right">
+                        <small id="rango_fecha" class="bgp-color-naranja opacity-9 pr-1"></small>
+                    </div>                                                      
+                </div>
+                <div class="card-body">     
+                    {% if  messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}    
+                    
+                    <div class="tab-content">
+                        <h6 id="nombre_ciudad" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                        <!-- Listado de ïconos delincuenciales -->
+                        <ul id="count_indices" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush"></ul>
+                    </div>
+                    <!-- nuevo -->
+                    <hr>
+
+                    <div class="tab-content escondido">
+                        
+                        <h6 id="nombre_ciudad_old" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                        <!-- Listado de ïconos delincuenciales -->
+                        <ul id="count_indices_old" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                        </ul>
+                    </div>
+                </div>  
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-8">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">                                      
+                        <i class="cardhead fas fa-exclamation size16" aria-hidden="true"></i>
+                        Índice delictivo
+                    </div>                                                        
+                </div>
+                <div class="card-body">
+                   <div id="chart1"></div> 
+                   <hr>
+                   <div id="chart2"></div>              
+                </div>
+            </div>    
+        </div>
+    </div> 
+</div>       
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=visualization"></script>
+
+<script>
+    $(document).ready(function() {
+
+        function alertasInternet() {
+            var estado = false;
+            var arrNoticias = [];
+    
+            $('[id^="list_news_"]').each(function( index ) {  
+                arrNoticias.push($(this).attr('id'));
+    
+                var idNoticia = $(this).attr('id');
+                var criterio = $(this).attr('data-criterio');
+    
+                $.ajax({
+                    async: false,
+                    url:  "{% url 'news_rss' %}",
+                    data: { 'criterio': criterio },
+                    datatype: 'json',
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',            
+                    success: function(result) {                    
+                        estado = true;
+                        var news_list = result.entries;
+                        $.each(news_list, function(){                                
+                            $('#'+idNoticia).append(
+                                '<li class="list-group-item bg-dark">'+
+                                '    <div class="widget-content p-0">'+
+                                '        <div class="widget-content-wrapper">'+
+                                '            <div class="widget-content-left mr-3">'+
+                                '                <i class="fas fa-play-circle"></i>'+
+                                '            </div>'+                        
+                                '            <div class="widget-content-left">' +
+                            '                <div class="widget-heading"><a href="' +this.link + '">' + this.title + '</a></div>' +
+                            '                <div class="widget-subheading">'+moment(this.published).format("DD-MM-YYYY HH:mm:ss")+' </div>' +
+                            '            </div>' + 
+                                '        </div>' +
+                                '    </div>' +
+                                '</li> '                            
+                            );   
+                        });
+                    }
+                }); // fin ajax
+    
+            });
+            console.log(arrNoticias);
+    
+            
+            return estado;
+        }
+    
+        alertasInternet();
+    
+        var dTimer = 0
+        var amountScroll = 70;;
+        if (dTimer == 0) {
+            dTimer = setInterval(function () {
+                $('.movehere').animate({ scrollTop: amountScroll }, 'slow');
+                amountScroll += 70;
+            }, 2000);
+        }
+
+        var vstart, vend, vplanta, vciudad = null;        
+        moment.locale('es');        
+    
+        $( "select#planta" ).change(function() {            
+            //vplanta = $(this).val();
+            //$('table#tbl-movimientos tbody tr').remove();     
+                
+        });        
+
+        jQuery('#tblregiones').DataTable({       
+            "order": [[ 3, "asc" ]],
+            "pageLength":  20,  
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           },          
+        });   
+        
+        $('input[name="dates_old"]').daterangepicker(
+        {
+            //"timePicker": true,
+            "showDropdowns": true,
+            //"showWeekNumbers": true,
+            //"showISOWeekNumbers": true,
+            "autoApply": true,
+            //"autoUpdateInput": false,
+            "startDate": moment().subtract(2, 'months').format("MM-DD-YYYY"),
+            "endDate": moment().add('1', 'day').format("MM-DD-YYYY"),
+            "opens": "center",
+            "ranges": {
+            'Hoy': [moment(), moment()],
+            'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+            'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+            'Este mes': [moment().startOf('month'), moment().endOf('month')],
+            'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            //'Últimos 2 meses': [moment().subtract(2, 'month').startOf('month'), moment().subtract(2, 'month').endOf('month')],
+            //'Últimos 3 meses': [moment().subtract(3, 'month').startOf('month'), moment().subtract(3, 'month').endOf('month')],
+            //'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "locale": {            
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Personalizar",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Setiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ]
+            
+            }
+        },
+        function(start, end, label) {    
+            vciudad = $('select#ciudad').val();
+            console.log(vciudad);
+            //vplanta = $('select#planta').val();
+            vstart = start.format('YYYY-MM-DD');                                
+            vend = end.format('YYYY-MM-DD'); 
+
+            if (vciudad == '') {
+                alert('Seleccione una Ciudad por favor !!!');
+                return false;
+            }
+            if (vstart == vend) {
+                vend = moment(vstart). add(1, 'days').format('YYYY-MM-DD HH:mm');
+            }
+            refresh_dashboars_old(vstart, vend, vciudad); 
+        });        
+
+        /**************************************************************************************/
+
+        $('input[name="dates_now"]').daterangepicker(
+        {
+            "showDropdowns": true,
+            //"showWeekNumbers": true,
+            //"showISOWeekNumbers": true,
+            "autoApply": true,
+            //"autoUpdateInput": true,
+            "startDate": moment().subtract(2, 'months').format("MM-DD-YYYY"),
+            "endDate": moment().add('1', 'day').format("MM-DD-YYYY"),
+            "opens": "center",
+            "ranges": {
+            'Hoy': [moment(), moment()],
+            'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+            'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+            'Este mes': [moment().startOf('month'), moment().endOf('month')],
+            'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "locale": {            
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Personalizar",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Setiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ]
+            
+            }
+        },
+        function(start, end, label) {    
+            vciudad = $('select#ciudad').val();
+            console.log(vciudad);
+
+            //vplanta = $('select#planta').val();
+            vstart = start.format('YYYY-MM-DD');                                
+            vend = end.format('YYYY-MM-DD'); 
+
+            console.log(moment(vstart). add(1, 'years').format('YYYY-MM-DD'));
+            console.log('********************************************************');
+            console.log(moment(vend). add(1, 'years').format('YYYY-MM-DD'));
+
+            if (vciudad == '') {
+                alert('Seleccione una Ciudad por favor !!!');
+                return false;
+            }
+            if (vstart == vend) {
+                vend = moment(vstart). add(1, 'days').format('YYYY-MM-DD HH:mm');
+            }
+            refresh_dashboars_now(vstart, vend, vciudad);   
+        }); 
+
+        function refresh_dashboars_old(vstart, vend, vciudad){           
+
+            var iconos = { 
+            {% for tipo in tipo_incidentes %}  
+            '{{ tipo.alias }}': { 'nombre': "{{ tipo.nombre }}", 'img': "/media/{{ tipo.icono }}" }, 
+            {% endfor %}  
+            };             
+            
+            $('#rango_fecha').text("De " + moment(vstart).format('DD-MM-YYYY') +" a " + moment(vend).format('DD-MM-YYYY'));
+            //$('#nombre_ciudad_old').text(vciudad);
+            $('#count_indices_old').empty();
+
+            var data_results = "";
+            var totales = "";
+            console.log("?vstart="+vstart+"&vend="+vend+"&vciudad="+vciudad);
+            $.ajax({
+                url:  "{% url 'entorno:incidentes_ajax' %}",
+                data: { 
+                    'vstart': vstart, 
+                    'vend': vend, 
+                    'vciudad': vciudad
+                },
+                datatype: 'json',
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',            
+                success: function (result) {
+                    
+                    $('#count_indices')
+                    data_results = result.Totales;
+                    totales = result.Total_Incidentes;
+
+                    if(data_results != 'None') {
+                        //console.log(result);
+
+                        if(totales == '0') {
+
+                            $('#count_indices_old').append(
+                                '<li class="list-group-item">' +
+                                '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                                '       <h6 class="bgp-color-rojo negrita text-uppercase text-center">No Hay registros todavía</h6>' +
+                                '    </div>' +
+                                '</li>' 
+                            );
+                            return false;
+                        }
+
+
+                        var indice_chart = '';
+                        var indice_label_chart = '';
+                        $.each(data_results, function(){
+                            //console.log(this[0] + ' - ' + this[1] + ' - ' + this[2] + ' - ' + this[3]);
+                            indice_chart += this[2] + ", ";
+                            indice_label_chart += this[0] + ", ";
+
+                            
+                            //var nombre_incidente = this.tipo;
+                            var tipo_incidente = this[1];
+                            var count_indices = this[2];
+                            var indicessss = 0;
+                            var promedio_indices = 0;
+                            var subio = '';
+                            var flecha = '';
+
+                            indicessss = this[2]*100;
+                            promedio_indices = parseFloat( indicessss / this[3] ).toFixed(2);
+                            if( isNaN(promedio_indices) || promedio_indices == Infinity ){
+                                promedio_indices = parseFloat( 0 ).toFixed(2);
+                            }
+
+
+                            if (this[3] > this[2]) {
+                                subio = 'Incremento';
+                                flecha = '<i class="fa fa-arrow-up"></i>';
+
+                            } else {
+                                subio = 'Decremento';
+                                flecha = '<i class="fa fa-arrow-down"></i>';
+                            }
+                            //? parseFloat(this[3]).toFixed(2) : "0";
+
+                            $('#count_indices_old').append(
+                                '<li class="list-group-item">' +
+                                '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                                '        <div class="widget-content-wrapper">' +
+                                '            <div class="widget-content-left mr-3 bck-white">' +
+                                '                <img width="42" class="rounded-circle icod-bw" src="' + iconos[tipo_incidente].img + '" alt="Casa Habitación">' +
+                                '            </div>' +
+                                '            <div class="widget-content-left">' +
+                                '                <div class="widget-heading">' + iconos[tipo_incidente].nombre + '</div>' +
+                                '                <div class="widget-subheading">'+subio+' </div>' +
+                                '            </div>' +
+                                '            <div class="widget-content-right">' +
+                                '                <div class="font-size-xlg text-muted">' +
+                                '                    <small class="bgp-color-naranja opacity-9 pr-1">'+ promedio_indices +'%</small>' +
+                                '                    <span id="'+tipo_incidente+'_old">' + count_indices + '</span>' +
+                                '                    <small class="text-danger pl-2">' +
+                                '                        ' + flecha + 
+                                '                    </small>' +
+                                '                </div>' +
+                                '            </div>' +
+                                '        </div>' +
+                                '    </div>' +
+                                '</li>' 
+                            );                            
+                        });
+
+                        //var arr_lbl1 = indice_chart.split(", ");
+                        //var arr_lbl2 = indice_label_chart.split(", ");                       
+                        
+                        //ApexCharts.exec('char_inc', 'updateSeries',  [{
+                        //data: arr_lbl1,
+                        //xaxis: {
+                        //  categories: arr_lbl2,
+                        //}
+                        //}], true, true);                         
+                    }
+                    
+                }
+            }); 
+        } 
+
+
+        function refresh_dashboars_now(vstart, vend, vciudad){           
+
+            var shape = {
+                coords: [1, 1, 1, 47, 30, 47, 30, 1],
+                type: 'poly'
+            };
+            var iconos = { 
+            {% for tipo in tipo_incidentes %}  
+            '{{ tipo.alias }}': { 'nombre': "{{ tipo.nombre }}", 'img': "/media/{{ tipo.icono }}" }, 
+            {% endfor %}  
+            };             
+            
+            $('#rango_fecha').text("De " + moment(vstart).format('DD-MM-YYYY') +" a " + moment(vend).format('DD-MM-YYYY'));
+            $('#nombre_ciudad').text(vciudad);
+            $('#count_indices').empty();
+
+            var data_results = "";
+            var totales = "";
+            //console.log("?vstart="+vstart+"&vend="+vend+"&vciudad="+vciudad);
+            $.ajax({
+                url:  "{% url 'entorno:incidentes_ajax' %}",
+                data: { 
+                    'vstart': vstart, 
+                    'vend': vend, 
+                    'vciudad': vciudad
+                },
+                datatype: 'json',
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',            
+                success: function (result) {
+                    
+                    $('#count_indices')
+                    data_results = result.Totales;
+                    totales = result.Total_Incidentes;
+
+                    data_incidentes = result.Incidente;
+
+                    if(data_results != 'None') {
+                        console.log(result);
+
+                        if(totales == '0') {
+
+                            $('#count_indices').append(
+                                '<li class="list-group-item">' +
+                                '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                                '       <h6 class="bgp-color-rojo negrita text-uppercase text-center">No Hay registros todavía</h6>' +
+                                '    </div>' +
+                                '</li>' 
+                            );
+                            return false;
+                        }
+
+
+                        var indice_chart = '';
+                        var indice_label_chart = '';
+                        var arr_lbl2 = '';
+                        $.each(data_results, function(){
+                            //console.log(this[0] + ' - ' + this[1] + ' - ' + this[2] + ' - ' + this[3]);
+                            indice_chart += this[2] + ", ";
+                            indice_label_chart += this[0] + ", ";
+
+                            
+                            //var nombre_incidente = this.tipo;
+                            var tipo_incidente = this[1];
+                            var count_indices = this[2];
+                            var indicessss = 0;
+                            var promedio_indices = 0;
+                            var subio = '';
+                            var flecha = '';
+
+                            var valor_a = '';
+                            var valor_b = '';
+
+                            //valor_a = $("#"+tipo_incidente+"_old").val();
+                            //valor_b = $("#"+tipo_incidente+"_now").val();
+                            var old_text ='';
+                            if($('input[name="dates_old"]').val() != ""){
+                                 old_text= $("#"+tipo_incidente+"_old").text();
+                                arr_lbl2 += old_text + ", ";
+                            } else {
+                                arr_lbl2 = '';
+                            }
+                            //console.log('2 - '+ arr_lbl2);
+                            $('#count_indices').append(
+                                '<li class="list-group-item">' +
+                                '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                                '        <div class="widget-content-wrapper">' +
+                                '            <div class="widget-content-left mr-3 bck-white">' +
+                                '                <img width="42" class="rounded-circle icod-bw" src="' + iconos[tipo_incidente].img + '" alt="Casa Habitación">' +
+                                '            </div>' +
+                                '            <div class="widget-content-left">' +
+                                '                <div class="widget-heading">' + iconos[tipo_incidente].nombre + '</div>' +
+                                '                <div id="'+tipo_incidente+'_txt" class="widget-subheading">'+subio+' </div>' +
+                                '            </div>' +
+                                '            <div class="widget-content-right">' +
+                                '                <div class="font-size-xlg text-muted">' +
+                                '                    <small id="'+tipo_incidente+'_pro" class="bgp-color-naranja opacity-9 pr-1">%</small>' +
+                                '                    <span id="'+tipo_incidente+'_now">' + old_text + ' <i class="fas fa-arrows-alt-h hide_icon"></i> ' + count_indices + '</span>' +
+                                '                    <small id="'+tipo_incidente+'_arrow" class="text-danger pl-2">' +
+                                '                        ' + flecha + 
+                                '                    </small>' +
+                                '                </div>' +
+                                '            </div>' +
+                                '        </div>' +
+                                '    </div>' +
+                                '</li>' 
+                            ); 
+
+                            if($('input[name="dates_old"]').val() != ""){
+                                $("#"+tipo_incidente+"_pro").removeClass('escondido');
+                                $('.hide_icon').removeClass('escondido');
+                                $("#"+tipo_incidente+"_arrow").removeClass('escondido');
+                                $("#chart2").removeClass('escondido');
+
+                                valor_a = parseFloat($("#"+tipo_incidente+"_old").text());
+                                valor_b = parseFloat(count_indices);
+
+                                //console.log("A " + valor_a + " B " + valor_b);
+                                indicessss = valor_b*100;
+
+                                promedio_indices = parseFloat( indicessss / valor_a ).toFixed(2);
+
+                                //console.log("A " + valor_a + " B " + valor_b + " C " + indicessss + " D " + promedio_indices);
+
+                                if( isNaN(promedio_indices) || promedio_indices == Infinity ){
+                                    promedio_indices = parseFloat( 0 ).toFixed(2);
+                                }
+
+                                $("#"+tipo_incidente+"_pro").text(promedio_indices+'%');
+
+
+                                if (valor_b == valor_a) {
+                                    subio = 'Sin Cambio';
+                                    flecha = '<i class="fas fa-equals"></i>'; 
+                                }
+                                else if (valor_b > valor_a) {
+                                    subio = 'Incremento';
+                                    flecha = '<i class="fa fa-arrow-up"></i>'; 
+                                } else {
+                                    subio = 'Decremento';
+                                    flecha = '<i class="fa fa-arrow-down"></i>';
+                                }
+                                $("#"+tipo_incidente+"_txt").text(subio);
+                                $("#"+tipo_incidente+"_arrow").html(flecha);
+                            } else {
+                                $("#"+tipo_incidente+"_pro").addClass('escondido');
+                                $('.hide_icon').addClass('escondido');
+                                $("#"+tipo_incidente+"_arrow").addClass('escondido');
+                                $("#chart2").addClass('escondido');
+                            }
+
+                            //console.log(promedio_indices + "-" + valor_a + "-" + valor_b);                         
+                        });
+
+                        
+
+                        //console.log(data_incidentes);
+                        var czindex = 500;
+                        
+                        var infowindow = new google.maps.InfoWindow();
+                        var contentString;
+                        $.each(data_incidentes, function(){
+                            var infowindow = null;
+                            //console.log("lat: " + this.fields.lat + ", lng: " + this.fields.lng + ", tipo: " + this.fields.tipo);
+                            const location = { lat: this.fields.lat, lng: this.fields.lng };
+                            const marker = new google.maps.Marker({
+                                position: location,
+                                map: map,
+                                icon: iconos[this.fields.tipo].img,
+                                shape: shape,
+                                title: this.fields.titulo.toUpperCase(),
+                                zIndex: czindex
+                            });
+
+                            marker.infowindow = new google.maps.InfoWindow({
+                                content: '<h3 class="infoh3"><b>'+this.fields.titulo+'</h3><hr/><h6><span class="infoh6">TIPO:</span><span class="spantipo">' + this.fields.tipo.toUpperCase() + '</span><hr/></h6><p class="infop"></p><p class="infop">'+this.fields.direccion+', '+this.fields.ciudad+', '+this.fields.estado+', '+this.fields.pais+' | Fecha: '+this.fields.fecha+' | Fuente: Diario MX</p><a href="'+this.fields.url_noticia+'" data-id="'+this.fields.id+'" class="hoverme mb-1 mr-1 btn btn-default" target="_new">Ver Incidente Relacionado</a>'
+                            });
+                            
+                            marker.addListener('click', function() {
+                                //this.infowindow.close(map, this);                                
+                                this.infowindow.open(map, this);
+
+                            });  
+
+                            /*marker.addListener('closeclick',function(){
+                               this.infowindow.close(map, this);
+                            });*/         
+
+                            markers.push(marker);           
+                            ++czindex;
+                            //markers.push(marker);
+
+                        });
+
+
+                        var arr_lbl1 = indice_chart.split(", ");
+                        arr_lbl2 = arr_lbl2.split(", ");
+
+                        //console.log(arr_lbl1+"-"+arr_lbl2);
+
+                        ApexCharts.exec('char_inc1', 'updateOptions', {
+                            title: {
+                                text: 'Índice delictivo '+ $('input[name="dates_now"]').val()
+                            }
+                        });
+
+                        ApexCharts.exec('char_inc1', 'updateSeries', [
+                            { data: arr_lbl1 }
+                        ]); 
+
+                        ApexCharts.exec('char_inc2', 'updateOptions', {
+                            title: {
+                                text: 'Índice delictivo '+ $('input[name="dates_old"]').val()
+                            }
+                        });
+
+                        ApexCharts.exec('char_inc2', 'updateSeries', [
+                            { data: arr_lbl2 }
+                        ]); 
+                        
+
+                        
+                        
+                    }
+
+                    
+                }
+            }); 
+
+            deleteMarkers();
+        } 
+        
+    });
+</script>
+<script>
+
+    var iconos = [ {% for tipo in tipo_incidentes %} '{{ tipo.nombre }}', {% endfor %} ]; 
+    var options1 = {
+      series: [{
+      name: 'Índice delictivo 1',
+      data: []
+    }],
+      chart: {
+        id: 'char_inc1',
+      type: 'bar',
+      height: 500
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '55%',                            
+      },
+    },
+    colors:['#9D292A'],
+    title: {
+      text: 'Índice delictivo 1'
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: iconos,
+    },
+    yaxis: {
+      title: {
+        text: 'Índice delictivo'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    grid: {
+      show: true,
+      yaxis: {
+          lines: {
+              show: false
+          }
+      },               
+   },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+            console.log(val);
+          return " Índice delictivo total " + val
+        }
+      }
+    }
+    };
+
+    var chart1 = new ApexCharts(document.querySelector("#chart1"), options1);
+    chart1.render();
+
+
+    
+    var options2 = {
+      series: [{
+      name: 'Índice delictivo 2',
+      data: []
+    }],
+      chart: {
+        id: 'char_inc2',
+      type: 'bar',
+      height: 500
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '55%',                            
+      },
+    },
+    colors:['#008ffb'],
+    title: {
+      text: 'Índice delictivo 2'
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: iconos,
+    },
+    yaxis: {
+      title: {
+        text: 'Índice delictivo'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    grid: {
+      show: true,
+      yaxis: {
+          lines: {
+              show: false
+          }
+      },               
+   },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+            console.log(val);
+          return " Índice delictivo total " + val
+        }
+      }
+    }
+    };
+
+    var chart2 = new ApexCharts(document.querySelector("#chart2"), options2);
+    chart2.render();
+</script>
+
+<script>    
+    var circle;
+    var map, heatmap, infowindow;
+    var markers = [];
+
+    /*function initMap() {*/
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 3,
+            center: {lat: 30.1523153, lng: -106.8905766},
+            mapTypeId: 'roadmap'
+        });
+
+        infoWindow = new google.maps.InfoWindow;
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            infoWindow.setPosition(pos);
+            infoWindow.setContent('Location found.');
+            infoWindow.open(map);
+            map.setCenter(pos);            
+          }, function() {
+            
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          
+        }
+        
+        var markers = setMarkers(map);
+
+        heatmap = new google.maps.visualization.HeatmapLayer({
+            data: getPoints(),
+            map: map
+        });       
+
+        jQuery('#ciudad').change(function(){
+            var geocoder =  new google.maps.Geocoder();
+            geocoder.geocode( { 'address': jQuery(this).val()}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    //alert("location : " + results[0].geometry.location.lat() + " " +results[0].geometry.location.lng()); 
+
+                    var pos = {
+                      lat: results[0].geometry.location.lat(),
+                      lng: results[0].geometry.location.lng()
+                    };
+                    map.panTo(pos);
+                    //map.setCenter(pos);
+
+                    map.setZoom( 10 );
+                } else {
+                console.log("Something got wrong " + status);
+                }
+            });
+        });
+    //}    
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                                'Error: The Geolocation service failed.' :
+                                'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+    }
+
+    function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+    }     
+
+    function changeRadius() {
+        heatmap.set('radius', heatmap.get('radius') ? null : 20);        
+    }
+
+    function changeOpacity() {
+        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+    }
+
+    function changeMarkers() {        
+        toggleMarkers(markers);
+    }
+
+    function toggleMarkers(markers) {
+        // Loop through all markers and hide each of them
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            marker.visible ? marker.setVisible(false) : marker.setVisible(true);
+            //marker.setVisible(false);
+        }        
+    }   
+
+      // Heatmap data: 500 Points
+    function getPoints() {
+        return [
+            {% for o in incidentes %}
+            new google.maps.LatLng({{ o.lat}}, {{ o.lng }}),                
+            {% endfor %}                    
+        ];
+    }
+
+    function smoothZoom (map, level, cnt, mode) {
+        //alert('Count: ' + cnt + 'and Max: ' + level);
+
+        // If mode is zoom in
+        if(mode == true) {
+
+            if (cnt >= level) {
+                return;
+            }
+            else {
+                var z = google.maps.event.addListener(map, 'zoom_changed', function(event){
+                    google.maps.event.removeListener(z);
+                    smoothZoom(map, level, cnt + 1, true);
+                });
+                setTimeout(function(){map.setZoom(cnt)}, 50);
+            }
+        } else {
+            if (cnt <= level) {
+                return;
+            }
+            else {
+                var z = google.maps.event.addListener(map, 'zoom_changed', function(event) {
+                    google.maps.event.removeListener(z);
+                    smoothZoom(map, level, cnt - 1, false);
+                });
+                setTimeout(function(){map.setZoom(cnt)}, 50);
+            }
+        }
+    }
+
+    function goUbicacion(lugar) {
+        var vLugar = 'Ubicación seleccionada';
+        var vzoom = 0;
+        var latitude  = 0;
+        var longitude = 0;
+        var whereMarker = null;
+
+        if (lugar == 'usa_east') {
+            latitude  =  36.5522;
+            longitude =  -83.9171817;
+            vLugar = 'Estados Unidos Este';
+            vzoom = 6;            
+        }  else if (lugar == 'global') {
+            latitude  =  24.6110255;
+            longitude = -42.8441299;
+            vLugar = 'Vista Global';
+            vzoom = 2.75;
+        } else if (lugar == 'la') {
+            latitude  =  15.2985681;
+            longitude =  -78.6551153;
+            vLugar = 'América Latina';
+            vzoom = 4;
+        } else if (lugar == 'juarez') {
+            latitude  =  31.6874405;
+            longitude =  -106.4300477;
+            vLugar = 'Ciudad Juárez';
+            vzoom = 12;
+        } else if (lugar == 'benitojuarez') {
+            latitude  = 30.1523153;
+            longitude = -106.8905766;
+            vLugar = 'Benito Juárez';
+            vzoom = 12;
+        } else if (lugar == 'europa') {
+            latitude  =   52.0930382;
+            longitude =  11.3800946;
+            vLugar = 'Europa';
+            vzoom = 5;
+        } else if (lugar == 'asia') {
+            latitude  =  33.2888155;
+            longitude =  113.5219767;
+            vLugar = 'Asia';
+            vzoom = 4;
+        } else if (lugar == 'oceania') {
+            latitude  =  -30.7058591;
+            longitude =  143.8021268;
+            vLugar = 'Oceanía';
+            vzoom = 5;
+        }         
+
+        whereMarker = new google.maps.Marker({
+            zoom: vzoom,
+            position: new google.maps.LatLng(latitude, longitude),
+            title: vLugar,
+            icon: "{% static 'core/assets/images/where-ico-marker.png' %}",
+            map: map,
+        });
+        map.panTo(whereMarker.getPosition());
+        //smoothZoom(map, vzoom, map.getZoom(), true);
+        map.setZoom(vzoom);
+    }
+
+    function setMarkers(map) {
+        // Adds markers to the map.
+        
+        // Shapes define the clickable region of the icon. The type defines an HTML
+        // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+        // The final coordinate closes the poly by connecting to the first coordinate.
+        var shape = {
+            coords: [1, 1, 1, 47, 30, 47, 30, 1],
+            type: 'poly'
+        };
+
+        var iconos = { 
+        {% for tipo in tipo_incidentes %}  
+        '{{ tipo.alias }}': { 'img': "/media/{{ tipo.icono }}" }, 
+        {% endfor %}  
+        };   
+
+        var czindex = 500;           
+
+        {% for p in incidentes %}
+
+            /*var title = '{{ p.tipo }}';
+            var title_ico = '{{ p.tipo|stringformat:"s" }}';
+
+            
+            //console.log(iconos[title_ico].img);
+            
+            if (title == 'asalto_transeuntes') {
+                title = 'Asalto a Transeuntes';
+            }   
+
+            var marker = new google.maps.Marker({
+                position: {lat: {{ p.lat}}, lng: {{ p.lng }} },
+                map: map,
+                icon: iconos[title_ico].img,
+                shape: shape,
+                title: title.toUpperCase(),
+                zIndex: czindex
+            });    
+
+            marker.infowindow = new google.maps.InfoWindow({
+                content: '<h3 class="infoh3"><b>' + '{{ p.desc }}</h3><hr/><h6><span class="infoh6">TIPO:</span><span class="spantipo">' + title.toUpperCase() + '</span><hr/></h6><p class="infop">{{ p.direccion }}, {{ p.ciudad }}, {{ p.estado }}, {{ p.pais }} | Fecha: {{ p.fecha }} | Fuente: Diario MX</p><a href="#" data-id="{{ p.id }}" class="hoverme mb-1 mr-1 btn btn-default">Ver Incidente Relacionado</a>'
+            });
+            
+            marker.addListener('click', function() {
+                this.infowindow.open(map, this);
+            });           
+
+            markers.push(marker);           
+            ++czindex;
+            //console.log (title);*/
+        {% endfor %}  
+
+        var ico_plantas = {             
+            'optimo': { 'img': "{% static 'core/assets/images/yazaki/yazaki-marker.png' %}" },
+            'relevante': { 'img': "{% static 'core/assets/images/alert-icon-plant.gif' %}" },
+        }; 
+
+        // Visualización de plantas de cliente
+
+        var czindex = 900;   
+        
+        {% for planta in plantas %}
+            var pnombre = '{{ planta.nombre }}'; 
+            
+            var vplantStatus = '{{ planta.status }}';
+        
+            console.log(vplantStatus);
+            console.log(pnombre);
+
+            var icon_status = "{{ planta.status|stringformat:"s" }}"
+
+            var marker = new google.maps.Marker({
+                position: {lat: {{ planta.lat }}, lng: {{ planta.lng }} },
+                map: map,
+                icon: ico_plantas[icon_status].img,
+                shape: shape,
+                title: pnombre.toUpperCase(),
+                zIndex: czindex
+            });
+
+            circle = new google.maps.Circle({
+                map: map,
+                radius: 2000,
+                fillColor: '#8EE5EE',
+                strokeColor: '#50A6C2'
+            });
+
+            circle.bindTo('center', marker, 'position');
+        {% endfor %}
+
+            var estado_planta = '<span class="bgp-color-verde">Óptimo</span>';
+
+        if (vplantStatus == 'relevante') {
+            estado_planta = '<span class="bgp-color-rojo">Relevante</span>';
+
+            var plantaAlias = "benitojuarez";
+            
+
+            jQuery('#addCritical').append('<li class="nav-item"><a class="nav-link" onclick="goUbicacion(\'' + plantaAlias.toLowerCase() + '\')"><i class="nav-link-icon lnr-inbox"></i><span class="nombrePlantaCritica"> Yazaki Benito Juarez</span></a></li>');
+        }         
+
+        /*marker.infowindow = new google.maps.InfoWindow({
+            content: '<div class="popupCustom"><div class="buHeader"></div><div class="infoUBH5_Wrapper" onclick="location.href=\'ceo_master\'"><img src="/static/core/assets/images/yazaki/yazaki-marker.png"/><h5 class="infoUBH5">' + pnombre.toUpperCase() + '</h5><span class="small">Álvaro Obregón, Sin Nombre, 31884, Benito Juárez, Chihuahua, México </span></div> <br> <div class="row infoContent"><div class="col-md-6"><p><b>Nivel de Seguridad:</b>' + estado_planta + '</p><p><b>Incidentes logísticos</b></p><hr/><p><b>PREDICTIVE ANALYTICS</b><br/>COBERTURA<br/><img src="/static/core/assets/images/indicador.jpg"/></p></div><div class="col-md-6"><div class="map_scroll_wrapper"><div class="map_scroll_content"> <p><b>Seguridad Electrónica</b>: 84.17%</p><p>Falla eléctrica total en planta G3783-Yak5 por explosión de estación de gasolina.</p><p>La planta Yazaki Benito Juarez quedó en un 75% afectada por razones de tormentas eléctricas y vientos fuertes en la ciudad, debido a que se dio una alerta roja desde el gobierno mexicano.<br/>Se tiene un estimado de varias horas antes de que la tormenta y los vientos fuertes se retiren.</p></div></div></div></div></div>',
+            maxWidth: 550
+        });           
+        
+        marker.addListener('click', function() {
+            this.infowindow.open(map, this);
+        });*/
+
+        //google.maps.event.trigger(marker,'click');
+
+        console.log(marker);          
+            
+        return markers;
+    }   
+
+
+    // Sets the map on all markers in the array.
+    function setMapOnAll(map) {
+      for (let i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+      }
+    }
+
+    // Removes the markers from the map, but keeps them in the array.
+    function clearMarkers() {
+      setMapOnAll(null);
+    }
+
+    // Shows any markers currently in the array.
+    function showMarkers() {
+      setMapOnAll(map);
+    }
+
+    // Deletes all markers in the array by removing references to them.
+    function deleteMarkers() {
+      clearMarkers();
+      markers = [];
+    }
+
+    
+  </script>
+
+    
+<script>
+
+    $(document).ready(function() {
+        moment.locale('es');                
+    });
+</script>
+    
+  
+<!-- Ends to include JS list -->
+{% endblock js %}
+

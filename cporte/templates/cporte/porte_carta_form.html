@@ -1,0 +1,1961 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+<title>Panoptic | Expertos en seguridad privada industrial, comercial y personal</title>
+<meta http-equiv="Content-Language" content="es-MX">
+<meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+<meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+<!-- Starts to include CSS list -->
+<style>
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        -webkit-box-sizing: inherit;
+    }
+
+    p {
+        margin: 0
+    }
+
+    .tr-fig:hover {
+        cursor: pointer;
+        background-color: #f0f0f0;
+    }
+
+    .card2 {
+        border: 10px solid white;
+        padding: 27px;
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 14%);
+    }
+
+    .input-error {
+        font-size: 11px;
+        margin-bottom: 0;
+        color: red;
+    }
+
+    .buttonAddMinus {
+        background: none;
+        color: inherit;
+        padding: 0;
+        cursor: pointer;
+        outline: inherit;
+        border: none;
+    }
+
+    .label-ubicaciones {
+        font-size: 12px;
+    }
+
+    .sugerencias {
+        width: 200px;
+        position: relative;
+        top: 10px;
+    }
+
+    input[type=submit] {
+        background-color: DodgerBlue;
+        color: #fff;
+    }
+
+    .sugerencias-items {
+        position: absolute;
+        width: 75%;
+        overflow: hidden;
+        overflow-y: auto;
+        max-height: 250px;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-radius: 5px;
+        z-index: 99;
+        margin-top: 3px;
+        top: 100%;
+        left: 0;
+        right: 0;
+        box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .sugerencias-items div {
+        padding: 7px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+    }
+
+    .sugerencias-items div:hover {
+        background-color: #e9e9e9;
+    }
+
+    .sugerencias-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+</style>
+{% for css in css_list %}
+{% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->
+{% load static %}
+<style>
+    #barChart {
+        background-color: white;
+        border-radius: 6px;
+    }
+</style>
+<link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+
+<!-- This div is move to body when document is ready -->
+<div class="modal fade" id="mi-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 style="margin: 0; font-weight: bold;">Confirmar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Elige la opción que deseas realizar
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="noModal" data-dismiss="modal">Guardar</button>
+                <button type="button" class="btn btn-success" id="siModal" data-dismiss="modal">Facturar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-dos" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 style="margin: 0; font-weight: bold;">Figuras transporte</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 15px;">
+                    Selecciona un chofer
+                </div>
+                <table id="figurasTable" class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">RFC</th>
+                            <th scope="col">Código Postal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in figuras%}
+                        <tr class="tr-fig" onclick="figuraSelect('{{ f.id }}')">
+                            <td>{{ f.nombre }}</td>
+                            <td>{{ f.rfc }}</td>
+                            <td>{{ f.cp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loader-body" style="display: none;">
+    <div class="spinner-border" style="width: 10rem; height: 10rem;" role="status">
+        <span class="sr-only">Loading. . .</span>
+    </div>
+</div>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-print size128 soundblue" aria-hidden="true"></i>
+            </div>
+            <div>Listado de CFDI &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; CFDI
+                <div class="admin-page-title-subheading">
+                    Crear CFDI
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a>Detalles CFDI</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Carta Porte</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Crear Carta Porte
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Carta Porte
+                </div>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-11 mx-auto">
+                        <form action="" autocomplete="off" id="factura-form">
+                            {% csrf_token %}
+                            <h4><b>DATOS DE PAGO</b></h4>
+                            <div class="form-row border p-1 m-1">
+                                <div class="form-group col-md-2">
+                                    <label>Cliente</label>
+                                    <select id="cliente" class="form-control">
+                                        {% for a in clientes %}
+                                        <option value={{a.id}}>{{a.nombre}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Forma de Pago</label>
+                                    <select id="formaPago" class="form-control">
+                                        {% for m in formasPago %}
+                                        <option value={{m.Value}}>{{m.Name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label>Método de Pago</label>
+                                    <select id="metodoPago" class="form-control">
+                                        {% for m in metodosPago %}
+                                        <option value={{ m.Value }}>{{ m.Name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label>Moneda</label>
+                                    <select id="moneda" class="form-control">
+                                        {% for x in monedas%}
+                                        {% if x.Value == "MXN" %}
+                                        <option value={{x.Value}} selected>{{x.Name}}</option>
+                                        {% else %}
+                                        <option value={{x.Value}}>{{x.Name}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <h4><b>COMPLEMENTOS</b></h4>
+                            <div class="border rounded p-3">
+                                <div class="row p-2">
+                                    <div class="col-md-6">
+                                        <div class="form-group ">
+                                            <label>Tipo de Transporte</label>
+                                            <select class="form-control"
+                                                style="background-color: #ebeff1; color: #819ca9" id="tipoTransporte"
+                                                disabled>
+                                                <option value="01" selected>Autotransporte</option>
+                                                <option value="03">Transporte Aereo</option>
+                                                <option value="04">Transporte Ferroviario</option>
+                                                <option value="02">Transporte Maritimo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Traslado por</label>
+                                            <select id="traslado" class="form-control" onchange="tipoTraslado(this.value)">
+                                                <option value="I" selected>Prestador de servicios de transportación
+                                                    (Ingreso)</option>
+                                                <option value="T">Propios medios (Traslado)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección ubicaciones -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md">
+                                                <h5 style="margin-bottom: 0;">UBICACIONES</h5>
+                                                <button id="btn-add-ubicacion" type="button" class="buttonAddMinus"
+                                                    style="margin-right: 25px;"><i class="fas fa-plus-square fa-2x"
+                                                        aria-hidden="true"></i></button>
+                                                <button id="btn-del-ubicacion" type="button" class="buttonAddMinus"><i
+                                                        class="fas fa-minus-square fa-2x"
+                                                        aria-hidden="true"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="row px-1" id="section-ubicacion">
+                                            <div class="col-md-6 card2 mb-2">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>Tipo de ubicación</label>
+                                                            <select data-index=0 class="form-control"
+                                                                onchange="onchangeSelectUb(this)"
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].TipoUbicacion">
+                                                                <option value="Origen" selected>ORIGEN</option>
+                                                                <option value="Destino">DESTINO</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h5 style="margin: 0">Ubicación 1</h5>
+                                                        <div>
+                                                            <button class="btn btn-primary" data-index=0>GUARDAR</button>
+                                                            <button class="btn btn-info">SELECCIONAR</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex mt-3">
+                                                    <div class="col-md-6 border pt-2 mr-1">
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">IDUbicacion</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].IDUbicacion"
+                                                                class="form-control" placeholder="ID ubicación"
+                                                                value="OR" onkeydown="return idUbic(event)">
+                                                            <!--onkeydown="return idUbic(event)">-->
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label
+                                                                class="label-ubicaciones">RFCRemitenteDestinatario</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].RFCRemitenteDestinatario"
+                                                                class="form-control" placeholder="RFC">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Nombre Remitente o
+                                                                Destinatario</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].NombreRemitenteDestinatario"
+                                                                class="form-control" placeholder="Nombre Remitente">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label
+                                                                class="label-ubicaciones">FechaHoraSalidaLlegada</label>
+                                                            <input data-index=0 type="text"
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].FechaHoraSalidaLlegada"
+                                                                class="form-control" placeholder="Fecha">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Distancia
+                                                                Recorrida</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].DistanciaRecorrida"
+                                                                class="form-control" placeholder="Distancia Recorrida">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 border ml-1">
+                                                        <h6>Domicilio</h6>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">País</label>
+                                                            <select data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.Pais"
+                                                                class="form-control">
+                                                                {% for p in paises %}
+                                                                {% if p.Value == "MEX" %}
+                                                                <option value={{ p.Value }} selected>{{ p.Name }}
+                                                                </option>
+                                                                {% else %}
+                                                                <option value={{ p.Value }}>{{ p.Name }}</option>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Código Postal</label>
+                                                            <span style="position: relative; display: inline-block;">
+                                                                <input data-collection="codigopostal" data-index=0
+                                                                    name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.CodigoPostal"
+                                                                    class="form-control" placeholder="Código Postal"
+                                                                    oninput="postalCode(this)" onblur="errorCP(this)">
+                                                                <label data-index=0
+                                                                    name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.CodigoPostal-error"
+                                                                    class='input-error' style="display: none">Debe
+                                                                    tener 5 dígitos</label>
+                                                                <div class="cp-spinner"
+                                                                    style="position: absolute; top: 7px; right: 7px; display: none;">
+                                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                                </div>
+                                                            </span>
+                                                            <div class="sugerencias"></div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Estado</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.Estado"
+                                                                class="form-control" placeholder="Estado">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Municipio</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.Municipio"
+                                                                class="form-control" placeholder="Municipio">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Colonia</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.Colonia"
+                                                                class="form-control" placeholder="Colonia">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Calle</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.Calle"
+                                                                class="form-control" placeholder="Calle">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">No. Exterior</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.NumeroExterior"
+                                                                class="form-control" placeholder="No. Exterior">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">No. Interior</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.NumeroInterior"
+                                                                class="form-control" placeholder="No. Interior">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Referencia</label>
+                                                            <input data-index=0
+                                                                name="Complemento.CartaPorte20.Ubicaciones[0].Domicilio.Referencia"
+                                                                class="form-control" placeholder="Referencia">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección Mercancias -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md">
+                                                <h5 style="margin-bottom: 0;">MERCANCIAS</h5>
+                                                <button id="btn-add-mercancia" type="button" class="buttonAddMinus"
+                                                    style="margin-right: 25px;">
+                                                    <i class="fas fa-plus-square fa-2x" aria-hidden="true"></i>
+                                                </button>
+                                                <button id="btn-del-mercancia" type="button" class="buttonAddMinus">
+                                                    <i class="fas fa-minus-square fa-2x" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label>Unidad de Peso</label>
+                                                    <select id="mercanciasUnidadPeso" class="form-control">
+                                                        {% for a in unidades %}
+                                                        <option value={{a.Clave}}>{{a.Descripcion}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row px-1" id="section-mercancia">
+                                            <div class="col-md-12 card2 mb-2">
+                                                <div class="row">
+                                                    <div class="col-md">
+                                                        <h5 style="margin: 0">Mercancia 1</h5>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-1">
+                                                    <div class="col-md-4 card2">
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Cantidad</label>
+                                                            <input data-index="0"
+                                                                name="Complemento.CartaPorte20.Mercancias.Mercancia[0].Cantidad"
+                                                                class="form-control" type="number"
+                                                                placeholder="Cantidad">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Bienes
+                                                                Transportados</label>
+                                                            <span>
+                                                                <input data-index="0"
+                                                                    name="Complemento.CartaPorte20.Mercancias.Mercancia[0].BienesTransp"
+                                                                    class="form-control" placeholder="Clave Producto"
+                                                                    oninput="claveCode(this)">
+                                                            </span>
+                                                            <div class="sugerencias"></div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Unidad</label>
+                                                            <span>
+                                                                <input data-index="0"
+                                                                    name="Complemento.CartaPorte20.Mercancias.Mercancia[0].ClaveUnidad"
+                                                                    class="form-control" placeholder="Unidad"
+                                                                    oninput="unitCode(this)">
+                                                            </span>
+                                                            <div class="sugerencias"></div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Descripcion</label>
+                                                            <input data-index="0"
+                                                                name="Complemento.CartaPorte20.Mercancias.Mercancia[0].Descripcion"
+                                                                class="form-control" placeholder="Descripcion">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8 card2">
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Peso en KG</label>
+                                                            <input data-index="0"
+                                                                name="Complemento.CartaPorte20.Mercancias.Mercancia[0].PesoEnKg"
+                                                                type="number" class="form-control" placeholder="1">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Valor Mercancia</label>
+                                                            <input data-index="0"
+                                                                name="Complemento.CartaPorte20.Mercancias.Mercancia[0].ValorMercancia"
+                                                                type="number" class="form-control" placeholder="1000">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Moneda</label>
+                                                            <select data-index="0"
+                                                                name="Complemento.CartaPorte20.Mercancias.Mercancia[0].Moneda"
+                                                                class="form-control">
+                                                                {% for x in monedas %}
+                                                                {% if x.Value == "MXN" %}
+                                                                <option value={{x.Value}} selected>{{x.Name}}</option>
+                                                                {% else %}
+                                                                <option value={{x.Value}}>{{x.Name}}</option>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección autotransporte -->
+                                <h5>AUTOTRANSPORTE</h5>
+                                <div class="form-row border p-1">
+                                    <div class="form-group col-md-6">
+                                        <label>PermSCT</label>
+                                        
+                                        <input disabled id="PermSCT" style="background-color: #ebeff1; color: #819ca9" class="form-control" placeholder="PermSCT" value="{{ user.portecliente.tipoPermiso }}">
+                                        <!--
+                                        <select id="PermSCT" class="form-control">
+                                            {% for a in permisos %}
+                                            <option value={{a.Clave}}>{{a.Descripcion}}</option>
+                                            {% endfor %}
+                                        </select>-->
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>NumPermSct</label>
+                                        <input disabled id="NumPermisoSCT" style="background-color: #ebeff1; color: #819ca9" class="form-control" placeholder="NumPermSct" value="{{ user.portecliente.numPermiso }}" >
+                                    </div>
+                                    <div class="d-block p-2 col-md-12 borders ">
+                                        <h5>IDENTIFICACION VEHICULAR</h5>
+                                        <div class="form-row border">
+                                            <div class="form-group col-md-6">
+                                                <label>Tipo de Transporte</label>
+                                                <select class="form-control" id="ConfigVehicular" onchange="isTrailer(this)">
+                                                    {% for a in configAuto %}
+                                                    <option value={{a.Clave}} data-remolque={{a.Remolque}}>{{a.Descripcion}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Placas</label>
+                                                <input id="PlacaVM" class="form-control" placeholder="Placas">
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label>Año del Vehiculo</label>
+                                                <input id="AnioModeloVM" type="number" class="form-control"
+                                                    placeholder="Año">
+                                            </div>
+                                        </div>
+                                        <h5>SEGURO</h5>
+                                        <div class="form-row border col-md-12">
+                                            <div class="form-group col-md-6">
+                                                <label>Aseguradora</label>
+                                                <input id="AseguraRespCivil" class="form-control"
+                                                    placeholder="Aseguradora">
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label>No. Poliza</label>
+                                                <input id="PolizaRespCivil" class="form-control"
+                                                    placeholder="No. Poliza">
+                                            </div>
+                                        </div>
+                                        <div id="remolques">
+                                            <!-- Se agrega un div para remolques en caso de aplicar-->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección Figuras transporte -->
+                                <div class="row" style="margin-top: 20px;">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-3"
+                                                style="display: flex; align-items: center; justify-content: center;">
+                                                <h4 style="margin: 0;">FIGURA TRANSPORTE</h4>
+                                            </div>
+                                            <div class="col-md-9" style="display: flex; align-items: center; justify-content: end;">
+                                                <button id="btn-select-figura" type="button" class="btn btn-primary"
+                                                    style="margin-right: 20px;">Seleccionar chofer</button>
+                                            </div>
+                                        </div>
+                                        <div class="row px-1">
+                                            <div class="col-md-12 card2">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Tipo Figura</label>
+                                                            <select id="TipoFigura" class="form-control">
+                                                                <option value="01" selected>Operador</option>
+                                                                <option value="02">Propietario</option>
+                                                                <option value="03">Arrendador</option>
+                                                                <option value="04">Notificado</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">RFC</label>
+                                                            <input id="RFCFigura" class="form-control"
+                                                                placeholder="RFC">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">Nombre</label>
+                                                            <input id="NombreFigura" class="form-control"
+                                                                placeholder="Ej. Juan Perez Lopez">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="label-ubicaciones">No. Licencia</label>
+                                                            <input id="NumLicencia" class="form-control"
+                                                                placeholder="No. Licencia">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row px-1">
+                                                    <div class="col-md-12 card2">
+                                                        <div class="row">
+                                                            <div class="col-md">
+                                                                <h5 style="margin: 0">Dirección</h5>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mt-2">
+                                                            <div class="col-md-6 form-group">
+                                                                <label>Pais</label>
+                                                                <select id="paisFigura" class="form-control">
+                                                                    {% for p in paises %}
+                                                                    {% if p.Value == "MEX" %}
+                                                                    <option value={{ p.Value }} selected>{{ p.Name }}
+                                                                    </option>
+                                                                    {% else %}
+                                                                    <option value={{ p.Value }}>{{ p.Name }}</option>
+                                                                    {% endif %}
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-6 form-group">
+                                                                <label class="label-ubicaciones">Código Postal</label>
+                                                                <span
+                                                                    style="position: relative; display: inline-block; width: 100%;">
+                                                                    <input data-collection="codigopostal" id="cpFigura"
+                                                                        class="form-control" placeholder="Código Postal"
+                                                                        oninput="postalCodeFigura(this)">
+                                                                    <div class="cp-spinner"
+                                                                        style="position: absolute; top: 7px; right: 7px; display: none;">
+                                                                        <i class="fas fa-spinner fa-spin"></i>
+                                                                    </div>
+                                                                </span>
+                                                                <div class="sugerencias"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 form-group">
+                                                                <label>Estado</label>
+                                                                <input id="estadoFigura" class="form-control"
+                                                                    placeholder="Ej. Chihuahua">
+                                                            </div>
+                                                            <div class="col-md-6 form-group">
+                                                                <label>Municipio</label>
+                                                                <input id="municipioFigura" class="form-control"
+                                                                    placeholder="Municipio">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 form-group">
+                                                                <label>Colonia</label>
+                                                                <input id="coloniaFigura" class="form-control"
+                                                                    placeholder="Colonia">
+                                                            </div>
+                                                            <div class="col-md-6 form-group">
+                                                                <label>Calle</label>
+                                                                <input id="calleFigura" class="form-control"
+                                                                    placeholder="Calle">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6 form-group">
+                                                                <label>Num. Exterior</label>
+                                                                <input id="numExteriorFigura" class="form-control"
+                                                                    placeholder="No. Exterior">
+                                                            </div>
+                                                            <div class="col-md-6 form-group">
+                                                                <label>Num. Interior</label>
+                                                                <input id="numInteriorFigura" class="form-control"
+                                                                    placeholder="No. Interior">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 form-group">
+                                                                <label>Referencias</label>
+                                                                <input id="referenciaFigura" class="form-control"
+                                                                    placeholder="Referencias">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sección productos o servicios -->
+                            <h4><b>PRODUCTOS O SERVICIOS</b></h4>
+
+                            <div class="row">
+                                <div class="col-md-12 card2">
+                                    <div class="row px-1">
+                                        <div class="col-md-8 card2">
+                                            <div class="form-group">
+                                                <label class="label-ubicaciones">Nombre</label>
+                                                <input id="nombreProducto" class="form-control" type="text"
+                                                    placeholder="Nombre">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="label-ubicaciones">Descripcion</label>
+                                                <textarea id="descripcionProducto" class="form-control" rows=2
+                                                    placeholder="Descripcion"></textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="label-ubicaciones">Precio Unitario</label>
+                                                <input id="precioProducto" value=0 type="number" class="form-control">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="label-ubicaciones">Cuenta Predial</label>
+                                                <input class="form-control" id="cuentaPredialProducto"
+                                                    placeholder="Cuenta Predial (solo para Arrendamiento)">
+                                            </div>
+                                            <div>
+                                                <span style="font-size: 16px;"><b>Impuestos federales</b></span>
+                                                <br>
+                                                <span class="label-ubicaciones">Selecciona únicamente los impuestos que
+                                                    necesite tu producto</span>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="label-ubicaciones">IVA</label>
+                                                        <select id="IVA" class="form-control">
+                                                            <option value="0.16">IVA 16%</option>
+                                                            <option value="0.08">IVA 8%</option>
+                                                            <option value="0.00">IVA 0%</option>
+                                                            <option value="-">-</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="row d-flex">
+                                                            <div class="col-md-4">
+                                                                <label class="label-ubicaciones">IEPS</label>
+                                                            </div>
+                                                            <div class="col-md-4 d-flex px-2">
+                                                                <label class="form-check-label" for="tasaIENS">
+                                                                    TASA
+                                                                </label>
+                                                                <input id="tasaIENS" type="radio"
+                                                                    class="form-check-input" name="ieps"
+                                                                    onchange="cuota()" checked>
+                                                            </div>
+                                                            <div class="col-md-4 d-flex px-2">
+                                                                <label class="form-check-label" for="tasaCUOTA">
+                                                                    CUOTA
+                                                                </label>
+                                                                <input id="tasaCUOTA" type="radio"
+                                                                    class="form-check-input" name="ieps"
+                                                                    onchange="cuota()">
+                                                            </div>
+                                                        </div>
+                                                        <select id="IEPS" class="form-control"
+                                                            onchange="iepsNotNull(this)">
+                                                            <option value="3.000000">IEPS 300%</option>
+                                                            <option value="1.600000">IEPS 160%</option>
+                                                            <option value="0.530000">IEPS 53%</option>
+                                                            <option value="0.500000">IEPS 50%</option>
+                                                            <option value="0.350000">IEPS 35%</option>
+                                                            <option value="0.304000">IEPS 30.4%</option>
+                                                            <option value="0.300000">IEPS 30%</option>
+                                                            <option value="0.298800">IEPS 29.88%</option>
+                                                            <option value="0.265000">IEPS 26.5%</option>
+                                                            <option value="0.250000">IEPS 25%</option>
+                                                            <option value="0.090000">IEPS 9%</option>
+                                                            <option value="0.070000">IEPS 7%</option>
+                                                            <option value="0.060000">IEPS 6%</option>
+                                                            <option value="0.059100">IEPS 5.91%</option>
+                                                            <option value="0.040000">IEPS 4%</option>
+                                                            <option value="0.030000">IEPS 3%</option>
+                                                            <option value="-" selected>-</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="label-ubicaciones">IVA RET</label>
+                                                        <select id="IVARet" class="form-control">
+                                                            <option value="0.16">IVA Ret 16%</option>
+                                                            <option value="0.106668">IVA Ret 10.6668%</option>
+                                                            <option value="0.106667">IVA Ret 10.6667%</option>
+                                                            <option value="0.106666">IVA Ret 10.666%</option>
+                                                            <option value="0.1067">IVA Ret 10.67%</option>
+                                                            <option value="0.10666665">IVA Ret 10.666665%</option>
+                                                            <option value="0.1066">IVA Ret 10.66%</option>
+                                                            <option value="0.106">IVA Ret 10.6%</option>
+                                                            <option value="0.1">IVA Ret 10%</option>
+                                                            <option value="0.0919">IVA Ret 9.19%</option>
+                                                            <option value="0.08">IVA Ret 8%</option>
+                                                            <option value="0.06">IVA Ret 6%</option>
+                                                            <option value="0.054">IVA Ret 5.4%</option>
+                                                            <option value="0.053333">IVA Ret 5.3333%</option>
+                                                            <option value="0.05">IVA Ret 5%</option>
+                                                            <option value="0.04">IVA Ret 4%</option>
+                                                            <option value="0.03">IVA Ret 3%</option>
+                                                            <option value="0.025">IVA Ret 2.5%</option>
+                                                            <option value="0.02">IVA Ret 2%</option>
+                                                            <option value="0.007">IVA Ret 0.7%</option>
+                                                            <option value="0.005">IVA Ret 0.5%</option>
+                                                            <option value="0.002">IVA Ret 0.2%</option>
+                                                            <option value="0">IVA Ret 0%</option>
+                                                            <option value="-" selected>-</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="label-ubicaciones">ISR</label>
+                                                        <select id="ISR" class="form-control">
+                                                            <option value="0.200000">ISR 20%</option>
+                                                            <option value="0.106660">ISR 10.666%</option>
+                                                            <option value="0.100000">ISR 10%</option>
+                                                            <option value="0.054000">ISR 5.4%</option>
+                                                            <option value="0.040000">ISR 4%</option>
+                                                            <option value="0.030000">ISR 3%</option>
+                                                            <option value="0.021000">ISR 2.10%</option>
+                                                            <option value="0.020000">ISR 2%</option>
+                                                            <option value="0.012500">ISR 1.25%</option>
+                                                            <option value="0.011000">ISR 1.1%</option>
+                                                            <option value="0.010000">ISR 1%</option>
+                                                            <option value="0.009000">ISR 0.9%</option>
+                                                            <option value="0.005000">ISR 0.5%</option>
+                                                            <option value="0.004000">ISR 0.4%</option>
+                                                            <option value="0.001000">ISR 0.1%</option>
+                                                            <option value="0.000000">ISR 0%</option>
+                                                            <option value="-" selected>-</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 card2">
+                                            <div class="form-group">
+                                                <label class="label-ubicaciones">Clave Producto</label>
+                                                <span>
+                                                    <input id="claveProducto" class="form-control"
+                                                        placeholder="Ej. Semillas" oninput="claveCode(this)">
+                                                </span>
+                                                <div class="sugerencias"></div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="label-ubicaciones">Clave Unidad</label>
+                                                <span>
+                                                    <input id="unidadProducto" class="form-control"
+                                                        placeholder="Ej. Kilogramo" oninput="unitCode(this)">
+                                                </span>
+                                                <div class="sugerencias"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-4">
+                                <button class="btn btn-primary btn-lg btn-block">
+                                    <h4 style="margin: 0px;">Crear Factura</h4>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+{% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    var postalCode;
+    var unitCode;
+    var errorCP;
+    var claveCode;
+    var postalCodeFigura;
+    var idUbic;
+    var onchangeSelectUb;
+    var cuota;
+    var statusForm;
+    var lastIndex;
+    var figuraSelect;
+    var tipoTraslado;
+    var iepsNotNull;
+    var blockElement;
+    var isTrailer;
+
+    $(document).ready(function () {
+        $("#mi-modal").appendTo("body");
+        $("#modal-dos").appendTo("body");
+        $(".loader-body").appendTo("body");
+        
+        $.datetimepicker.setLocale("es");
+        $("[name='" + "Complemento.CartaPorte20.Ubicaciones[0].FechaHoraSalidaLlegada" + "']").datetimepicker({
+            format: 'Y-m-d H:i'
+        });
+
+        $("#noModal").click(function () {
+            statusForm = false;
+            $("<div>", {
+                class: "loader-back"
+            }).appendTo("body");
+            $(".loader-body").css("display", "");
+            crearFactura();
+        });
+        
+        $("#siModal").click(function () {
+            statusForm = true;
+            $("<div>", {
+                class: "loader-back"
+            }).appendTo("body");
+            $(".loader-body").css("display", "");
+            crearFactura();
+        })
+
+        $("#factura-form").submit(function (e) {
+            e.preventDefault();
+
+            // Solo activa el modal
+            $("#mi-modal").modal("show");
+        });
+
+        function ajax_remolques(){
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: "{%  url 'cporte:get_tipo_remolques' %}",
+                    success: function(data){
+                        $("#remolques").html(data);
+                        $("#btn-add-remolque").click(addTrailer);
+                        $("#btn-del-remolque").click(delTrailer);
+                        resolve();
+                    }
+                });
+            });
+        }
+
+        isTrailer = (event) => {
+            let selectOption = event.options[event.selectedIndex];
+            if(selectOption.dataset.remolque == 1){
+                ajax_remolques();
+            }else{
+                $("#remolques").empty();
+            }
+        }
+
+        var update = false;
+
+        /*
+            //Todo lo que este en X o vacío, se obtiene desde el form o backend.
+            //Si es tipo traslado, se deben eliminar las llaves PaymentMethod, PaymentForm y Currency.
+            //En caso de ser tipo ingreso, se debe desbloquear las casillas pago, forma de pago,
+            //tipo de moneda y el total en base al subtotal + IVA.
+        */
+        function crearFactura() {
+            let clave = $("#claveProducto").val();
+            clave = clave.replace(" ", "").split("-")[0];
+            let unidad = $("#unidadProducto").val();
+            unidad = unidad.split("-");
+            unidad[0] = unidad[0].replaceAll(" ","");
+            unidad[1] = unidad[1].substr(1,unidad[1].length);
+
+            let json = {
+                NameId: "33",
+                CfdiType: document.getElementById("traslado").value,
+                Folio: "",
+                PaymentMethod: document.getElementById("metodoPago").value,
+                LogoUrl: "",
+                PaymentForm: document.getElementById("formaPago").value,
+                Currency: document.getElementById("moneda").value,
+                ExpeditionPlace: "32320",
+                Issuer: {
+                    FiscalRegime: "",
+                    Name: "",
+                    Rfc: "",
+                    Address: {
+                    }
+                },
+                Receiver: {
+                    Name: "",
+                    CfdiUse: "P01",
+                    Rfc: "",
+                    Address: {
+                    }
+                },
+                Items: [{
+                    Quantity: 1,
+                    ProductCode: clave,
+                    UnitCode: unidad[0],
+                    Unit: unidad[1],
+                    Description: document.getElementById("descripcionProducto").value,
+                    UnitPrice: document.getElementById("precioProducto").value,
+                    Subtotal: document.getElementById("precioProducto").value,
+                    Taxes: [{}],
+                    Total: document.getElementById("precioProducto").value
+                }],
+                Complemento: {
+                    CartaPorte20: {
+                        TranspInternac: "No",
+                        Ubicaciones: [],
+                        Mercancias: {
+                            UnidadPeso: document.getElementById("mercanciasUnidadPeso").value,
+                            Mercancia: [],
+                            Autotransporte: {
+                                PermSCT: document.getElementById("PermSCT").value,
+                                NumPermisoSCT: document.getElementById("NumPermisoSCT").value,
+                                IdentificacionVehicular: {
+                                    ConfigVehicular: document.getElementById("ConfigVehicular").value,
+                                    PlacaVM: document.getElementById("PlacaVM").value,
+                                    AnioModeloVM: document.getElementById("AnioModeloVM").value
+                                },
+                                Seguros: {
+                                    AseguraRespCivil: document.getElementById("AseguraRespCivil").value,
+                                    PolizaRespCivil: document.getElementById("PolizaRespCivil").value
+                                },
+                                Remolques: []
+                            }
+                        },
+                        FiguraTransporte: [
+                            {
+                                TipoFigura: document.getElementById("TipoFigura").value,
+                                RFCFigura: document.getElementById("RFCFigura").value,
+                                NombreFigura: document.getElementById('NombreFigura').value,
+                                NumLicencia: document.getElementById('NumLicencia').value,
+                                Domicilio: {
+                                    Pais: document.getElementById('paisFigura').value,
+                                    CodigoPostal: document.getElementById('cpFigura').value,
+                                    Estado: document.getElementById('estadoFigura').value,
+                                    Municipio: document.getElementById('municipioFigura').value,
+                                    Colonia: document.getElementById("coloniaFigura").value,
+                                    Calle: document.getElementById('calleFigura').value,
+                                    NumeroExterior: document.getElementById("numExteriorFigura").value,
+                                    NumeroInterior: document.getElementById("numInteriorFigura").value,
+                                    Referencia: document.getElementById("referenciaFigura").value
+                                }
+                            }
+                        ]
+                    }
+                }
+            };
+
+            if (document.getElementById("traslado").value === "T") {
+                delete json["PaymentMethod"];
+                delete json["PaymentForm"];
+                delete json["Currency"];
+                delete json["Items"][0]["Taxes"];
+                json["Items"][0]["UnitPrice"] = 0.00;
+                json["Items"][0]["Subtotal"] = 0.00;
+                json["Items"][0]["Total"] = 0.00;
+            } else {
+                json["Items"][0]["Taxes"][0]["Total"] = 0.00;
+                json["Items"][0]["Taxes"][0]["Name"] = "IVA";
+                json["Items"][0]["Taxes"][0]["Base"] = document.getElementById("precioProducto").value;
+                json["Items"][0]["Taxes"][0]["Rate"] = document.getElementById("IVA").value;
+                json["Items"][0]["Taxes"][0]["IsRetention"] = false;
+                if(document.getElementById('IVARet').value != '-'){
+                    json["Items"][0]["Taxes"].push({});
+                    json["Items"][0]["Taxes"][1]["Total"] = 0.00;
+                    json["Items"][0]["Taxes"][1]["Name"] = "IVA RET";
+                    json["Items"][0]["Taxes"][1]["Base"] = document.getElementById("precioProducto").value;
+                    json["Items"][0]["Taxes"][1]["Rate"] = document.getElementById("IVARet").value;
+                    json["Items"][0]["Taxes"][1]["IsRetention"] = true;
+                }
+            }
+
+            // Agregando ubicaciones
+            let container = $("#section-ubicacion");
+            let fields = container.find("input,select");
+
+            //Variable utilizada para guardar el destino en la base de datos
+            var municipio;
+
+            json["Complemento"]["CartaPorte20"]["Ubicaciones"].push({});
+            for (let i = 0; i < fields.length; i++) {
+                let name = fields[i].name;
+                let value = fields[i].value;
+                if (fields[i].dataset.index != 0) {
+                    if (fields[i - 1].dataset.index != fields[i].dataset.index) {
+                        json["Complemento"]["CartaPorte20"]["Ubicaciones"].push({});
+                    }
+                }
+                name = name.replace(/\[(\w+)\]/g, '.$1');
+                name = name.replace(/^\./, '');
+                name = name.split('.');
+                let res = name.reduce(function (o, k, i) {
+                    if (!o[k] && i != name.length - 1) {
+                        o[k] = {};
+                    }
+                    if (i == name.length - 1) {
+                        /*
+                        if (k == "Municipio") {
+                            municipio = $("[name='" + fields[i].name + "'] option:selected").text();
+                        }*/
+                        o[k] = value;
+                    }
+                    return o && o[k]
+                }, json);
+            }
+
+            //Agregando mercancias
+            container = $("#section-mercancia");
+            fields = container.find("input,select");
+            json["Complemento"]["CartaPorte20"]["Mercancias"]["Mercancia"].push({});
+            for (let i = 0; i < fields.length; i++) {
+                let name = fields[i].name;
+                let value = fields[i].value;
+                if (fields[i].dataset.index != 0) {
+                    if (fields[i - 1].dataset.index != fields[i].dataset.index) {
+                        json["Complemento"]["CartaPorte20"]["Mercancias"]["Mercancia"].push({});
+                    }
+                }
+                name = name.replace(/\[(\w+)\]/g, '.$1');
+                name = name.replace(/^\./, '');
+                name = name.split('.');
+                let res = name.reduce(function (o, k, i) {
+                    if (!o[k] && i != name.length - 1) {
+                        o[k] = {};
+                    }
+                    if (i == name.length - 1) {
+                        o[k] = value;
+                    }
+                    if (k == 'BienesTransp' || k == "ClaveUnidad") {
+                        o[k] = value.replace(" ", "").split("-")[0]
+                    }
+                    return o && o[k]
+                }, json);
+            }
+            
+            //Maping remolque
+            container = $("#section-remolque");
+            fields = container.find("input,select");
+            if(fields.length > 0){
+                json["Complemento"]["CartaPorte20"]["Mercancias"]["Autotransporte"]["Remolques"].push({});
+                for (let i = 0; i < fields.length; i++) {
+                    let name = fields[i].name;
+                    let value = fields[i].value;
+                    if (fields[i].dataset.index != 0) {
+                        if (fields[i - 1].dataset.index != fields[i].dataset.index) {
+                            json["Complemento"]["CartaPorte20"]["Mercancias"]["Autotransporte"]["Remolques"].push({});
+                        }
+                    }
+                    name = name.replace(/\[(\w+)\]/g, '.$1');
+                    name = name.replace(/^\./, '');
+                    name = name.split('.');
+                    let res = name.reduce(function (o, k, i) {
+                        if (!o[k] && i != name.length - 1) {
+                            o[k] = {};
+                        }
+                        if (i == name.length - 1) {
+                            o[k] = value;
+                        }
+                        if (k == 'SubTipoRem' || k == "Placa") {
+                            o[k] = value.replace(" ", "").split("-")[0]
+                        }
+                        return o && o[k]
+                    }, json);
+                }
+            }
+            else{
+                delete json["Complemento"]["CartaPorte20"]["Mercancias"]["Autotransporte"]["Remolques"];
+            }
+
+            //console.log(JSON.stringify(json));
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                url: "{%  url 'cporte:porte_factura_create' %}",
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                data: JSON.stringify(
+                    {
+                        "data": json,
+                        "idreceiver": document.getElementById("cliente").value,
+                        "figura": document.getElementById("NombreFigura").value,
+                        "origen": $("[name='Complemento.CartaPorte20.Ubicaciones[0].Domicilio.Municipio'] option:selected").text(),
+                        "destino": $("[name='Complemento.CartaPorte20.Ubicaciones[" + lastIndex + "].Domicilio.Municipio'] option:selected").text(),
+                        "status": statusForm ? "1" : "0",
+                        "update": update ? "{{ factura.id }}" : false
+                    }),
+                success: function (response) {
+                    window.location.reload();
+                },
+                error: function (response) {
+                    if(response.status === 400){
+                        if(!update){
+                            sessionStorage.setItem("factura", JSON.stringify(json));
+                        }
+                    }
+                    window.location.reload();
+                }
+            });
+        }
+
+        onchangeSelectUb = function (e) {
+            let IDUbicacion = "Complemento.CartaPorte20.Ubicaciones[" + e.dataset.index + "].IDUbicacion";
+            switch (e.value) {
+                case "Origen":
+                    $("[name='" + IDUbicacion + "']").val("OR");
+                    break;
+                case "Destino":
+                    $("[name='" + IDUbicacion + "']").val("DE");
+                    break;
+            }
+        }
+
+        idUbic = function (e) {
+            const reg = new RegExp('^[0-9]+$');
+            if (e.keyCode == 8 && e.target.value.length == 2) {
+                return false;
+            }
+            if (e.keyCode != 8 && !reg.test(String.fromCharCode(e.keyCode))) {
+                return false;
+            }
+            if (e.target.value.length == 8 && e.keyCode != 8) {
+                return false;
+            }
+        }
+
+        var txterror = false;
+
+        errorCP = function (code) {
+            let nameError = "Complemento.CartaPorte20.Ubicaciones[" + code.dataset.index + "].Domicilio.CodigoPostal-error";
+            setTimeout(function () {
+                if (code.value.length < 5) {
+                    code.style.borderColor = "red"
+                    code.style.borderWidth = "2px"
+
+                    if (!txterror) {
+                        $("[name='" + nameError + "']").css("display", "block");
+                        txterror = true;
+                    }
+                } else {
+                    txterror = false;
+                    code.style.borderColor = "";
+                    code.style.borderWidth = "";
+                    $("[name='" + nameError + "']").css("display", "none");
+                }
+            }, 100);
+        }
+
+        var responseCP;
+        var actualCP;
+
+        function ajax_get_cp(e){
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'json',
+                    url: "{% url 'cporte:get_cp' %}?cp=" + e.value,
+                    success: function (res) {
+                        const codes = [];
+                        responseCP = res;
+                        res["codigo"].map((x) => codes.push(x.Value));
+                        autocomplete(e, codes);
+                        e.nextElementSibling.nextElementSibling.style.display = "none";
+                    },
+                    error: function (res) {
+                        autocomplete(e, null);
+                        e.nextElementSibling.nextElementSibling.style.display = "none";
+                    }
+                });
+        }
+
+        postalCode = function (e) {
+            e.value = e.value.replace(/[^0-9+]+/gi, '').substr(0, 5);
+            let pais = "Complemento.CartaPorte20.Ubicaciones[" + e.dataset.index + "].Domicilio.Pais"
+            if ($("[name='" + pais + "']").val() === "MEX") {
+                e.nextElementSibling.nextElementSibling.style.display = "block";
+                ajax_get_cp(e);
+            }
+        }
+
+        postalCodeFigura = function (e) {
+            e.value = e.value.replace(/[^0-9+]+/gi, '').substr(0, 5);
+            if ($("#paisFigura").val() === "MEX") {
+                e.nextElementSibling.style.display = "block";
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'json',
+                    url: "{% url 'cporte:get_cp' %}?cp=" + e.value,
+                    success: function (res) {
+                        const codes = [];
+                        responseCP = res;
+                        res["codigo"].map((x) => codes.push(x.Value));
+                        autocomplete(e, codes);
+                        e.nextElementSibling.style.display = "none";
+                    },
+                    error: function (res) {
+                        autocomplete(e, null);
+                        e.nextElementSibling.style.display = "none";
+                    }
+                });
+            }
+        }
+
+        unitCode = function (e) {
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: "{% url 'cporte:get_unidades' %}?keyword=" + e.value,
+                success: function (res) {
+                    const codes = [];
+                    res["units"].map((x) => codes.push(x.Value + " - " + x.ShortName))
+                    autocomplete(e, codes);
+                },
+                error: function (res) {
+                    autocomplete(e, null);
+                }
+            })
+        }
+
+        claveCode = function (e) {
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                url: "{% url 'cporte:get_clave' %}?keyword=" + e.value,
+                success: function (res) {
+                    const codes = [];
+                    res["claves"].map((x) => codes.push(x.Value + " - " + x.Name))
+                    autocomplete(e, codes);
+                },
+                error: function (res) {
+                    autocomplete(e, null);
+                }
+            });
+        }
+
+        function updateFieldsUbicacion(input) {
+            return new Promise((resolve) => {
+                let cp = actualCP[0]["Value"];
+                let statecode = actualCP[0]["StateCode"];
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: "{% url 'cporte:get_ubicacion' %}?cp=" + cp + "&state_code=" + statecode,
+                    success: function (res) {
+                        if (!input.dataset.index) {
+                            //CARGAR ESTADOS
+                            let estados = "<select id='estadoFigura' data-place='Estado' class='form-control'>";
+                            for (let i = 0; i < res['estados'].length; i++) {
+                                if (res['estados'][i]['Value'] === actualCP[0]['StateCode']) {
+                                    estados += "<option value=" + res['estados'][i]['Value'] + " selected>" + res['estados'][i]['Name'] + "</option>"
+                                }
+                                else {
+                                    estados += "<option value=" + res['estados'][i]['Value'] + ">" + res['estados'][i]['Name'] + "</option>"
+                                }
+                            }
+                            estados += "</select>"
+                            $("#estadoFigura").replaceWith(estados)
+                            //CARGAR MUNICIPIOS
+                            let municipios = "<select id='municipioFigura' data-place='Municipio' class='form-control'>"
+                            for (let i = 0; i < res['municipios'].length; i++) {
+                                if (res['municipios'][i]['Value'] === actualCP[0]['MunicipalityCode']) {
+                                    municipios += "<option value=" + res['municipios'][i]['Value'] + " selected>" + res['municipios'][i]['Name'] + "</option>"
+                                }
+                                else {
+                                    municipios += "<option value=" + res['municipios'][i]['Value'] + ">" + res['municipios'][i]['Name'] + "</option>"
+                                }
+                            }
+                            municipios += "</select>"
+                            $("#municipioFigura").replaceWith(municipios);
+
+                            //CARGAR COLONIAS
+                            if (res['colonias'].length !== 0) {
+                                let colonias = "<select id='coloniaFigura' data-place='Colonia' class='form-control'>";
+                                for (let i = 0; i < res['colonias'].length; i++) {
+                                    colonias += "<option value=" + res['colonias'][i]['Value'] + ">" + res['colonias'][i]['Name'] + "</option>"
+                                }
+                                colonias += "</select>"
+                                $("#coloniaFigura").replaceWith(colonias);
+                            }
+                        } else {
+                            const idx = input.dataset.index;
+                            let estado = "Complemento.CartaPorte20.Ubicaciones[" + idx + "].Domicilio.Estado";
+                            let municipio = "Complemento.CartaPorte20.Ubicaciones[" + idx + "].Domicilio.Municipio";
+                            let colonia = "Complemento.CartaPorte20.Ubicaciones[" + idx + "].Domicilio.Colonia";
+
+                            //CARGAR ESTADOS
+                            let estados = "<select name='" + estado + "' data-index='" + idx + "' class='form-control'>";
+                            for (let i = 0; i < res['estados'].length; i++) {
+                                if (res['estados'][i]['Value'] === actualCP[0]['StateCode']) {
+                                    estados += "<option value=" + res['estados'][i]['Value'] + " selected>" + res['estados'][i]['Name'] + "</option>"
+                                }
+                                else {
+                                    estados += "<option value=" + res['estados'][i]['Value'] + ">" + res['estados'][i]['Name'] + "</option>"
+                                }
+                            }
+                            estados += "</select>"
+                            $("[name='" + estado + "']").replaceWith(estados);
+
+                            //CARGAR MUNICIPIOS
+                            let municipios = "<select name='" + municipio + "' data-index='" + idx + "' class='form-control'>"
+                            for (let i = 0; i < res['municipios'].length; i++) {
+                                if (res['municipios'][i]['Value'] === actualCP[0]['MunicipalityCode']) {
+                                    municipios += "<option value=" + res['municipios'][i]['Value'] + " selected>" + res['municipios'][i]['Name'] + "</option>"
+                                }
+                                else {
+                                    municipios += "<option value=" + res['municipios'][i]['Value'] + ">" + res['municipios'][i]['Name'] + "</option>"
+                                }
+                            }
+                            municipios += "</select>"
+                            $("[name='" + municipio + "']").replaceWith(municipios);
+
+                            //CARGAR COLONIAS
+                            if (res['colonias'].length !== 0) {
+                                let colonias = "<select name='" + colonia + "' data-index='" + idx + "' class='form-control'>";
+                                for (let i = 0; i < res['colonias'].length; i++) {
+                                    colonias += "<option value=" + res['colonias'][i]['Value'] + ">" + res['colonias'][i]['Name'] + "</option>"
+                                }
+                                colonias += "</select>"
+                                $("[name='" + colonia + "']").replaceWith(colonias);
+                            }
+                        }
+                        resolve();
+                    },
+                    error: function (res) {
+                        console.log(res.data);
+                    }
+                });
+            });
+        }
+
+        function autocomplete(inp, arr) {
+            var val = inp.value;
+            closeAllLists();
+            if (!val || arr == null) { return false };
+            let container = document.createElement("div");
+            container.setAttribute("class", "sugerencias-items");
+            for (let i = 0; i < arr.length; i++) {
+                let b = document.createElement("div");
+                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(val.length);
+                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                b.addEventListener("click", function (e) {
+                    let val = this.getElementsByTagName("input")[0].value;
+                    inp.value = val;
+                    if (inp.dataset.collection === "codigopostal") {
+                        let res = responseCP.codigo.filter((x) => x.Value == val);
+                        actualCP = res;
+                        updateFieldsUbicacion(inp);
+                    }
+                    closeAllLists();
+                    //errorCP(inp);
+                });
+                inp.parentNode.nextElementSibling.appendChild(container);
+                container.appendChild(b);
+            }
+
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("sugerencias-items");
+                for (let i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target, inp);
+            });
+        }
+
+        function addUbicacion() {
+            let container = $("#section-ubicacion");
+            let newSection = container.children().last().clone();
+            let divs = newSection.find("input,select")
+
+            var newValue = parseInt(divs[0].getAttribute("data-index")) + 1;
+            for (let i = 0; i < divs.length; i++) {
+                let name = divs[i].name;
+                let lengthName = name.split(".");
+                if (divs[i].nodeName === "INPUT") {
+                    divs[i].value = "";
+                    if (lengthName[lengthName.length - 1] == "IDUbicacion") {
+                        divs[i].value = "OR";
+                    }
+                }
+                var newName = name.substring(0, name.indexOf("[") + 1) + newValue + name.substring(name.indexOf(["]"]), name.length);
+                if (lengthName[lengthName.length - 1] == "Municipio" || lengthName[lengthName.length - 1] == "Colonia" || lengthName[lengthName.length - 1] == "Estado") {
+                    $(divs[i]).replaceWith("<input data-index='" + newValue + "' name='" + newName + "' class='form-control' placeholder='" + lengthName[lengthName.length - 1] + "'>");
+                } else {
+                    divs[i].name = newName;
+                    divs[i].setAttribute("data-index", newValue);
+                }
+            }
+            newSection.find("h5").text("Ubicación " + (newValue + 1));
+            container.append(newSection);
+            $("[name='" + "Complemento.CartaPorte20.Ubicaciones[" + newValue + "].FechaHoraSalidaLlegada" + "']").datetimepicker({
+                format: 'Y-m-d H:i'
+            });
+            blockElement(document.getElementsByName("Complemento.CartaPorte20.Ubicaciones[" + newValue + "].DistanciaRecorrida")[0],false);
+            lastIndex = newValue;
+        }
+
+        function delUbicacion() {
+            let container = $("#section-ubicacion");
+            if (container.children().length > 1) {
+                container.children().last().remove();
+            }
+        }
+
+        function addMercancia() {
+            let container = $("#section-mercancia");
+            let newSection = container.children().last().clone();
+
+            let divs = newSection.find("input,select")
+
+            for (let i = 0; i < divs.length; i++) {
+                let name = divs[i].name;
+                if (divs[i].nodeName === "INPUT") {
+                    divs[i].value = "";
+                }
+                let newName = name.substring(0, name.indexOf("[") + 1);
+                let value = parseInt(divs[i].getAttribute("data-index")) + 1;
+                newSection.find("h5").text("Mercancia " + (value + 1));
+                newName += value + name.substring(name.indexOf(["]"]), name.length);
+                divs[i].name = newName;
+                divs[i].setAttribute("data-index", value)
+            }
+
+            container.append(newSection);
+        }
+
+        function delMercancia() {
+            let container = $("#section-mercancia");
+            if (container.children().length > 1) {
+                container.children().last().remove();
+            }
+        }
+
+        function addTrailer(){
+            let container = $("#section-remolque");
+            let newSection = container.children().last().clone();
+
+            //Maping
+            let divs = newSection.find("input,select")
+
+            for (let i = 0; i < divs.length; i++) {
+                let name = divs[i].name;
+                if (divs[i].nodeName === "INPUT") {
+                    divs[i].value = "";
+                }
+                let newName = name.substring(0, name.indexOf("[") + 1);
+                let value = parseInt(divs[i].getAttribute("data-index")) + 1;
+                newSection.find("h5").text("Remolque " + (value + 1));
+                newName += value + name.substring(name.indexOf(["]"]), name.length);
+                divs[i].name = newName;
+                divs[i].setAttribute("data-index", value)
+            }
+
+            container.append(newSection);
+        }
+
+        function delTrailer(){
+            let container = $("#section-remolque");
+            if (container.children().length > 1){
+                container.children().last().remove();
+            }
+        }
+
+        cuota = function couta() {
+            if ($('#tasaCUOTA').prop('checked')) {
+                $('#IEPS').replaceWith("<input id='IEPS' class='form-control'>")
+            }
+            else {
+                let s = "<select id='IEPS' class='form-control' onchange='iepsNotNull(this)'>";
+                s += "<option value='3.000000'>IEPS 300%</option>";
+                s += "<option value='1.600000'>IEPS 160%</option>";
+                s += "<option value='0.530000'>IEPS 53%</option>";
+                s += "<option value='0.500000'>IEPS 50%</option>";
+                s += "<option value='0.350000'>IEPS 35%</option>";
+                s += "<option value='0.304000'>IEPS 30.4%</option>";
+                s += "<option value='0.300000'>IEPS 30%</option>";
+                s += "<option value='0.298800'>IEPS 29.88%</option>";
+                s += "<option value='0.265000'>IEPS 26.5%</option>";
+                s += "<option value='0.250000'>IEPS 25%</option>";
+                s += "<option value='0.090000'>IEPS 9%</option>";
+                s += "<option value='0.070000'>IEPS 7%</option>";
+                s += "<option value='0.060000'>IEPS 6%</option>";
+                s += "<option value='0.059100'>IEPS 5.91%</option>";
+                s += "<option value='0.040000'>IEPS 4%</option>";
+                s += "<option value='0.030000'>IEPS 3%</option>";
+                s += "<option value='-' selected>-</option>";
+                s += "</select>";
+                $('#IEPS').replaceWith(s);
+            }
+        }
+
+        var btnFigClick = false;
+
+        function showFormFigura() {
+            var btn = $("#btn-select-figura");
+            if (!btnFigClick) {
+                $("#modal-dos").modal("show");
+            } else {
+                btn.removeClass("btn-outline-danger");
+                btn.addClass("btn-primary")
+                btn.text("Seleccionar figura");
+                btnFigClick = false;
+                updateFiguraFields(null, false);
+            }
+        }
+
+        async function updateFiguraFields(json, block) {
+            if (block) {
+                let domicilio = json["Domicilio"];
+                $("#TipoFigura").val(json["TipoFigura"]).change();    
+                $("#RFCFigura").val(json["RFCFigura"]);
+                $("#NombreFigura").val(json["NombreFigura"]);
+                $("#NumLicencia").val(json["NumLicencia"]);
+                $("#paisFigura").val(domicilio["Pais"]).change();
+                $("#cpFigura").val(domicilio["CodigoPostal"]);
+
+                if (domicilio["Pais"] == "MEX") {
+                    actualCP = [{
+                        "Value": domicilio["CodigoPostal"],
+                        "StateCode": domicilio["Estado"]
+                    }];
+                    await updateFieldsUbicacion(document.getElementById("cpFigura"));
+                    
+                    $("#estadoFigura").val(domicilio["Estado"]).change();
+                    $("#municipioFigura").val(domicilio["Municipio"]).change();
+                    $("#coloniaFigura").val(domicilio["Colonia"]).change();
+                } else {
+                    $("#estadoFigura").val(domicilio["Estado"]);
+                    $("#municipioFigura").val(domicilio["Municipio"]);
+                    $("#coloniaFigura").val(domicilio["Colonia"]);
+                }
+
+                $("#calleFigura").val(domicilio["Calle"]);
+                $("#numExteriorFigura").val(domicilio["NumeroExterior"]);
+                $("#numInteriorFigura").val(domicilio["NumeroInterior"]);
+                $("#referenciaFigura").val(domicilio["Referencia"]);
+            } else {
+                $("#TipoFigura").val("01").change();
+                $("#RFCFigura").val("");
+                $("#NombreFigura").val("");
+                $("#NumLicencia").val("");
+                $("#paisFigura").val("MEX").change();
+                $("#cpFigura").val("");
+
+                let selects = [$("#estadoFigura"),$("#municipioFigura"),$("#coloniaFigura")];
+                for(let i = 0; i < selects.length; i++){
+                    if(selects[i][0].nodeName == "SELECT"){
+                        $(selects[i]).replaceWith("<input id='" + selects[i][0].id + "' \
+                        class='form-control' placeholder='" + selects[i][0].dataset.place + "'>");
+                    }else{
+                        selects[i].val("")
+                    }
+                }
+
+                $("#calleFigura").val("");
+                $("#numExteriorFigura").val("");
+                $("#numInteriorFigura").val("");
+                $("#referenciaFigura").val("");
+            }
+        }
+
+        figuraSelect = function (id) {
+            let btn = $("#btn-select-figura");
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                data: { "figura_id": id },
+                url: "{% url 'cporte:get_figura' %}",
+                success: function (res) {
+                    updateFiguraFields(res, true);
+                },
+                error: function (res) {
+                    console.log("hubo un error");
+                }
+            });
+            btn.removeClass("btn-primary");
+            btn.addClass("btn-outline-danger");
+            btn.text("Remover figura");
+            $("#modal-dos").modal("hide");
+            btnFigClick = true;
+        }
+
+        tipoTraslado = function (e) {
+            if (e == "T") {
+                blockElement(document.getElementById('formaPago'), true)
+                blockElement(document.getElementById('metodoPago'), true)
+                blockElement(document.getElementById('moneda'), true)
+                blockElement(document.getElementById('IVA'), true)
+                blockElement(document.getElementById('IVARet'), true)
+                blockElement(document.getElementById('ISR'), true)
+                blockElement(document.getElementById('IEPS'), true)
+                document.getElementById('precioProducto').value = 0
+                blockElement(document.getElementById('precioProducto'), true)
+            }
+            else {
+                blockElement(document.getElementById('formaPago'), false)
+                blockElement(document.getElementById('metodoPago'), false)
+                blockElement(document.getElementById('moneda'), false)
+                blockElement(document.getElementById('IVA'), false)
+                blockElement(document.getElementById('IVARet'), false)
+                blockElement(document.getElementById('ISR'), false)
+                blockElement(document.getElementById('IEPS'), false)
+                blockElement(document.getElementById('precioProducto'), false)
+            }
+        }
+
+        iepsNotNull = function (elem) {
+            if (elem.value == "-") {
+                blockElement(document.getElementById('ISR'), false)
+                blockElement(document.getElementById('IVARet'), false)
+            }
+            else {
+                blockElement(document.getElementById('ISR'), true)
+                blockElement(document.getElementById('IVARet'), true)
+                //CHANGE VALUES
+                document.getElementById('ISR').value = "-";
+                document.getElementById('IVARet').value = '-';
+            }
+        }
+
+        blockElement = function (elem, b) {
+            if (b === true) {
+                elem.setAttribute('disabled', 'disabled')
+                elem.style.backgroundColor = '#ebeff1'
+                elem.style.color = '#819ca9'
+            }
+            else {
+                elem.removeAttribute('disabled')
+                elem.style.backgroundColor = ''
+                elem.style.color = ''
+            }
+        }
+
+        //Set distancia recorrida -> 0
+        blockElement(document.getElementsByName("Complemento.CartaPorte20.Ubicaciones[0].DistanciaRecorrida")[0],true);
+        $("[name='Complemento.CartaPorte20.Ubicaciones[0].DistanciaRecorrida']").val(0);
+
+        function locationFilled(location, idx){
+            let accessName = `Complemento.CartaPorte20.Ubicaciones[${idx}].`;
+            
+            if(idx > 0){
+                addUbicacion();
+            }
+
+            Object.keys(location).forEach(async function(key) {
+                if(key === "Domicilio") {
+                    $("[name='" + accessName + key + ".Pais" + "']").val(location[key]["Pais"]).change();
+                    $("[name='" + accessName + key + ".CodigoPostal" + "']").val(location[key]["CodigoPostal"]);
+
+                    let inputCP = $("[name='" + accessName + key + ".CodigoPostal" + "']")[0];
+                    if(location[key]["Pais"] === "MEX"){
+                        actualCP = [{
+                            "Value": location[key]["CodigoPostal"],
+                            "StateCode": location[key]["Estado"]
+                        }];
+                        await updateFieldsUbicacion(inputCP);
+                        $("[name='" + accessName + key + ".Estado" + "']").val(location[key]["Estado"]).change();
+                        $("[name='" + accessName + key + ".Municipio" + "']").val(location[key]["Municipio"]).change();
+                        $("[name='" + accessName + key + ".Colonia" + "']").val(location[key]["Colonia"]).change();
+                    }else{
+                        $("[name='" + accessName + key + ".Estado" + "']").val(location[key]["Estado"]);
+                        $("[name='" + accessName + key + ".Municipio" + "']").val(location[key]["Municipio"]);
+                        $("[name='" + accessName + key + ".Colonia" + "']").val(location[key]["Colonia"]);
+                    }
+
+                    $("[name='" + accessName + key + ".Calle" + "']").val(location[key]["Calle"]);
+                    $("[name='" + accessName + key + ".NumeroExterior" + "']").val(location[key]["NumeroExterior"]);
+                    $("[name='" + accessName + key + ".NumeroInterior" + "']").val(location[key]["NumeroInterior"]);
+                    $("[name='" + accessName + key + ".Referencia" + "']").val(location[key]["Referencia"]);
+                }else{
+                    $("[name='" + accessName + key +"']").val(location[key]).change();
+                }
+            });
+
+        }
+
+        function mercanciaFilled(mercancia, idx){
+            let accessName = `Complemento.CartaPorte20.Mercancias.Mercancia[${idx}].`;
+
+            if(idx > 0){
+                addMercancia();
+            }
+
+            Object.keys(mercancia).forEach(function(key) {
+                $("[name='" + accessName + key +"']").val(mercancia[key]);
+            });
+        }
+
+        function remolqueFilled(remolque, idx){
+            let accessName = `Complemento.CartaPorte20.Mercancias.Autotransporte.Remolques[${idx}].`;
+
+            if(idx > 0){
+                addTrailer();
+            }
+
+            Object.keys(remolque).forEach(function(key) {
+                $("[name='" + accessName + key +"']").val(remolque[key]).change();
+            });
+        }
+
+        async function autofilled(factura){
+            if(factura === null) return;
+
+            let complemento = factura["Complemento"]["CartaPorte20"];
+            let type = factura["CfdiType"];
+
+            tipoTraslado(type);
+            $("#traslado").val(type);
+
+            if(type === "I"){
+                $("#formaPago").val(factura["PaymentForm"]);
+                $("#metodoPago").val(factura["PaymentMethod"]);
+                $("#moneda").val(factura["Currency"]);
+                $("#precioProducto").val(factura["Items"][0]["UnitPrice"]);
+                $("#IVA").val(factura["Items"][0]["Taxes"][0]["Rate"]);
+            }   
+
+            // Fill ubcaciones section
+            complemento["Ubicaciones"].map((x, idx) => {
+                locationFilled(x, idx);
+            });
+
+            // Fill mercancias section
+            $("#mercanciasUnidadPeso").val(complemento["Mercancias"]["UnidadPeso"]).change();
+            complemento["Mercancias"]["Mercancia"].map((x, idx) => {
+                mercanciaFilled(x, idx);
+            });
+
+            // Fill autotransporte section
+            let autotransporte = complemento["Mercancias"]["Autotransporte"];
+            $("#ConfigVehicular").val(autotransporte["IdentificacionVehicular"]["ConfigVehicular"]);
+            $("#PlacaVM").val(autotransporte["IdentificacionVehicular"]["PlacaVM"]);
+            $("#AnioModeloVM").val(autotransporte["IdentificacionVehicular"]["AnioModeloVM"]);
+            $("#AseguraRespCivil").val(autotransporte["Seguros"]["AseguraRespCivil"]);
+            $("#PolizaRespCivil").val(autotransporte["Seguros"]["PolizaRespCivil"]);
+
+            if(autotransporte["Remolques"]){
+                await ajax_remolques(); //Add remolque section
+
+                autotransporte["Remolques"].map((x, idx) => {
+                    remolqueFilled(x, idx);
+                });
+            }
+
+            // Fill figura transporte section
+            updateFiguraFields(complemento["FiguraTransporte"][0],true);
+
+            // Fill product section
+            $("#descripcionProducto").val(factura["Items"][0]["Description"]);
+            $("#claveProducto").val(factura["Items"][0]["ProductCode"]);
+            $("#unidadProducto").val(factura["Items"][0]["UnitCode"] + " - " + factura["Items"][0]["Unit"]);
+        }
+
+        function checkSessionStorage(){
+            let json = JSON.parse(sessionStorage.getItem("factura"));
+            autofilled(json);
+        }
+
+        {% if factura.json %}
+            let factura = {{ factura.json | safe }};
+            console.log(factura);
+            update = true;
+            autofilled(factura);
+        {% else %}
+            checkSessionStorage();    
+        {% endif %}
+
+        //Clear sessionStorage when page is loading from another page
+        sessionStorage.clear();
+
+        $("#btn-add-ubicacion").click(addUbicacion);
+        $("#btn-del-ubicacion").click(delUbicacion);
+        $("#btn-add-mercancia").click(addMercancia);
+        $("#btn-del-mercancia").click(delMercancia);
+        $("#btn-select-figura").click(showFormFigura);
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

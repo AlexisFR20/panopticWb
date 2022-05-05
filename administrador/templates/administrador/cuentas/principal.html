@@ -1,0 +1,260 @@
+{% extends 'administrador/bases/base_admin_cuentas.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic | Administrador de Aplicación</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}    
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/admin/admin-main-gear.png' %}" alt="Administrator icon">                                    
+            </div>
+            <div>Administrador de Cuentas
+                <div class="admin-page-title-subheading">
+                    Panel Principal
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions">
+            <div class="row">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a>Administrador Global</a>
+                        </li>
+                        <li class="active breadcrumb-item" aria-current="page">
+                            Inicio
+                        </li>
+                    </ol>
+                </nav>    
+            </div>        
+        </div>        
+    </div>
+</div>                                
+    
+<div class="row" >
+    <!-- <div class="col-md-6 col-lg-6 col-xl-7"> -->
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-5">
+        <div class="mb-3 card">
+            
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title fadeblue">
+                    <i class="cardhead fa fa-user-circle" aria-hidden="true"></i>
+                    Datos de su cuenta 
+                </div>                            
+            </div>
+
+            <div class="card-body">                           
+                <hr style="background-color: lightseagreen; height: 4px;">
+                <!-- <h5 class="card-title">Detallles Personales</h5>       -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="no_orden" class="">No. de Orden / Identificador</label>
+                            <input name="no_orden" id="no_orden" placeholder="Identificador" type="text" class="form-control" readonly value="{{ request.user.no_orden|default_if_none:"Sin Identificador / NA" }}">
+                        </div>           
+                    </div>
+                    <div class="col-md-8">
+                        <div class="position-relative form-group">
+                            <label for="first_name" class="">Su nombre completo</label>
+                            <input name="first_name" id="first_name" placeholder="Su nombre completo" type="text" class="form-control" readonly value="{{ request.user.first_name }} {{ request.user.last_name }}">
+                        </div>                                            
+                    </div>
+                </div>      
+
+                <div class="row">
+                    <div class="col-md-4"> 
+                        <div class="pad-panel-12 text-center">
+                            {% if user.imagen %}
+                            <img class="img-fluida" height=120 width=auto src="{{ request.user.imagen.url }}" alt="{{ user.first_name }} {{ user.last_name }}">
+                            {% else %}
+                            <img class="img-fluida" height=120 width=auto src="{% static 'core/assets/images/general-avatar.png' %}" alt="Usuario sin Avatar">      
+                            {% endif %}                  
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="position-relative form-group">
+                            <label for="email" class="">E-mail</label>
+                            <input name="email" id="email" placeholder="Correo Electrónico" type="email" class="form-control" readonly value="{{ request.user.email }}">
+                        </div>       
+                        <div class="position-relative form-group">
+                            <label for="planta" class="">Unidad de Negocio / Planta</label>
+                            <input name="planta" id="planta" placeholder="Unidad de Negocio" type="text" class="form-control" readonly value="{{ request.user.planta|upper }} EN {{ request.user.planta.ciudad|upper }} / {{ request.user.planta.estado|upper }}">
+                        </div>                                                 
+                    </div>
+                </div>      
+
+                <div class="row">
+                    <div class="col md-6">
+                        <div class="position-relative form-group">
+                            <label for="tel_pral" class="">Teléfono Principal</label>
+                            <input name="tel_pral" id="planta" placeholder="Teléfono Principal" type="text" class="form-control" readonly value="{{ request.user.tel_pral }}">
+                        </div> 
+                    </div>
+                    <div class="col md-6">
+                        <div class="position-relative form-group">
+                            <label for="tel_alt" class="">Teléfono Alterno</label>
+                            <input name="tel_alt" id="planta" placeholder="Teléfono Alterno" type="text" class="form-control" readonly value="{{ request.user.tel_alt }}">
+                        </div>     
+                    </div>
+                </div>               
+                
+                <div class="row">
+                    <div class="col md-6">
+                        <div class="position-relative form-group">
+                            <label for="date_joined" class="">Fecha de Ingreso</label>
+                            <input name="date_joined" id="date_joined" placeholder="Correo Electrónico" type="text" class="form-control" readonly value="{{ request.user.date_joined|date:"j \d\e F \d\e Y" }}">
+                        </div> 
+                    </div>
+                    <div class="col md-6">
+                        <div class="position-relative form-group">
+                            <label for="edad" class="">Edad</label>
+                            <input name="edad" id="planta" placeholder="Edad" type="number" class="form-control" readonly value="{{ request.user.edad }}">
+                        </div>
+                    </div>
+                </div>                      
+                <br>
+                <h5 class="bgp-color-azul size16 negrita text-center mayus">Cambiar contraseña</h5>
+                <!-- form start -->
+                <form  role="form" method="POST">
+                    {% csrf_token %}
+                    <div class="container">
+                       <div class="row">
+                           <div class="col-md-12">
+                                {% if  messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }}" role="alert">
+                                        {{ message }}
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}      
+                                <!-- Confirmación de contraseña -->
+                                <div class="form-group">
+                                    <label for="password">Contraseña nueva</label>
+                                    <input type="password" class="form-control" id="password" name="password" data-validation="length" data-validation-length="min8" placeholder="Escriba una contraseña" data-validation-optional="true" autocomplete="off">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password_confirma">Repetir Contraseña</label>
+                                    <input type="password" class="form-control" id="password_confirma" name="password_confirma" data-validation="confirmation" data-validation="length" data-validation-length="min8" data-validation-confirm="password" data-validation-optional="true"placeholder="Repita la contraseña">
+                                </div>
+                                <!-- Fin de Confirmación de contraseña -->
+                           </div>
+                       </div>
+                    </div>                
+                    <p class="text-center">                    
+                        <button class="mb-2 mr-2 btn-transition btn btn-outline-secondary mayus size16">Modificar CONTRASEÑA</button>
+                    </p>                
+                </form>
+            </div>  
+        </div>
+    </div>   
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-7">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title fadeblue">
+                    <i class="cardhead fas fa-external-link-alt" aria-hidden="true"></i>
+                    Enlaces
+                </div>                                                        
+            </div>
+            <div class="card-body">  
+                <button class="mb-2 mr-2 btn btn-primary btn-lg btn-block size16 bgp-cyan">CUENTA TIPO: {{ request.user.role|upper }}</button>                       
+              <!-- Opciones de acceso -->
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <button onclick="window.location.href='{% url "ceo_global" %}'" style="min-height: 70px;" class="mb-2 mr-2 btn btn-light btn-lg btn-block size20 mayus">ZONA GENERAL</button>                        
+                    </div>
+                </div>
+
+                <div class="row">
+                    {% if permisoZona0 %}
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <button onclick="window.location.href='{% url "entorno:zona0" %}'" style="min-height: 70px;" class="mb-2 mr-2 btn bgp-azul btn-lg btn-block size20 mayus text-white">
+                            <i class="fa fa-users size48 en-linea ico-sombra" aria-hidden="true"></i>
+                            <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea" style="font-size: 2.2rem !important;">Zona 0</div>
+                        </button>                 
+                    </div>
+                    {% endif %}
+                    {% if permisoAnalisisRiesgo %}
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <button onclick="window.location.href='{% url "arnes:home" %}'" style="min-height: 70px;" class="mb-2 mr-2 btn bgp-amarillo btn-lg btn-block size20 mayus text-white">
+                            <i class="fa fa-cog size48 ico-sombra" aria-hidden="true"></i>
+                            <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea" style="font-size: 2.2rem !important;">Análisis de Riesgo</div>
+                        </button>                 
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    {% if permisoDD %}
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <button onclick="window.location.href='{% url "ddmanagement:home" %}'" style="min-height: 70px;" class="mb-2 mr-2 btn bgp-naranja btn-lg btn-block size18 mayus text-white">
+                            <i class="fa fa-truck size48 ico-sombra" aria-hidden="true"></i>   
+                            <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea" style="font-size: 2.2rem !important;">D &amp; D Management</div>
+                        </button>                 
+                    </div>
+                    {% endif %}
+                    {% if permisoPredictive %}
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <button onclick="window.location.href='{% url "analytics:home" %}'" style="min-height: 70px;" class="mb-2 mr-2 btn bgp-rojo btn-lg btn-block size20 mayus text-white">
+                            <i class="fa fa-chart-bar size48 ico-sombra" aria-hidden="true"></i> 
+                            <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea" style="font-size: 2.2rem !important;">Predictive Analytics</div>
+                        </button>                 
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    {% if permisoBackstage %}
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <button onclick="window.location.href='{% url "administrador:admin_home" %}'" style="min-height: 70px;" class="mb-2 mr-2 btn btn-light btn-lg btn-block size20 mayus">BACKSTAGE</button>                       
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    {% if user.role.alias_rol == 'administrador' %}
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <button style="min-height: 70px;" class="mb-2 mr-2 btn btn-light btn-lg btn-block size20 mayus">ADMINISTRAR CUENTAS</button>                       
+                    </div>
+                    {% endif %}
+                </div>
+                
+              <!-- Fin de Opciones de acceso -->
+            </div>  
+        </div>
+    </div>                  
+</div> 
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+<script>
+$(document).ready(function() {
+    
+});
+</script>
+{% endblock js %}

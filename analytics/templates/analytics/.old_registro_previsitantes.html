@@ -1,0 +1,142 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+    {% load static %}
+    {% load qr_tags %}
+	
+    {% comment %}
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    {% endcomment %} 
+
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Previsitantes
+                <div class="admin-page-title-subheading">
+                   Registro de Previsitantes
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a></a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'analytics:previsitantes' %}"> Previsitantes</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Registro de Previsitantes
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+    </div>
+</div>                                
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-xl-10">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Registro de Previsitantes
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                <hr>
+                <a href="{%  url 'analytics:previsitantes' %}" class="btn btn-primary size16">Volver a Historial de Previsitantes</a>                
+                <hr>
+                <br>         
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form id="paqueteria_detail_form" method="POST" enctype="multipart/formdata">
+			    {% csrf_token %}
+			    {% for message in messages %}
+			    	<div class="alert alert-{{ message.tags }}" role="alert">
+					{{ message }}
+				</div>
+			    {% endfor %}
+			    {% comment %}
+						<div id="qr">
+						{% with "HOLA" as template %}
+                         				<p>{% qr_from_text template "size" %}</p>
+                                    			<a href="{% url 'testpdf' %}?qr={{ template }}" target="_blank" class="mb-2 mr-2 btn btn-light"> Descargar PDF</a>
+   				                {% endwith %}
+						</div>
+						{% else %}
+						{{ message }}
+					</div>
+						{% endif %}
+                            	{% endfor %}
+                            {% endif %}
+			    {% endcomment %}
+			    <div class="position-relative form-group">
+                                <label> Nombre </label>
+                                <input name="nombre" id="nombre" type="text" class="form-control"/>
+                            </div>
+                            <div class="position-relative form-group">
+                                <label> Anfitrion </label>
+                                <input name="anfitrion" id="anfitrion" type="text" class="form-control"/>
+                            </div>
+			    <div class="position-relative form-group" data-provide="datepicker" data-date-format="yyyy-mm-dd">
+				    <label> Fecha </label>
+				    <input type="text" class="form-control" name="fecha"/>
+			    </div>
+			    <button class="btn btn-primary"type="text">Enviar test</button> 
+			</form>
+                    </div>
+		    <div id="qr"></div>
+                </div>                  
+            </div>  
+        </div>
+    </div>
+    </div>
+</div>       
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function (){
+		$('.datepicker').datepicker({
+		});
+		{% comment %}alert({{ qr|safe }});	{% endcomment %}
+	});
+</script>
+
+<!-- Ends to include JS list ->
+{% endblock js%}

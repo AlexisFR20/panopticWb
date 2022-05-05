@@ -1,0 +1,169 @@
+<!--  Data Table Start -->
+<table id="tbl-rondines-realizados" class="table table-striped table-bordered dt-responsive nowrap" style="width:100%">
+    <thead>
+        <tr>
+            <th>Nombre</th>                                
+            <th>Hora Inicio</th>
+            <th>Hora Final</th>
+            <th>Guardia</th>            
+        </tr>
+    </thead>
+    <tbody>
+        {% for rondin in rondines %}        
+        <tr data-rondin-id={{ rondin.id }}> 
+            <td><b>{{ rondin.rondin.nombre }}</b></td>
+            <td>{{ rondin.id }} | {{ rondin.r_hora_inicio }}</td>
+            <td>{{ rondin.r_hora_fin }}</td> 
+            <td>{{ rondin.rondin.admin_aguilas.first_name }} {{ rondin.rondin.admin_aguilas.last_name }}</td>            
+        </tr>
+        {% endfor %}           
+    </tbody>                              
+</table>        
+<!-- Data Table End -->
+<div id="dataEvidencias" class="escondido">{% for e in evidenciasP %}{{e.rondinhecho.rs_hora_inicio}},{% endfor %}</div>
+<script>
+    var groupColumn = 0;
+    var table = $('#tbl-rondines-realizados').DataTable({
+        "columnDefs": [
+            { "visible": false, "targets": groupColumn }
+        ],
+        "order": [[ groupColumn, 'asc' ]],
+        "displayLength": 10,
+        "drawCallback": function ( settings ) {
+            var api = this.api();
+            var rows = api.rows( {page:'current'} ).nodes();
+            var last=null;
+ 
+            api.column(groupColumn, {page:'current'} ).data().each( function ( group, i ) {
+                if ( last !== group ) {
+                    $(rows).eq( i ).before(
+                        '<tr class="group"><td colspan="3">'+group+'</td></tr>'
+                    );
+ 
+                    last = group;
+                }
+            } );
+        },
+        "language": {
+          "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+        }
+    });
+
+    $('#tbl-rondines-realizados tbody').on('click', 'tr', function () {
+        var rondin_hecho_id = $(this).attr('data-rondin-id');
+        //console.log('Rondin Hecho ID');
+        //console.log(rondin_hecho_id);
+        //console.log(data.attr('data-rondin-id'));        
+        if (rondin_hecho_id != 0) {            
+            // Llamada AJAX para obtener información de reporte  
+            jQuery.get({                       
+                url: '/backstage/ajax/ajax_load_reporte_puntos_hechos',
+                data: {
+                    'rondin_hecho_id': rondin_hecho_id                
+                },
+                success: function (data) {                           
+                    // Llenado de datos en Forma de edición de rondin
+                    //console.log(data);
+                    $('#puntos-realizados').html(data);
+                    $('#tbl-puntos-hechos').DataTable({       
+                        "order": [[ 1, "desc" ]],    
+                        "searching": false,
+                        "pageLength":  10,    
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                        }
+                    });
+                }
+            }); // fin de AJAX    
+        } // fin de if   
+     
+    });   
+
+    var labelsArray=[];
+    var dataArray=[];
+    var c = $('#dataEvidencias').text();
+    var arrData = c.split(",");
+    arrData.pop();    
+
+    GraphResult = arrData.reduce((r,c) => (r[c] = (r[c] || 0) + 1, r), {});        
+
+    for (const prop in GraphResult) {       
+        labelsArray.push(prop+'T00:00:00.000');
+        dataArray.push(GraphResult[prop]);        
+    }    
+
+    var chartJsData = function(resultSet) {
+      return {
+        datasets: [
+          {
+            label: 'Incidentes en Puntos Realizados',
+            backgroundColor: '#83131a',
+            borderColor: '#83131a',
+            data: dataArray,
+            fill: false, 
+          }
+        ],
+        labels: labelsArray,
+      };
+    };
+    var options = {
+      scales: {
+        xAxes: [
+          {
+            ticks: {
+              callback: function(value) {                 
+                return new Date(value).toLocaleDateString('es-MX', {month:'short', day:'2-digit'}); 
+              }
+            },
+            type: "time", 
+            time: {
+              displayFormats: {
+                hour: "MMM DD",
+                month: 'MMM DD'
+              },
+              tooltipFormat: "MM / DD"              
+            }
+          }
+        ],
+        yAxes: [
+          {
+            ticks: {              
+              beginAtZero: true
+            }
+          }
+        ]
+      }
+    };
+
+    var drawChart = function(startDate, endDate, GraphResult) {   
+      
+      console.log('startDate');
+      console.log(startDate);
+
+      console.log('endDate');
+      console.log(endDate); 
+      
+      console.log('GraphResult');
+      console.log(GraphResult);      
+
+      var data = chartJsData(dataArray);
+      if (window.chart) {
+        console.log('Ya definida por DateRangePicker');
+        window.chart.data = data;
+        window.chart.update();
+      } else {        
+        window.chart = new Chart(document.getElementById("chart-canvas"), {
+          type: "line",
+          options: options,
+          data: data
+        });
+      }
+      
+    };
+
+    start = $('input[name="dates"]').data('daterangepicker').startDate;
+    end = $('input[name="dates"]').data('daterangepicker').endDate;
+    $('#logoengrafica').hide();
+    drawChart(start, end);     
+
+</script>

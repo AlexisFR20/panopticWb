@@ -1,0 +1,310 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Visitantes
+                <div class="admin-page-title-subheading">
+                   Ver Registro de Visitantes
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Análisis de Riesgo</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:admin_visitantes_index' %}">Registro de Visitantes</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Ver Registro de Visitantes
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Informaci&oacute;n del Visitante
+                </div>                                                        
+            </div>
+            <div class="card-body">       
+                <hr>
+                <a href="{%  url 'administrador:admin_visitantes_index' %}" class="btn btn-primary size16">Volver a Historial de Visitantes</a>
+                <a href="{%  url 'administrador:admin_visitantes_create' %}" class="btn btn-success size16">Agregar Nuevo Registro</a>
+                <hr>
+                <br>         
+
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-12 mx-auto"> 
+                        <!--  Data Table Start -->
+                        <table id="tbl-visitante" class="table table-striped table-bordered dt-responsive nowrap2"  style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Planta</th>
+                                    <th>Tipo</th>                                    
+                                    <th>Nombre</th>
+                                    <th>Empresa</th>
+                                    <th>Anfitrion</th>                                    
+                                    <th>Confirmo Anfitrión</th>
+                                    <th>Identificación</th>
+                                    <th>Gafete</th>
+                                    <th>Entrada</th>
+                                    <th>Salida</th>
+                                </tr>
+                            </thead>
+                            <tbody>                                
+                                <tr>
+                                    <td>{{ visitante.planta|default_if_none:"SIN REGISTRAR" }}</td> 
+                                    <td>{{ visitante.tipo|upper }}</td>
+                                    <td>{{ visitante.nombre }}</td>
+                                    <td>{{ visitante.empresa }}</td>
+                                    <td>{{ visitante.anfitrion }}</td>
+                                    <td>{{ visitante.confirmo_anfitrion|yesno:"SI,NO" }}</td>
+                                    <td>{{ visitante.identificacion }}</td>
+                                    <td>{{ visitante.gafete }}</td>
+                                    <td>{{ visitante.entrada }}</td>
+                                    <td>{{ visitante.salida }}</td>
+                                </tr>                                
+                            </tbody>                          
+                            <tfoot>
+                                <tr>   
+                                    <th>Planta</th>
+                                    <th>Tipo</th>                                    
+                                    <th>Nombre</th>
+                                    <th>Empresa</th>
+                                    <th>Anfitrion</th>                                    
+                                    <th>Confirmo Anfitrión</th>
+                                    <th>Identificación</th>
+                                    <th>Gafete</th>
+                                    <th>Entrada</th>
+                                    <th>Salida</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        
+                    </div>
+                    
+                </div>                
+            </div>
+        </div> 
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Informaci&oacute;n de Vehículo
+                </div>                                                        
+            </div>
+            <div class="card-body">       
+                <div class="row mt-3 mb-5">                    
+                    <div class="col-md-12 mx-auto">
+                        <!--  Data Table Start -->
+                        <table id="tbl-vehiculo" class="table table-striped table-bordered dt-responsive nowrap2"  style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Placas</th>
+                                    <th>Nota</th>
+                                </tr>
+                            </thead>
+                            <tbody>                                
+                                <tr>
+                                    <td>{{ vehiculo.marca|default_if_none:"SIN REGISTRAR" }}</td> 
+                                    <td>{{ vehiculo.modelo|default_if_none:"SIN REGISTRAR" }}</td>
+                                    <td>{{ vehiculo.placas|default_if_none:"SIN REGISTRAR" }}</td>
+                                    <td>{{ vehiculo.nota|default_if_none:"SIN REGISTRAR" }}</td>
+                                </tr>                                
+                            </tbody>                          
+                            <tfoot>
+                                <tr>   
+                                    <th>Marca</th>
+                                    <th>Modelo</th>                                    
+                                    <th>Placas</th>
+                                    <th>Nota</th>                                    
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>                
+            </div>
+        </div> 
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Informaci&oacute;n de Equipo(s)
+                </div>                                                        
+            </div>
+            <div class="card-body">       
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-12 mx-auto">
+                        <!--  Data Table Start -->
+                        <table id="tbl-equipos" class="table table-striped table-bordered dt-responsive nowrap2"  style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th># de Serie</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item_equipo in ItemsEquipos|dictsort:"id" reversed %}
+                                <tr>
+                                    <td>{{ item_equipo.descripcion|default_if_none:"SIN REGISTRAR" }}</td> 
+                                    <td>{{ item_equipo.n_serie|default_if_none:"SIN REGISTRAR" }}</td>
+                                    <td>{{ item_equipo.n_serie|default_if_none:"SIN REGISTRAR" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>                          
+                            <tfoot>
+                                <tr>   
+                                    <th>Descripción</th>
+                                    <th># de Serie</th>
+                                    <th>Cantidad</th>                                    
+                                </tr>
+                            </tfoot>
+                        </table>
+                        
+                    </div>             
+                              
+                </div>  
+            </div>
+        </div> 
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Información de Material(es)
+                </div>                                                        
+            </div>
+            <div class="card-body">                      
+                <div class="row mt-3 mb-5">                   
+                    
+                    <div class="col-md-12 mx-auto">
+                        <!--  Data Table Start -->
+                        <table id="tbl-materiales" class="table table-striped table-bordered dt-responsive nowrap2"  style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for items_materiales in ItemsMateriales|dictsort:"id" reversed %}
+                                <tr>
+                                    <td>{{ items_materiales.descripcion|default_if_none:"SIN REGISTRAR" }}</td> 
+                                    <td>{{ items_materiales.tipo|default_if_none:"SIN REGISTRAR" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>                          
+                            <tfoot>
+                                <tr>   
+                                    <th>Descripción</th>
+                                    <th>Tipo</th>                                    
+                                </tr>
+                            </tfoot>
+                        </table> 
+                    </div>                
+                </div>  
+            </div>
+        </div> 
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    $(document).ready(function() {
+        // DataTable
+        $('#tbl-visitante').DataTable({       
+            "order": [[ 0, "asc" ]],
+            "pageLength":  10,  
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           },          
+        }); 
+
+        $('#tbl-vehiculo').DataTable({       
+            "order": [[ 0, "asc" ]],
+            "pageLength":  10,  
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           },          
+        });  
+
+        $('#tbl-equipos').DataTable({       
+            "order": [[ 0, "asc" ]],
+            "pageLength":  10,  
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           },          
+        }); 
+
+        $('#tbl-materiales').DataTable({       
+            "order": [[ 0, "asc" ]],
+            "pageLength":  10,  
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           },          
+        });   
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

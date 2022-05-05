@@ -1,0 +1,175 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Rondin</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% load render_table from django_tables2 %}
+
+{% block 'content' %}
+
+    <main role="main">
+        <div class="container">
+            
+            <h3>Rondines hechos: {{ rondineshechos.count }}</h3>
+
+            <div style="height: 400px">
+                <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+            <hr>
+
+             <!--  Data Table Start -->
+                <table id="tbl-lista" class="table table-striped table-bordered dt-responsive "  style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>Nombre Rondin</th>
+                            <th>Usuario</th>
+                            <th>Puntos hechos</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Acciones</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in rondineshechos %}
+                        <tr>
+                            <td>{{ r.id }}</td>
+                            <td>{{ r.rondin.nombre }}</td>
+                            {% if r.guardia is not null %}
+                            <td><b>{{ r.guardia }}</b></td>
+                            {% else %}
+                            <td><b>-</b></td>
+                            {% endif %}
+                            <td>{{ r.puntohecho_set.count }}</td>
+                            <td>{{ r.hora_inicio }}</td>
+                            <td>{{ r.hora_fin }}</td>
+                            <td>
+                                <a href="{% url 'analytics:rondinhecho_detalle' r.id  %}" title="Ver registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-eye size16"></i></a>
+                            </td>
+                            
+                        </tr> 
+                        {% endfor %}     
+                    </tbody>   
+                    <tfoot>
+                        <tr>
+                            <th>id</th>
+                            <th>Nombre Rondin</th>
+                            <th>Puntos hechos</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Acciones</th>
+
+                        </tr>
+                    </tfoot>                       
+                </table>        
+                <!-- Data Table End -->
+
+        </div>
+    </main>                
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.flash.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.print.min.js"></script>
+
+<script type="text/javascript">
+    var fechas = [];
+    {% for r in rondineshechos %}
+        fechas.push('{{ r.hora_inicio.date|date:"M-d" }}');
+    {% endfor %}
+    var fechasunic = unique(fechas);
+    var fcount = []
+
+    for (var i=0; i<fechasunic.length; i++){
+        var c = 0;
+        for (var j=0; j<fechas.length; j++){
+            if (fechas[j] == fechasunic[i]){
+                c++;
+               // console.log(c)
+            }
+        }
+        fcount.push(c);
+    }
+
+    var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var color = Chart.helpers.color;
+
+    var ctx = document.getElementById('myChart');
+
+    var myChart = new Chart(ctx, {
+
+       type: 'bar',
+        data: {
+            labels: fechasunic,
+            datasets: [{
+                label: 'Rondines hechos '+ (new Date().getFullYear()),
+                backgroundColor: '#9D292AE6',
+                borderWidth: 1,
+                data: fcount
+            }]
+        },
+        options: {  
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    function unique(arr) {
+        var u = {}, a = [];
+        for(var i = 0, l = arr.length; i < l; ++i){
+            if(!u.hasOwnProperty(arr[i])) {
+                a.push(arr[i]);
+                u[arr[i]] = 1;
+            }
+        }
+        return a;
+    }
+
+
+    jQuery(document).ready(function() {
+        jQuery('#tbl-lista').DataTable({    
+            dom: 'Bfrtip',
+            buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Tabla rondines hechos'
+            },
+            {
+                extend: 'pdfHtml5',
+                title: 'Tabla rondines hechos'
+            }],
+            "order": [[ 0, "desc" ]],
+            "pageLength":  10,    
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           }
+        });
+    });
+</script>
+{% endblock js%}
+

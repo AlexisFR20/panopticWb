@@ -1,0 +1,186 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Visitantes
+                <div class="admin-page-title-subheading">
+                   Historial de Registro de Visitantes
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Análisis de Riesgo</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:visitantes_list' %}"> Registro de Visitantes</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Historial de Registro de Visitantes
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Historial de Visitantes
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="row">
+                    <div class="col-md-12"> 
+                        <hr>
+                        <a href="{%  url 'administrador:visitantes_create' %}" class="btn btn-primary size16">Agregar un Nuevo Registro</a>
+                        <hr>
+                        <br>
+                        <!--  Data Table Start -->
+                        <table id="tbl-paqueteria-historial" class="table table-striped table-bordered dt-responsive nowrap2"  style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Unidad de Negocio</th>
+                                    <th>Tipo</th>
+                                    <th>Nombre</th>
+                                    <th>Empresa</th>
+                                    <th>Anfitrion</th>
+                                    <th>Confirmo Anfitrión</th>
+                                    <th>Identificación</th>
+                                    <th>Gafete</th>
+                                    <th>Placas</th>
+                                    <th>Entrada</th>                                                                       
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for visitante in f_visitantes_list|dictsort:"id" reversed %}  <!--model_list -->
+                                <tr>
+                                    <td>{{ visitante.planta|default_if_none:"SIN REGISTRAR" }}</td> 
+                                    <td>{{ visitante.tipo|upper }}</td> 
+                                    <td>{{ visitante.nombre }}</td>
+                                    <td>{{ visitante.empresa }}</td>
+                                    <td>{{ visitante.anfitrion }}</td> 
+                                    <td class="text-center">
+                                        <input readonly type="checkbox" name="confirmo_anfitrion" id="confirmo_anfitrion" class="freeze" {% if visitante.confirmo_anfitrion == True %} checked {% endif %}>
+                                    </td> 
+                                    <td>{{ visitante.identificacion }}</td> 
+                                    <td>{{ visitante.gafete }}</td> 
+                                    <td>{{ visitante.placas }}</td> 
+                                    <td>{{ visitante.entrada|date:"SHORT_DATE_FORMAT" }} <b>{{ visitante.entrada|time:"H:i" }}</b></td>                                     
+                                    <td> 
+                                        <a href="{% url 'administrador:visitantes_detailview' visitante.id  %}" title="Ver registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-eye size16"></i></a>    
+                                        <a href="{% url 'administrador:visitantes_update' visitante.id  %}" title="Editar registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-secondary text-center"><i class="fas fa-edit size16"></i></a>
+                                        <a href="{% url 'administrador:visitantes_delete' visitante.id  %}" title="Borrar registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-danger text-center" onclick="return confirm('¿Est&aacute; seguro de borrar el Visitante {{ visitante.nombre }}?')"><i class="fas fa-trash-alt size16  bgp-color-rojo"></i></a>                            
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>                          
+                            <tfoot>
+                                <tr>   
+                                    <th>Planta</th>
+                                    <th>Tipo</th>
+                                    <th>Nombre</th>
+                                    <th>Empresa</th>
+                                    <th>Anfitrion</th>
+                                    <th>Confirmo Anfitrión</th>
+                                    <th>Identificación</th>
+                                    <th>Gafete</th>
+                                    <th>Placas</th>
+                                    <th>Entrada</th>                                                                        
+                                    <th>Acciones</th>
+                                </tr>
+                            </tfoot>
+                        </table>        
+                        <!-- Data Table End -->
+                    </div>
+                </div>
+                <br><br>                
+                <p class="text-left">
+                    <b>Nota:</b> Por escribir
+                </p>
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    $(document).ready(function() {
+
+        $(".freeze").bind("click", false);
+
+        
+
+
+        // DataTable
+        $('#tbl-paqueteria-historial').DataTable({       
+            "order": [[ 0, "asc" ]],
+            "pageLength":  10,  
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           },          
+        });    
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

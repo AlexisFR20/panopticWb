@@ -1,0 +1,505 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic | {{ userdict.page_name | upper }} - {{ userdict.tipousuario | upper }} | Módulo General</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+
+    <style>
+        #mapa {
+            margin: 0;
+            padding: 0;
+            min-height: 480px;
+        }
+
+        #map_canvas {
+            margin: 0;
+            padding: 0;
+            min-height: 480px;
+        }
+
+		.as-console-wrapper {
+		  display: none !important;
+		}
+
+		#add-route {
+		  position: absolute;
+		  top: 1px;
+		  right: 1px;
+		}
+
+		#add-waypoint {
+		  position: absolute;
+		  top: 1px;
+		  right: 80px;
+		}
+        .pad-lista-iconos-delincuenciales {
+            padding: 0;
+        }
+        .rm-list-borders .list-group-item {padding: 0;}
+    </style>
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">
+    {% load static %}
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/mini-logo-panoptic.png' %}" alt="Logo de Panoptic">                                    
+            </div>
+            <div>Panel de Control <button class="mb-2 mr-2 btn btn-light tipousuario">{{ userdict.tipousuario }}<span class="badge badge-success badge-dot badge-dot-lg"> </span></button>
+                <div class="page-title-subheading">
+                    Los siguientes módulos están a su disposición; puede utilizar el menú izquierdo para cualquier opción en particular. 
+                </div>
+            </div>
+        </div>                       
+    </div>
+</div>                                
+<div class="row justify-content-end">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-3">
+        <a href="#" id="print-pdf" class="btn-transition btn btn-primary btn-lg btn-block size16">Imprimir Reporte General</a>
+    </div>
+</div><br>
+<div class="tabs-animation"> 
+
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-xl-6">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-azul">                        
+                        <a href='{% url "entorno:zona0" %}' style="text-decoration: none; color: #fff;">
+                        <div style="position: relative; padding-left: 10px;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-users size48 en-linea ico-sombra" aria-hidden="true"></i>
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea">Zona 0</div>
+                            </div>                          
+                        </div>                                             
+                        </a>
+                    </div>                
+                </div>
+                <ul class="list-group list-group-flush">                    
+                    <li class="p-0 list-group-item li-sin-borde">
+                        <div class="grid-menu grid-menu-2col">
+                            <div class="no-gutters row">
+                                <div class="col-sm-6">
+                                    <div id='map1' style='width: auto; height: 662px;'></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="page-title-subheading card-header">
+                                        <h6 class= "negrita bgp-color-azul" style="margin-top: 8px;">Indices Delincuenciales</h6>                                       
+                                    </div>
+                                    
+                                    <div  class="lista-indicadores" style="padding: 8px;">                                        
+                                        <ul id="indicesdel" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                                            
+                                        </ul>      
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+ 
+        <div class="col-sm-12 col-md-6 col-xl-6">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-amarillo">   
+                        <a href='{% url "arnes:roadmap" %}' style="text-decoration: none; color: #fff;">                     
+                        <div style="position: relative; padding-left: 10px;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-cog size48 ico-sombra" aria-hidden="true"></i>
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea">Análisis de Riesgo</div>                                           
+                            </div>                             
+                        </div>                                             
+                    </div>                
+                    </a>
+                </div>
+                <ul class="list-group list-group-flush">                    
+                    <li class="p-0 list-group-item">
+                        <div class="grid-menu grid-menu-2col">
+                            <div class="no-gutters row">
+                                <div class="col-sm-6">
+                                    <div class="text-center">
+                                        <h6 class= "negrita mayus" style="margin-top: 18px;">Vulnerabilidad General</h6>
+                                        
+                                    </div>                               
+                                    <div id="ceo_master_graf_general"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card-header">
+                                        <h6 class= "negrita bgp-color-azul" style="margin-top: 8px;">Recomendaciones</h6>
+                                    </div>
+                                    <div class="card-body"> 
+                                        <div class="tab-content">
+                                            <table class="mb-0 table table-striped">                                                
+                                                <tbody>
+                                                    {% for r in recomendaciones%}
+                                                        <tr>
+                                                        <th scope="row"><i class="header-icon lnr-checkmark-circle bgp-color-verde negrita"> </i></th>
+                                                        <td>
+                                                            <div>
+                                                                <span class="item-alerta">{{r.descripcion}}</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor%}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>              
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-xl-6">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-naranja"> 
+                        <!--<a href='{% url "ddmanagement:home" %}' style="text-decoration: none; color: #fff;">-->                       
+                        <div style="position: relative; padding-left: 10px;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-truck size48 ico-sombra" aria-hidden="true"></i>   
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea">D & D Management</div>                                           
+                            </div>                             
+                        </div>                                             
+                    </div>                
+                    </a>
+                </div>
+                <ul class="list-group list-group-flush">                    
+                    <li class="p-0 list-group-item">
+
+                        <div class="widget-content pt-2 pl-0 pb-2 pr-0">
+                            <div class="text-center">
+                                <div id="mapa"></div>
+                            </div>
+                        </div>                        
+                    </li>
+                </ul>                
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-xl-6">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-rojo">  
+                        <a href='{% url "analytics:home" %}' style="text-decoration: none; color: #fff;">                      
+                        <div style="position: relative; padding-left: 10px;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-chart-bar size48 ico-sombra" aria-hidden="true"></i> 
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea">Predictive Analytics</div>                                           
+                            </div>                             
+                        </div>                                             
+                    </div>                
+                    </a>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="grid-menu grid-menu-2col">
+                            <div class="no-gutters row">
+                                <div class="col-sm-3">
+                                    <div class="card-hover-shadow-2x mb-3 card-438">
+                                        <div class="card-header">                                        
+                                            <h5 class="mayus bgp-color-azul" style="margin: 0 auto; font-size:15px">Capacitación</h5>                                        
+                                        </div>
+                                        <div class="card-body">                                            
+                                            <div class="card-center-a" style="height: 374px;">
+                                                <div id="capacitacion" class="card-center-b bgp-color-rojo" style="font-size:30px">
+
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div> 
+                                <div class="col-sm-3">
+                                    <div class="card-hover-shadow-2x mb-3 card-438">
+                                        <div class="card-header">                                        
+                                            <h5 class="mayus bgp-color-azul" style="margin: 0 auto; font-size:15px">Cobertura</h5>                                        
+                                        </div>
+                                        <div class="card-body">                                            
+                                            <div class="card-center-a" style="height: 374px;">
+                                                <div id="cobertura" class="card-center-b bgp-color-rojo" style="font-size:30px">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="card-hover-shadow-2x mb-3 card-438">
+                                        <div class="card-header">                                        
+                                            <h5 class="mayus bgp-color-azul" style="margin: 0 auto; text-align: center; font-size:15px">Personal Sin Gafete</h5>                                        
+                                        </div>
+                                        <div class="card-body">                                            
+                                            <div class="card-center-a" style="height: 374px;">
+                                                <div id="num_gafete" class="card-center-b bgp-color-rojo" style="font-size:30px">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="card-hover-shadow-2x mb-3 card-438">
+                                        <div class="card-header">                                        
+                                            <h5 class="mayus bgp-color-azul" style="margin: 0 auto; font-size:15px">Rondines</h5>                                        
+                                        </div>
+                                        <div class="card-body">                                            
+                                            <div class="card-center-a" style="height: 374px;">
+                                                <div id="num_rondines" class="card-center-b bgp-color-rojo" style="font-size:30px">
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>                               
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+            </div>
+        </div>              
+    </div>
+
+</div>                    
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}    
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+<script>
+    var pathnameInDashboardHome = window.location.pathname;
+    if (pathnameInDashboardHome == '/ceo_master/modulo_general') {
+        
+
+         $.ajax({
+                url:  '{% url "administrador:ajax_analisis_de_riesgo_vulnerabilidadgral" %}',
+                data: { 'cliente_id': {{user.cliente_id}}, 'planta_id': {{user.planta_id}}},
+                datatype: 'json',
+                type: 'GET',
+                contentType: 'application/json; char=utf-8',
+                dataType: 'json',
+                success: function (result) {
+                    //mArray = JSON.parse(result);
+                    var labelsVul = ["Entorno", "Infraestructura", "Seguridad Operativa", "Seguridad Electrónica", "Logistica"];
+                    var valVul = [result["v_entorno"], result["v_infraestructura"], result["v_seguridad_operativa"], result["v_seguridad_electronica"], result["v_logistica"]];
+
+                    var vulGral = (result["v_entorno"]+result["v_infraestructura"]+result["v_seguridad_operativa"]+result["v_seguridad_electronica"]+result["v_logistica"])/5;
+
+                    catEntornoAvg = result["cat_entorno_avg"];                    
+                    catInfraAvg = result["cat_infraestructura_avg"];                    
+                    catSegopAvg = result["cat_seg_operativa_avg"];                    
+                    catSegelecAvg = result["cat_seg_electrica_avg"];                    
+                    catLogisticaAvg = result["cat_logistica_avg"];                    
+
+                    var optionsVulGral = {
+                        title: {
+                          text: 'Vulnerabilidad General',
+                          align: 'left'
+                        },
+                        series: [{
+                            name: 'Vulnerabilidad General',
+                            data: [(100-vulGral).toFixed(2), vulGral.toFixed(2)],
+
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        colors: ['#8A63D8','#999'],
+                        labels: ["Seguridad", "Vulnerabilidad"],
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {
+                              horizontal: false,
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                         
+                    }
+                    
+                    document.getElementById('ceo_master_graf_general').innerHTML = '';
+                    var chartVulGral = new ApexCharts(document.querySelector("#ceo_master_graf_general"), optionsVulGral);
+                    chartVulGral.render(); 
+                }
+
+            }); 
+
+          // Fin de gráfica General
+    } 
+    
+    $.ajax({
+            url:  '{% url "administrador:get_ajax_ceo_numero_rondines" %}',
+            data: {'planta_id': {{user.planta_id}}},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {  
+              $('#num_rondines').text(result.rondines);
+              
+            }
+        });   
+      $.ajax({
+            url:  '{% url "administrador:get_ajax_ceo_personal_sin_gafete" %}',
+            data: {'planta_id': {{user.planta_id}}},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {  
+              
+              $('#num_gafete').text(result.ambos);
+              
+            }
+        }); 
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_ceo_capacitacion" %}',
+            data: {},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {  
+              
+              $('#capacitacion').text(result.capacitaciones[0].toFixed(2) + "%");
+              
+            }
+        });
+</script>
+<script type="text/javascript">
+    var turnos = 0;
+    var cubiertos = 0;
+    var personas = 0;
+</script>
+ {% for ef in estadosfuerza %}
+    <script type="text/javascript">
+        turnos += {{ef.total}}
+    </script>
+    {% if ef.cobertura_set.first %}
+        <script type="text/javascript">
+            cubiertos += {{ef.cobertura_set.first.total}}
+        </script>
+    {% endif %}
+ {% endfor %}
+<script type="text/javascript">
+    if(turnos == 0){
+        $('#cobertura').html("0")  
+    }else{
+        $('#cobertura').html((cubiertos/turnos*100).toFixed(2)+"%")
+    }
+</script>
+<script>
+        jQuery(document).ready(function() {
+                var shape = {
+                    coords: [1, 1, 1, 47, 30, 47, 30, 1],
+                    type: 'poly'
+                };
+                var iconos = { 
+                {% for tipo in tipo_incidentes %}  
+                '{{ tipo.alias }}': { 'nombre': "{{ tipo.nombre }}", 'img': "/media/{{ tipo.icono }}" }, 
+                {% endfor %}  
+                };             
+
+                var data_results = "";
+                var totales = "";
+                $.ajax({
+                    url:  "{% url 'progreso_incidentes' %}",
+                    data: {  
+                        
+                    },
+                    datatype: 'json',
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',            
+                    success: function (result) {
+                            
+                        //$('#indicesdel')
+                        data_results = result.Res;
+                        totales = result.Total_Incidentes;
+                        
+                        data_incidentes = result.Incidente;
+
+                        if(data_results == 'OK') {
+
+                            if(totales == '0') {
+
+                                $('#indicesdel').append(
+                                    '<li class="list-group-item">' +
+                                    '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                                    '       <h6 class="bgp-color-rojo negrita text-uppercase text-center">No Hay registros todavía</h6>' +
+                                    '    </div>' +
+                                    '</li>' 
+                                );
+                                return false;
+                            }
+                            var indice_chart = '';
+                            var indice_label_chart = '';
+                            var arr_lbl2 = '';
+                            $.each(data_incidentes, function(){
+                                var tipo_incidente = this.tipo;
+                                var count_indices = this.dcount;
+                                var indicessss = 0;
+                                var promedio_indices = 0;
+                                var valor_a = '';
+                                var valor_b = '';
+                                var arr_lbl2 = '';
+                                var maximo = 0;
+                                var base = 1;                                
+                                var nc = count_indices.toString().length;                                
+                                nc = nc + 1;                               
+                                for (i = 1; i < nc; i++) {
+                                    base = base + "0";
+                                }
+
+                                var perc = (count_indices*100)/base;
+                                $('#indicesdel').append(
+                                    '<li class="list-group-item">' +
+                                    '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                                    '        <div class="widget-content-wrapper">' +
+                                    '            <div class="widget-content-left mr-3 bck-white">' +
+                                    '                <img width="42" class="rounded-circle icod-bw" src="' + iconos[tipo_incidente].img + '" alt="Casa Habitación">' +
+                                    '            </div>' +
+                                    '            <div class="widget-content-left" style="width:  100%;">' +
+                                    '                <div class="widget-heading size12" style="margin-bottom: 6px;">' + iconos[tipo_incidente].nombre + '</div>' +
+                                    '            <div class="widget-content-right">' +
+                                    '                <div class="font-size-xlg text-muted">' +
+                                    '                     <div class="mb-3 progress"><div class="progress-bar" role="progressbar" aria-valuenow="' + perc + '" aria-valuemin="0" aria-valuemax="' + base + '" style="width: ' + perc + '%;">' + count_indices + '/' + base + '</div></div>' +
+                                    '                </div>' +
+                                    '            </div>' +
+                                    '        </div>' +
+                                    '    </div>' +
+                                    '</li>' 
+                                ); 
+                            });
+                        }
+                   }
+                }); 
+
+        });     
+</script>
+{% endblock js %}

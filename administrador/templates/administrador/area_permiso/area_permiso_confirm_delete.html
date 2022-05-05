@@ -1,0 +1,115 @@
+{% extends 'administrador/bases/base_admin_cuentas.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-user-shield size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>USUARIOS Y ROLES &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Áreas de Permisos
+                <div class="admin-page-title-subheading">
+                   Borrar Área de Permiso
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Usuarios y Roles</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{%  url 'administrador:areas_permisos_list' %}"> Áreas de Permisos</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Borrar Área de Permiso
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Borrar Área de Permiso
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form action="" method="post">
+                            {% csrf_token %}       
+                            <p>¿Está seguro de borrar el registro <b>{{ object.nombre }}</b>?"</p>         
+                            {{ form.as_p }}                
+                            <div class="text-left">
+                                <input type="submit" class="btn-transition btn btn-primary size16" value="Si, borrar Área de Permiso" />
+                            </div>
+                        </form>   
+                    </div>
+                </div>                                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+        // No hay nada que ejecutar
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

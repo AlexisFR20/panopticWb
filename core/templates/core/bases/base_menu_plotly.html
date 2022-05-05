@@ -1,0 +1,72 @@
+                        <ul class="vertical-nav-menu">
+                            <li class="app-sidebar__heading">Modulos</li>
+                            <li>    
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-angle-right"></i>
+                                    Entorno
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul style="display: block;">                                    
+                                    <li>
+                                        <a href="{% url 'entorno:dashboard'%}">                                            
+                                            Estadisticas
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'entorno:list'%}">                                            
+                                            Incidentes
+                                        </a>
+                                    </li>      
+                                </ul>
+                            </li>
+                            <hr/>                           
+                            <li class="app-sidebar__heading diamante-bold septxt-2 size18">Gráficas</li>  
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-angle-right"></i>
+                                    Bar Chart
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul style="display: block;">                                    
+                                    <li>
+                                        <a href="/widgets/graficas/plotly/barchart_simple_vertical">                                            
+                                            Simple Vertical
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/widgets/graficas/plotly/barchart_simple_vertical_etiquetas_fijas">                                            
+                                            Simple Vertical / Etiq. Fijas
+                                        </a>
+                                    </li>    
+                                    <li>
+                                        <a href="/widgets/graficas/plotly/barchart_grupo_vertical">
+                                            Gpo Vertical
+                                        </a>
+                                    </li> 
+                                    <li>
+                                        <a href="/widgets/graficas/plotly/barchart_grupo_horizontal">                                            
+                                            Gpo Horizontal
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/widgets/graficas/plotly/barchart_grupo_horizontal_lbls_inclinadas">                                            
+                                            Gpo Hor. / Etiq. Inclinadas
+                                        </a>
+                                    </li> 
+                                    <li>
+                                        <a href="/widgets/graficas/plotly/barchart_color_individual">                                            
+                                            Color Individual en Barra
+                                        </a>
+                                    </li> 
+                                    <li>
+                                        <a href="/widgets/graficas/plotly/barchart_ancho_individual">                                            
+                                            Ancho Individual en Barra
+                                        </a>
+                                    </li> 
+                                    <li>
+                                        <a href="/widgets/graficas/plotly/barchart_estilizada">                                            
+                                            Estilizada / Colores
+                                        </a>
+                                    </li> 
+                            </li>                            
+                        </ul>

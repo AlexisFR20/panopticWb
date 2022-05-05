@@ -1,0 +1,95 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Encuestas</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+    <div class="app-page-title">    
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="mini-logo-panoptic">
+                    <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+                </div>
+                <div>Análisis de Riesgo&nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Cuestionarios contestados
+                    <div class="admin-page-title-subheading">
+                    Crear Cuestionario
+                    </div>
+                </div>
+            </div> 
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                    </div>
+                    <div class="col-lg-6">
+                        <nav class="" aria-label="admin breadcrumb">
+                            <ol class="admin breadcrumb pull-right">
+                                <li class="breadcrumb-item">
+                                    <a>
+                                        <i aria-hidden="true" class="fa fa-home"></i>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a> Análisis de Riesgo</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{% url 'administrador:admin_papeletas' %}">Cuestionarios contestados</a>
+                                </li>
+                                <li class="active breadcrumb-item" aria-current="page">
+                                    Crear Cuestionario
+                                </li>
+                            </ol>
+                        </nav>              
+                    </div>
+                </div>        
+            </div>        
+        </div>
+    </div>    
+
+
+    <a  href="{% url 'administrador:admin_list_encuestas' %}" class="m-3 btn btn-success size16">Volver a lista de cuestionarios</a>   
+    <hr>
+    
+
+    <main role="main">
+          <div  class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <div class="mb-3 card" class=" row mt-3">
+                    <div  class="col-md-12 mx-auto">
+                         <div class="card-header-tab card-header-tab-animation card-header">
+                         
+                            <h3  class="p-3">Nuevo Cuestionario</h3>
+                            
+                          </div>
+
+                                <div class="card-body">
+                                    <form action="" method="post">{% csrf_token %}
+                                            {{ form.as_p }}
+                                        <br>
+                                        <input type="submit" class=" m-2 btn btn-primary size16" value="Guardar Encuesta" />
+                                    </form>
+                                </div>
+                         
+                     </div>
+                 </div>
+            </div>
+     </main>                
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

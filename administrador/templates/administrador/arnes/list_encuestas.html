@@ -1,0 +1,103 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Gráficas Plotly</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+     <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}
+
+{% load render_table from django_tables2 %}
+{% block 'content' %}
+    <div class="app-page-title">    
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="mini-logo-panoptic">
+                    <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+                </div>
+                <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Gestión de Cuestionario
+                    <div class="admin-page-title-subheading">
+                    Lista de Cuestionarios
+                    </div>
+                </div>
+            </div> 
+
+            <div class="page-title-actions">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a> Análisis de Riesgo</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="#"> Gestión de Cuestionarios</a>
+                        </li>
+                        <li class="active breadcrumb-item" aria-current="page">
+                            <a href="{% url 'administrador:admin_list_encuestas' %}">Lista de Cuestionarios</a> 
+                        </li>
+                    </ol>
+                </nav>     
+            </div> <!-- Page title actions -->
+
+        </div> <!-- Page Title Wrapper -->
+    </div>  <!-- app page title -->
+
+    <!--Inicio de lo agregado-->
+    <div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    <h3>Cuestionarios</h3>
+                </div>                                                        
+            </div>
+            <div class="p-2" >
+                <form class="form-inline mr-auto">
+                    <input class="form-control" type="text" name="q" placeholder="Buscar" aria-label="Buscar" value="{{ request.GET.q }}">
+                    <button class="btn btn-primary m-2" type="submit">Buscar</button>
+                </form>
+            </div>
+            
+            <div class="p-2 " >
+                 <a href="{% url 'administrador:admin_create_encuesta' %}" class="btn btn-success size16">Agregar Nuevo Cuestionario</a>
+            </div>
+                
+                <div   class="card-body">     
+                    {% render_table table %}
+                    {% endblock %}      
+                </div>
+        </div>    
+    </div>
+</div>
+    <!-- Final de lo agregado-->
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

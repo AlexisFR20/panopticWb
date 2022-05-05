@@ -1,0 +1,19 @@
+{% load static %}
+{% for evidencia in evidencias %}
+    <div class="mb-2 mr-2 badge badge-primary width80">{{ evidencia.nota }}</div>
+    {% if evidencia.evidencia %}
+    <a href="{{ evidencia.evidencia.url }}" data-fancybox data-caption="{{ evidencia.nota }}" class="avatar-icon-wrapper btn-hover-shine pull-right">
+        <div class="avatar-icon rounded">
+                <img src="{{ evidencia.evidencia.url }}" alt="Evidencia">
+        </div>
+    </a>
+    {% else %} 
+    <a href="javascript:void(0);" class="avatar-icon-wrapper btn-hover-shine">
+        <div class="avatar-icon rounded"></div>
+            <img src="{% static 'core/assets/images/general-un.png' %}"  alt="Evidencia no encontrada en servidor">      
+        </div>
+    </a>
+    {% endif %}        
+{% empty %}
+    <p class="size24 text-center" style="line-height: 40px;">No se encontraron evidencias para el rondin</p>
+{% endfor %}           

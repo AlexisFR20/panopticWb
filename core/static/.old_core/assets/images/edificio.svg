@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="297mm"
+   height="210mm"
+   viewBox="0 0 297 210"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 5da689c313, 2019-01-14"
+   sodipodi:docname="layout.svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.598154"
+     inkscape:cx="576.37795"
+     inkscape:cy="469.61449"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer2"
+     showgrid="true"
+     inkscape:showpageshadow="false"
+     borderlayer="true"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="false"
+     inkscape:snap-bbox-midpoints="false"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-page="true"
+     inkscape:snap-grids="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid10"
+       units="mm"
+       spacingx="0.5"
+       spacingy="0.5"
+       empspacing="20" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ref"
+     inkscape:groupmode="layer"
+     id="layer1"
+     sodipodi:insensitive="true"
+     style="display:none">
+    <image
+       sodipodi:absref="/home/fern/Projects/Work/demo/Layout.png"
+       y="0"
+       x="-9"
+       id="image74"
+       xlink:href="file:///home/fern/Projects/Work/demo/Layout.png"
+       preserveAspectRatio="none"
+       height="210"
+       width="315"
+       style="stroke-width:2.17714286" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layout">
+    <path
+       id="path143"
+       style="fill:none;stroke:#000000;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 215,32.5 v 3 h -15.5 v 25 H 209 V 62 h 21 V 47.5 h 1.5 V 33 m -30,74 V 75.5 h -2 V 63 h 27 v 12.5 h -6 V 107 m -62,-44 H 198 v 33.5 h -39.5 z m -1,-27.5 h 39 v 25 h -39 z m -5,27.5 h 2 v 28 h -2 z m -6.5,0 h 3.5 V 91 H 146 Z m -29.5,0 26,2e-6 v 19.5 h 1 v 8.5 h -27 z m 26,-27.5 h 12 v 25 h -12 z m -16,0 H 140 v 25 h -13.5 z m -10,0 h 7.5 v 25 h -7.5 z M 109,61 h 5 v 30 h -5 z m 0,-25.5 h 5 v 23 h -5 z m -21.5,0 h 19 V 91 H 89 V 81 H 87.5 Z M 68,72.5 V 60 h 2.5 V 55.5 H 68 v -17 h 6 v -6 m 89,74.5 v -8 h -8 v -5 h -19 c 0,0 0,0.5 0,0.5 H 115.5 V 94 H 112 v 1.5 h -2.5 v -1 H 86 v -11 H 84 V 53 h 1.5 V 45.5 H 84 V 42 h 1.5 v -8.5 h 72 V 33 M 234,146 v -25.5 h 11 m -79,4 v 6 l 0.5,1.5 1.5,1.5 1.5,0.5 h 6.5 v 4 h 8.5 V 127 H 179 v -11 h 4 v -2.5 M 142.5,148 v -40 m 39,37.5 h 5 V 152 M 163,124 V 107.5 H 74 V 76 h 0.5 V 73 H 66 m 161.5,41 v -6.5 H 190 v 5.5 h -12 v 2.5 h -7.5 v -8 H 169 v 3 h -3 V 124 M 66,32 h 29.5 v -4.5 h 7 V 32 h 48 v -8.5 h 4 V 32 h 51 v -8 h 6 v 1.5 h 5 v 7 h 19 v 75 H 233 V 114 M 60.5,29 h 5 v 47 h -5 z m 48,120.5 v 3 h -34 l -7,-2 -6,-6 -2,-7 V 25 l 186,-6 v 127.5 h -36 l -1,1 v 4 l -1,1 H 185 l -2,-0.5 -1.5,-1.5 -0.5,-2 v -3 h -2 v 3 h -36.5 l -0.5,2 -1.5,1.5 -2,0.5 h -24 v -3" />
+  </g>
+</svg>

@@ -1,0 +1,618 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Revisión 18 Puntos
+                <div class="admin-page-title-subheading">
+                   Historial
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Revisión 18 Puntos</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'administrador:admin_18puntos_historial' %}"> Listado</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Revisión 
+                            </li>
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div> 
+        
+    </div>
+</div>                                
+
+<div class="row" >
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+       <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Historial
+                </div>                                                        
+            </div>
+            <div class="card-body">                
+                <div class="row">
+                
+                    <div class="col-sm-12 col-md-10 col-lg-10">
+                        
+                        <div class="container">
+                            <hr>
+                            <div class="form-heading size20 text-center" style="padding-bottom: 0px;">Reporte de Inspección de 18 Puntos del Trailer </div>   
+                            <hr>
+                            <!-- form start -->
+                            <form  id="frm-ver" role="form" >
+                            
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-12 col-lg-4">                                        
+                                            
+                                            <div class="form-group">
+                                                <label>Fecha</label>
+                                                <input type="text" id="fecha" name="fecha" class="form-control mostrar" placeholder="Fecha" value="{{ revision.p18_fecha }}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Inspección por</label>
+                                                <input type="text" id="inspeccionado" name="inspeccionado" class="form-control mostrar" placeholder="Nombre de quien inspecciona" value="{{ revision.inspecionado_por.first_name }} {{ revision.inspecionado_por.last_name }}" readonly>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>No. Contenedor</label>
+                                                <input type="text" id="n_contenedor" name="n_contenedor" class="form-control mostrar" placeholder="No. del contenedor" value="{{ revision.n_contenedor }}" readonly>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>Unidad de Negocio</label>
+                                                <input type="text" id="planta" name="planta" class="form-control mostrar" placeholder="Lugar donde se realizó" value="{{ revision.planta | upper }}" readonly>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>Empresa Transportista</label>
+                                                <input type="text" id="transportista" name="transportista" class="form-control mostrar" placeholder="Transportista" value="{{ revision.transportista }}" readonly>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>Sello(s)</label>
+                                                <input type="text" id="n_sello" name="n_sello" class="form-control mostrar" placeholder="Sellos registrados" value="{{ revision.n_sello | upper }}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>No. Económico</label>
+                                                <input type="text" id="n_economico" name="n_economico" class="form-control mostrar" placeholder="Sin número económico" value="{{ revision.n_economico|default_if_none:"Sin número económico"}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Chofer</label>
+                                                <input type="text" id="nombre_chofer" name="nombre_chofer" class="form-control mostrar" placeholder="Sin chofer asignado" value="{{ revision.nombre_chofer|default_if_none:"Sin chofer asignado"}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Chofer</label>
+                                                <input type="text" id="placas_contenedor" name="placas_contenedor" class="form-control mostrar" placeholder="Sin placas de contenedor" value="{{ revision.placas_contenedor }}" readonly>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label>Placas de Tractocamión</label>
+                                                <input type="text" id="placas_tractocamion" name="placas_tractocamion" class="form-control mostrar" placeholder="Sin placas de tractocamión" value="{{ revision.placas_tractocamion }}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Vigencia de Licencia</label>
+                                                <input type="text" id="vigencia_licencia" name="vigencia_licencia" class="form-control mostrar" placeholder="Sin registro de licencia" value="{{ revision.vigencia_licencia }}" readonly>
+                                            </div>
+                                            
+                                        </div> <!-- Fin de panel izquierdo -->
+
+                                        <div class="col-xs-12 col-md-12 col-lg-8">
+                                            
+                                            
+                                        {% if revision.onEvidence %}                                            
+                                            <p class="bgp-color-azul text-center">Preguntas de Inspección</p>             
+                                            
+                                                <ol>
+                                                    <li>
+                                                        <span class="item-encuesta">Defensa</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.defensa %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.defensa %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                           
+                                                        {% if revision.evidencia_defensa %}                                            
+                                                            <label>Evidencia</label>
+                                                            <a href="{{ revision.evidencia_defensa.url }}" data-fancybox data-caption="Evidencia de Defensa">                                                
+                                                                <img src="{{ revision.evidencia_defensa.url }}" class="rounded" height="20" width="20" alt="Evidencia de defensa">                                                      
+                                                            </a>   
+                                                            &emsp;    
+                                                            {% if revision.nota_defensa and revision.evidencia_defensa %}   
+                                                            {{ revision.nota_defensa }}                                                       
+                                                            <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;">
+                                                                <i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_defensa }}"> </i>
+                                                                <span class="{% if revision.defensa %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span>
+                                                            </button-->
+                                                            {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Motor</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.motor %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.motor %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                           
+                                                        {% if not revision.motor and revision.evidencia_motor %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_motor.url }}" data-fancybox data-caption="Evidencia de Motor">                                                
+                                                            <img src="{{ revision.evidencia_motor.url }}" class="rounded" height="20" width="20" alt="Evidencia de motor">                                                      
+                                                        </a>   
+                                                        &emsp;
+                                                        {% if revision.nota_motor %}
+                                                        {{ revision.nota_motor }}                                                          
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title=""> </i><span class="{% if revision.motor %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Llantas</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.llantas %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.llantas %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                           
+                                                       {% if not revision.llantas and revision.evidencia_llantas %}
+														
+														
+														
+														
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_llantas.url }}" data-fancybox data-caption="Evidencia de llantas">                                                
+                                                            <img src="{{ revision.evidencia_llantas.url }}" class="rounded" height="20" width="20" alt="Evidencia de llantas">                                                      
+                                                        </a>   
+                                                        &emsp;
+                                                        {% if revision.nota_llantas %}    
+                                                        {{ revision.nota_llantas }}                                                      
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_llantas }}"> </i><span class="{% if revision.llantas %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Piso Cabina</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.piso_cabina %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.piso_cabina %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                           
+                                                        {% if not revision.piso_cabina and revision.evidencia_piso_cabina %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_piso_cabina.url }}" data-fancybox data-caption="Evidencia de piso_cabina">                                                
+                                                            <img src="{{ revision.evidencia_piso_cabina.url }}" class="rounded" height="20" width="20" alt="Evidencia de piso_cabina">                                                      
+                                                        </a>   
+                                                        &emsp; 
+                                                        {% if revision.nota_piso_cabina %}   
+                                                        {{ revision.nota_piso_cabina }}                                                    
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;">
+                                                            {{ revision.nota_piso_cabina }}
+                                                            <i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_piso_cabina }}"> </i>
+                                                            <span class="{% if revision.piso_cabina %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Tanque Combustible</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.tanque_conbustible %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.tanque_conbustible %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                           
+                                                        {% if not revision.tanque_conbustible and revision.evidencia_tanque_conbustible %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_tanque_conbustible.url }}" data-fancybox data-caption="Evidencia de tanque_conbustible">                                                
+                                                            <img src="{{ revision.evidencia_tanque_conbustible.url }}" class="rounded" height="20" width="20" alt="Evidencia de tanque_conbustible">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp; 
+                                                        {% if revision.nota_tanque_conbustible %}    
+                                                        {{ revision.nota_tanque_conbustible }}                                                      
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_tanque_conbustible }}"> </i><span class="{% if revision.tanque_conbustible %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Cabina</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.cabina %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.cabina %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                           
+                                                        {% if not revision.cabina and revision.evidencia_cabina %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_cabina.url }}" data-fancybox data-caption="Evidencia de cabina">                                                
+                                                            <img src="{{ revision.evidencia_cabina.url }}" class="rounded" height="20" width="20" alt="Evidencia de cabina">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_cabina %}      
+                                                        {{ revision.nota_cabina }}                                                    
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_cabina }}"> </i><span class="{% if revision.cabina %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Suspensión de Aire</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.suspension_aire %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.suspension_aire %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                                                                                   
+                                                        {% if not revision.suspension_aire and revision.evidencia_suspension_aire %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_suspension_aire.url }}" data-fancybox data-caption="Evidencia de suspension_aire">                                                
+                                                            <img src="{{ revision.evidencia_suspension_aire.url }}" class="rounded" height="20" width="20" alt="Evidencia de suspension_aire">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_suspension_aire %}           
+                                                        {{ revision.nota_suspension_aire }}                                               
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_suspension_aire }}"> </i><span class="{% if revision.suspension_aire %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Flecha de Embrague</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.flecha_embrague %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.flecha_embrague %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                           
+                                          {% if not revision.flecha_embrague and revision.evidencia_flecha_embrague %} 
+											
+														
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_flecha_embrague.url }}" data-fancybox data-caption="Evidencia de flecha_embrague">                                                
+                                                            <img src="{{ revision.evidencia_flecha_embrague.url }}" class="rounded" height="20" width="20" alt="Evidencia de flecha_embrague">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;   
+                                                        {% if revision.nota_flecha_embrague%}       
+                                                        {{ revision.nota_flecha_embrague }}                                                   
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_flecha_embrague }}"> </i><span class="{% if revision.flecha_embrague %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Quinta Rueda</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.quinta_rueda %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if not revision.quinta_rueda %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; &emsp; &emsp; &emsp; &emsp; &nbsp;                                                           
+                                                        {% if not revision.quinta_rueda and revision.evidencia_quinta_rueda %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_quinta_rueda.url }}" data-fancybox data-caption="Evidencia de quinta_rueda">                                                
+                                                            <img src="{{ revision.evidencia_quinta_rueda.url }}" class="rounded" height="20" width="20" alt="Evidencia de quinta_rueda">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_quinta_rueda %}
+                                                        {{ revision.nota_quinta_rueda }}                                                          
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_quinta_rueda }}"> </i><span class="{% if revision.quinta_rueda %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Debajo de Plataforma</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.debajo_plataforma == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.debajo_plataforma == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.debajo_plataforma == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                           
+                                                        {% if not revision.debajo_plataforma and revision.evidencia_debajo_plataforma %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_debajo_plataforma.url }}" data-fancybox data-caption="Evidencia de debajo_plataforma">                                                
+                                                            <img src="{{ revision.evidencia_debajo_plataforma.url }}" class="rounded" height="20" width="20" alt="Evidencia de debajo_plataforma">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_debajo_plataforma %}
+                                                        {{ revision.nota_debajo_plataforma }}                                                          
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_debajo_plataforma }}"> </i><span class="{% if revision.debajo_plataforma %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Puertas internas/externas</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.puertas_internas_externas == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.puertas_internas_externas == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.puertas_internas_externas == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                        
+                                                        {% if not revision.puertas_internas_externas and revision.evidencia_puertas_internas_externas %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_puertas_internas_externas.url }}" data-fancybox data-caption="Evidencia de puertas_internas_externas">                                                
+                                                            <img src="{{ revision.evidencia_puertas_internas_externas.url }}" class="rounded" height="20" width="20" alt="Evidencia de puertas_internas_externas">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_puertas_internas_externas %}   
+                                                        {{ revision.nota_puertas_internas_externas }}                                                       
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_puertas_internas_externas }}"> </i><span class="{% if revision.puertas_internas_externas %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Piso interior de la caja</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.piso_interior_cajas == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.piso_interior_cajas == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.piso_interior_cajas == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                           
+                                                        {% if not revision.piso_interior_cajas and revision.evidencia_piso_interior_cajas %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_piso_interior_cajas.url }}" data-fancybox data-caption="Evidencia de piso_interior_cajas">                                                
+                                                            <img src="{{ revision.evidencia_piso_interior_cajas.url }}" class="rounded" height="20" width="20" alt="Evidencia de piso_interior_cajas">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_piso_interior_cajas %}    
+                                                        {{ revision.nota_piso_interior_cajas }}                                                      
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_piso_interior_cajas }}"> </i><span class="{% if revision.piso_interior_cajas %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Paredes Laterales</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.paredes_laterales == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.paredes_laterales == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.paredes_laterales == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                         
+                                                        {% if not revision.paredes_laterales and revision.evidencia_paredes_laterales %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_paredes_laterales.url }}" data-fancybox data-caption="Evidencia de paredes_laterales">                                                
+                                                            <img src="{{ revision.evidencia_paredes_laterales.url }}" class="rounded" height="20" width="20" alt="Evidencia de paredes_laterales">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_paredes_laterales %}       
+                                                        {{ revision.nota_paredes_laterales }}                                                   
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_paredes_laterales }}"> </i><span class="{% if revision.paredes_laterales %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Pared Frontal</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.pared_frontal == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.pared_frontal == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.pared_frontal == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                                  
+                                                        {% if not revision.pared_frontal and revision.evidencia_pared_frontal %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_pared_frontal.url }}" data-fancybox data-caption="Evidencia de pared_frontal">                                                
+                                                            <img src="{{ revision.evidencia_pared_frontal.url }}" class="rounded" height="20" width="20" alt="Evidencia de pared_frontal">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_pared_frontal %}    
+                                                        {{ revision.nota_pared_frontal }}                                                      
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_pared_frontal }}"> </i><span class="{% if revision.pared_frontal %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Techo</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.techo == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.techo == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.techo == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                           
+                                                        {% if not revision.techo and revision.evidencia_techo %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_techo.url }}" data-fancybox data-caption="Evidencia de techo">                                                
+                                                            <img src="{{ revision.evidencia_techo.url }}" class="rounded" height="20" width="20" alt="Evidencia de techo">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_techo %}     
+                                                        {{ revision.nota_techo }}                                                     
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_techo }}"> </i><span class="{% if revision.techo %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Unidad refrigeración</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.unidad_refrigeracion == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.unidad_refrigeracion == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.unidad_refrigeracion == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                            
+                                                        {% if not revision.unidad_refrigeracion and revision.evidencia_unidad_refrigeracion %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_unidad_refrigeracion.url }}" data-fancybox data-caption="Evidencia de unidad_refrigeracion">                                                
+                                                            <img src="{{ revision.evidencia_unidad_refrigeracion.url }}" class="rounded" height="20" width="20" alt="Evidencia de unidad_refrigeracion">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_unidad_refrigeracion %} 
+                                                        {{ revision.nota_unidad_refrigeracion }}                                                         
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_unidad_refrigeracion }}"> </i><span class="{% if revision.unidad_refrigeracion %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Escape</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.escape == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.escape == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.escape == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                            
+                                                        {% if not revision.escape and revision.evidencia_escape %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_escape.url }}" data-fancybox data-caption="Evidencia de escape">                                                
+                                                            <img src="{{ revision.evidencia_escape.url }}" class="rounded" height="20" width="20" alt="Evidencia de escape">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_escape %}    
+                                                        {{ revision.nota_escape }}                                                      
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_escape }}"> </i><span class="{% if revision.escape %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+                                                    <li>
+                                                        <span class="item-encuesta">Revisión de sello</span>
+                                                        &emsp; &emsp;                                                            
+                                                        <span class="answeryesnomaybe">SÏ</span>                                                         
+                                                        (&nbsp;{% if revision.revision_sello == 1 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                          
+                                                        <span class="answeryesnomaybe">NO</span>                                                         
+                                                        (&nbsp;{% if revision.revision_sello == 0 %} <i class="fas fa-times-circle bgp-color-rojo"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp; 
+                                                        <span class="answeryesnomaybe">NA</span>                                                         
+                                                        (&nbsp;{% if revision.escape == 2 %} <i class="fas fa-check-circle bgp-color-verde"></i>{% else %} &emsp; {% endif %}&nbsp;)
+                                                        &emsp;                                                            
+                                                        {% if not revision.revision_sello and revision.evidencia_revision_sello %}                                            
+                                                        <label>Evidencia</label>
+                                                        <a href="{{ revision.evidencia_revision_sello.url }}" data-fancybox data-caption="Evidencia de revision_sello">                                                
+                                                            <img src="{{ revision.evidencia_revision_sello.url }}" class="rounded" height="20" width="20" alt="Evidencia de revision_sello">                                                      
+                                                        </a>   
+                                                        &emsp; &emsp;    
+                                                        {% if revision.nota_revision_sello %}  
+                                                        {{ revision.nota_revision_sello }}                                                        
+                                                        <!--button class="mb-2 mr-2 btn-icon btn-icon-only btn btn-link btn-sm" style="padding: 2px .5rem;"><i class="lnr-license btn-icon-wrapper font-size-xlg" title="{{ revision.nota_revision_sello }}"> </i><span class="{% if revision.revision_sello %} badge badge-success {% else %} badge badge-success {% endif %} badge-dot badge-dot"> </span></button-->
+                                                        {% endif %}   
+                                                        {% endif %}   
+                                                    </li>
+
+                                                </ol>                                           
+
+                                        {% endif %}                                                                         
+                                        </div>
+                                    </div>
+                                
+                                </div> <!-- container -->
+                                
+                            </form>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </div>
+       </div>
+    </div>
+ </div>
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+<script>
+    $(document).ready(function() {
+       
+
+        
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

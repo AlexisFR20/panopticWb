@@ -1,0 +1,331 @@
+{% load static %}
+<script>
+    //JS Mapa Delitivo
+    var map, heatmap, infowindow, jTipoUsuario;
+    var markers = [];      
+    var circle;
+    
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 5,
+            center: {lat: 23.3496639, lng: -102.1215997},
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+    
+        infoWindow = new google.maps.InfoWindow;
+    
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+    
+            infoWindow.setPosition(pos);
+            infoWindow.setContent('Location found.');
+            infoWindow.open(map);
+            map.setCenter(pos);            
+            }, function() {
+            
+            });
+        } else {
+            // Browser doesn't support Geolocation            
+        }
+        
+        var markers = setMarkers(map);
+    
+        heatmap = new google.maps.visualization.HeatmapLayer({
+            data: getPoints(),
+            map: map
+        });       
+    }    
+    
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                                'Error: The Geolocation service failed.' :
+                                'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+    }
+    
+    function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+    }     
+    
+    function changeRadius() {
+        heatmap.set('radius', heatmap.get('radius') ? null : 20);        
+    }
+    
+    function changeOpacity() {
+        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+    }
+    
+    function changeMarkers() {        
+        toggleMarkers(markers);
+    }
+    
+    function toggleMarkers(markers) {
+        // Loop through all markers and hide each of them
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            marker.visible ? marker.setVisible(false) : marker.setVisible(true);
+            //marker.setVisible(false);
+        }        
+    }   
+    
+        // Heatmap data: 500 Points
+    function getPoints() {
+        return [
+            {% for o in incidentes %}
+            new google.maps.LatLng({{ o.lat}}, {{ o.lng }}),                
+            {% endfor %}                    
+        ];
+    }
+    
+    function smoothZoom (map, level, cnt, mode) {
+        //alert('Count: ' + cnt + 'and Max: ' + level);
+    
+        // If mode is zoom in
+        if(mode == true) {
+    
+            if (cnt >= level) {
+                return;
+            }
+            else {
+                var z = google.maps.event.addListener(map, 'zoom_changed', function(event){
+                    google.maps.event.removeListener(z);
+                    smoothZoom(map, level, cnt + 1, true);
+                });
+                setTimeout(function(){map.setZoom(cnt)}, 50);
+            }
+        } else {
+            if (cnt <= level) {
+                return;
+            }
+            else {
+                var z = google.maps.event.addListener(map, 'zoom_changed', function(event) {
+                    google.maps.event.removeListener(z);
+                    smoothZoom(map, level, cnt - 1, false);
+                });
+                setTimeout(function(){map.setZoom(cnt)}, 50);
+            }
+        }
+    }
+    
+    function goUbicacion(lugar) {
+        var vLugar = 'Ubicación seleccionada';
+        var vzoom = 0;
+        var latitude  = 0;
+        var longitude = 0;
+        var whereMarker = null;
+    
+        if (lugar == 'usa_east') {
+            latitude  =  36.5522;
+            longitude =  -83.9171817;
+            vLugar = 'Estados Unidos Este';
+            vzoom = 6;            
+        }  else if (lugar == 'global') {
+            latitude  =  24.6110255;
+            longitude = -42.8441299;
+            vLugar = 'Vista Global';
+            vzoom = 2.75;
+        } else if (lugar == 'la') {
+            latitude  =  15.2985681;
+            longitude =  -78.6551153;
+            vLugar = 'América Latina';
+            vzoom = 4;
+        } else if (lugar == 'juarez') {
+            latitude  =  31.6874405;
+            longitude =  -106.4300477;
+            vLugar = 'Ciudad Juárez';
+            vzoom = 12;
+        } else if (lugar == 'benitojuarez') {
+            latitude  = 30.1523153;
+            longitude = -106.8905766;
+            vLugar = 'Benito Juárez';
+            vzoom = 12;
+        } else if (lugar == 'europa') {
+            latitude  =   52.0930382;
+            longitude =  11.3800946;
+            vLugar = 'Europa';
+            vzoom = 5;
+        } else if (lugar == 'asia') {
+            latitude  =  33.2888155;
+            longitude =  113.5219767;
+            vLugar = 'Asia';
+            vzoom = 4;
+        } else if (lugar == 'oceania') {
+            latitude  =  -30.7058591;
+            longitude =  143.8021268;
+            vLugar = 'Oceanía';
+            vzoom = 5;
+        } else if (lugar == 'ua') {
+            vzoom = 12;
+            // Try HTML5 geolocation.
+            if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+    
+                alert('Segun esto te encontró aqui');
+    
+                infoWindow.setPosition(pos);
+                infoWindow.setContent('Su ubicación en este momento.');
+                infoWindow.open(map);
+                map.setCenter(pos);   
+                map.setZoom(vzoom); 
+    
+            }, function() {
+            // Browser doesn't support Geolocation    
+                alert('No es soportado esta función en el navegador');
+            });
+            } else {
+            // Browser doesn't support Geolocation            
+            }
+        }          
+    
+        whereMarker = new google.maps.Marker({
+            zoom: vzoom,
+            position: new google.maps.LatLng(latitude, longitude),
+            title: vLugar,
+            icon: "{% static 'core/assets/images/where-ico-marker.png' %}",
+            map: map,
+        });
+        
+        map.panTo(whereMarker.getPosition());
+        //smoothZoom(map, vzoom, map.getZoom(), true);
+        map.setZoom(vzoom);
+    }
+    
+    function coberturaModoAleatorioOptima(bottom, top) {
+        return Math.floor( Math.random() * ( 1 + top - bottom ) ) + bottom;
+    }
+    
+    function setMarkers(map) {
+        // Adds markers to the map.
+        
+        // Shapes define the clickable region of the icon. The type defines an HTML
+        // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+        // The final coordinate closes the poly by connecting to the first coordinate.
+        var shape = {
+            coords: [1, 1, 1, 47, 30, 47, 30, 1],
+            type: 'poly'
+        };
+    
+        /*var iconos = { 
+            'homicidio'         : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/homicidio.png' %}" },
+            'carjacking'        : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/carjacking.png' %}" },
+            'asalto_transeuntes': { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/transeuntes.png' %}" },
+            'casa_habitacion'   : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/casa-habitacion.png' %}" },
+            'hotel'             : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/hotel.png' %}" },
+            'aeropuerto'        : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/aeropuerto.png' %}" },
+            'autopartes'        : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/auto-partes.png' %}" },
+            'secuestro'         : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/secuestro.png' %}" },            
+            'lesiones'          : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/lesiones.png' %}" },            
+            'robo_vehiculo'     : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/carjacking.png' %}" },            
+            'narcomenudeo'      : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/narcomenudeo.png' %}" },            
+            'violencia_familiar': { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/secuestro.png' %}" },            
+        };*/
+
+        var iconos = { 
+        {% for tipo in tipo_incidentes %}  
+        '{{ tipo.alias }}': { 'img': "/media/{{ tipo.icono }}" }, 
+        {% endfor %}  
+        };               
+        
+        var czindex = 500;           
+        
+        {% for p in incidentes %}
+    
+            var tipo = '{{ p.tipo }}';            
+            
+            if (tipo == 'asalto_transeuntes') {
+                tipo = 'Asalto a Transeuntes';
+            } else if (tipo == 'robo_vehiculo') {
+                tipo = 'Robo de Vehículo';
+            }
+
+            //console.log(tipo);
+            var tipo_inci = "{{ p.tipo|stringformat:"s" }}";
+            if (tipo != 'robo-vehiculo' && tipo != 'asalto-a-negocios' && tipo != 'violacion' && tipo != 'feminicidio' && tipo != 'auto-partes' && tipo != 'transeuntes' && tipo != 'extorsion' && tipo != 'robo-casa' && tipo != 'violencia-familiar')  {
+                var marker = new google.maps.Marker({
+                    position: {lat: {{ p.lat}}, lng: {{ p.lng }} },
+                    map: map,
+                    icon: iconos[tipo_inci].img,
+                    shape: shape, 
+                    tipo: tipo.toUpperCase(),
+                    zIndex: czindex
+                });    
+            }
+    
+            marker.infowindow = new google.maps.InfoWindow({
+                content: '<h3 class="infoh3"><b>' + tipo.toUpperCase() + '</h3><hr/><h6><span class="infoh6 size16">{{p.titulo}}</span><br/><p class="infop bgp-color-azul size14">{{ p.direccion }} {{ p.ciudad }}, {{ p.estado }}, {{ p.pais }} | Fecha: {{ p.fecha }}</p><hr/></h6><a href="#" data-id="{{ p.id }}" class="hoverme mb-2 mr-2 btn btn-light mayus">Ver Incidente Relacionado</a>'
+            });
+            
+            marker.addListener('click', function() {
+                this.infowindow.open(map, this);
+            });           
+    
+            markers.push(marker);           
+            ++czindex;
+            //console.log (title);
+        {% endfor %}  
+    
+        var ico_plantas = {             
+            'optimo': { 'img': "{% static 'core/assets/images/yazaki/yazaki-marker.png' %}" },
+            'relevante': { 'img': "{% static 'core/assets/images/alert-icon-plant.gif' %}" },
+        }; 
+    
+        // Visualización de plantas de cliente
+    
+        var czindex = 900, vplantStatus;   
+    
+        {% for planta in plantas %}      
+            var pnombre = '{{ planta.nombre }}';           
+            
+            vplantStatus = '{{ planta.status }}';
+    
+            //console.log(vplantStatus);
+    
+            var marker = new google.maps.Marker({
+                position: {lat: {{ planta.lat}}, lng: {{ planta.lng }} },
+                map: map,
+                icon: ico_plantas.{{ planta.status }}.img,
+                shape: shape,
+                title: pnombre.toUpperCase(),
+                zIndex: czindex
+            });
+
+            circle = new google.maps.Circle({
+                map: map,
+                radius: 2000, // 2 Kms
+                fillColor: '#8EE5EE',
+                strokeColor: '#50A6C2'
+            });
+    
+            circle.bindTo('center', marker, 'position');
+    
+            marker.setZIndex(1000000);   
+                    
+            
+        {% endfor %}  
+        
+        return markers;
+    }   
+    
+
+    jQuery('.hoverme').mouseenter(function(){
+        jQuery('#lista_incidentes').hide();
+    }); 
+    jQuery('.hoverme').mouseleave(function(){
+        jQuery('#lista_incidentes').show();
+    });       
+</script>
+
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=visualization&callback=initMap">
+</script>
+

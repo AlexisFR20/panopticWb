@@ -1,0 +1,565 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+<title>Panoptic | Expertos en seguridad privada industrial, comercial y personal</title>
+<meta http-equiv="Content-Language" content="es-MX">
+<meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+<meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+<!-- Starts to include CSS list -->
+<style>
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        -webkit-box-sizing: inherit;
+    }
+
+    p {
+        margin: 0
+    }
+
+    .card2 {
+        border: 10px solid white;
+        padding: 27px;
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 14%);
+    }
+
+    .input-error {
+        font-size: 11px;
+        margin-bottom: 0;
+        color: red;
+    }
+
+    .buttonAddMinus {
+        background: none;
+        color: inherit;
+        padding: 0;
+        cursor: pointer;
+        outline: inherit;
+        border: none;
+    }
+
+    .label-ubicaciones {
+        font-size: 12px;
+    }
+
+    .sugerencias {
+        width: 200px;
+        position: relative;
+        top: 10px;
+    }
+
+    input[type=submit] {
+        background-color: DodgerBlue;
+        color: #fff;
+    }
+
+    .sugerencias-items {
+        position: absolute;
+        width: 75%;
+        overflow: hidden;
+        overflow-y: auto;
+        max-height: 250px;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-radius: 5px;
+        z-index: 99;
+        margin-top: 3px;
+        top: 100%;
+        left: 0;
+        right: 0;
+        box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .sugerencias-items div {
+        padding: 7px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+    }
+
+    .sugerencias-items div:hover {
+        background-color: #e9e9e9;
+    }
+
+    .sugerencias-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+</style>
+{% for css in css_list %}
+{% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->
+{% load static %}
+<style>
+    #barChart {
+        background-color: white;
+        border-radius: 6px;
+    }
+</style>
+<link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+
+<!-- This div is move to body when document is ready -->
+<div class="modal fade" id="mi-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirmar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Terminaste de actualizar los datos?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="noModal" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-success" id="siModal" data-dismiss="modal">Si</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loader-body" style="display: none;">
+    <div class="spinner-border" style="width: 10rem; height: 10rem;" role="status">
+        <span class="sr-only">Loading. . .</span>
+    </div>
+</div>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-user-plus size128 soundblue" aria-hidden="true"></i>
+            </div>
+            <div>Listado de Choferes &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; CFDI
+                <div class="admin-page-title-subheading">
+                    Crear Chofer
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a>Detalles CFDI</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Carta Porte</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Crear Chofer
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Chofer
+                </div>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-11 mx-auto">
+                        <form action="" autocomplete="off" id="factura-form">
+                            <h4><b>DATOS CHOFER</b></h4>
+                            <div class="form-row border p-1 m-1">
+                                <div class="form-group col-md-3">
+                                    <label>Tipo</label>
+                                    <select id="tipoFigura" class="form-control" >
+                                        {% if figura.tipo == "01" %}
+                                        <option value="01" selected>Operador</option>
+                                        {% else %}
+                                        <option value="01">Operador</option>
+                                        {% endif %}
+                                        {% if figura.tipo == "02" %}
+                                        <option value="02" selected>Propietario</option>
+                                        {% else %}
+                                        <option value="02">Propietario</option>
+                                        {% endif %}
+                                        {% if figura.tipo == "03" %}
+                                        <option value="03" selected>Arrendador</option>
+                                        {% else %}
+                                        <option value="03">Arrendador</option>
+                                        {% endif %}
+                                        {% if figura.tipo == "04" %}
+                                        <option value="04" selected>Notificado</option>
+                                        {% else %}
+                                        <option value="04">Notificado</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>Nombre</label>
+                                    <input id="nombreFigura" class="form-control" placeholder="Nombre" value='{{figura.nombre}}'>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>RFC</label>
+                                    <input id="rfcFigura" class="form-control" placeholder="RFC" value='{{figura.rfc}}'>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label>No.Licencia</label>
+                                    <input id="licenciaFigura" class="form-control" placeholder="No.Licencia" value='{{figura.licencia}}'>
+                                </div>
+                            </div>
+                            <div class="row px-1">
+                                <h5><b>Domicilio</b></h5>
+                                <div class="col-md-12">
+                                    <div class="row mt-2">
+                                        <div class="form-group col-md-6">
+                                            <label>Pais</label>
+                                            <select id="paisFigura" class="form-control">
+                                                {% for p in paises %}
+                                                {% if p.Value == "MEX" %}
+                                                <option value={{ p.Value }} selected>{{ p.Name }}
+                                                </option>
+                                                {% else %}
+                                                <option value={{ p.Value }}>{{ p.Name }}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label class="label-ubicaciones">Código Postal</label>
+                                            <span style="position: relative; display: inline-block; width: 100%;">
+                                                <input data-collection="codigopostal" id="cpFigura" class="form-control"
+                                                    placeholder="Código Postal" oninput="postalCodeFigura(this)" value="{{figura.cp}}">
+                                                <div class="cp-spinner"
+                                                    style="position: absolute; top: 7px; right: 7px; display: none;">
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                </div>
+                                            </span>
+                                            <div class="sugerencias"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>Estado</label>
+                                            <input id="estadoFigura" class="form-control" placeholder="Estado" value="{{figura.estado}}">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>Municipio</label>
+                                            <input id="municipioFigura" class="form-control" placeholder="Municipio" value="{{figura.municipio}}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>Colonia</label>
+                                            <input id="coloniaFigura" class="form-control" placeholder="Colonia" value="{{figura.colonia}}">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>Calle</label>
+                                            <input id="calleFigura" class="form-control" placeholder="Calle" value="{{figura.calle}}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>Num. Exterior</label>
+                                            <input id="numExteriorFigura" class="form-control" placeholder="Num. Exterior" value="{{figura.ext}}">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>Num. Interior</label>
+                                            <input id="numInteriorFigura" class="form-control" placeholder="Num. Interior" value="{{figura.int}}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-12">
+                                            <label>Referencias</label>
+                                            <input id="referenciaFigura" class="form-control" placeholder="Referencias" value="{{figura.referencia}}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-4">
+                                <button class="btn btn-primary btn-lg btn-block">
+                                    <h4 style="margin: 0px;">ACTUALIZAR</h4>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+{% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    window.setTimeout(function () {
+        $(window).scrollTop(0);
+    }, 0);
+
+    var postalCode;
+    var postalCodeFigura;
+    var idUbic;
+    var statusForm;
+
+    $(document).ready(function () {
+        blockElement = function (elem, b) {
+            if (b === true) {
+                elem.setAttribute('disabled', 'disabled')
+                elem.style.backgroundColor = '#ebeff1'
+                elem.style.color = '#819ca9'
+            }
+            else {
+                elem.removeAttribute('disabled')
+                elem.style.backgroundColor = ''
+                elem.style.color = ''
+            }
+        }
+
+        blockElement(document.getElementById('nombreFigura'),true);
+        blockElement(document.getElementById('rfcFigura'),true);
+
+        $("#mi-modal").appendTo("body");
+        $(".loader-body").appendTo("body");
+
+        $("#siModal").click(function () {
+            statusForm = true;
+            $("<div>", {
+                class: "loader-back"
+            }).appendTo("body");
+            $(".loader-body").css("display", "");
+            agregarChofer();
+        })
+
+        $("#factura-form").submit(function (e) {
+            e.preventDefault();
+
+            // Solo activa el modal
+            $("#mi-modal").modal("show");
+        });
+
+        function agregarChofer() {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                data: JSON.stringify({
+                    "tipo": document.getElementById('tipoFigura').value,
+                    "nombre": document.getElementById('nombreFigura').value,
+                    "rfc": document.getElementById('rfcFigura').value,
+                    "licencia": document.getElementById('licenciaFigura').value,
+                    "pais": document.getElementById('paisFigura').value,
+                    "cp": document.getElementById('cpFigura').value,
+                    "estado": document.getElementById('estadoFigura').value,
+                    "municipio": document.getElementById('municipioFigura').value,
+                    "colonia": document.getElementById('coloniaFigura').value,
+                    "calle": document.getElementById('calleFigura').value,
+                    "numExterior": document.getElementById('numExteriorFigura').value,
+                    "numInterior": document.getElementById('numInteriorFigura').value,
+                    "referencias": document.getElementById('referenciaFigura').value
+                }),
+                success: function (response){
+                    window.location.reload();
+                },
+                error: function (response){
+                    alert("Ocurrio un error");
+                }
+            });
+        }
+
+
+        idUbic = function (e) {
+            const reg = new RegExp('^[0-9]+$');
+            if (e.keyCode == 8 && e.target.value.length == 2) {
+                return false;
+            }
+            if (e.keyCode != 8 && !reg.test(String.fromCharCode(e.keyCode))) {
+                return false;
+            }
+            if (e.target.value.length == 8 && e.keyCode != 8) {
+                return false;
+            }
+        }
+
+        var responseCP;
+        var actualCP;
+
+        postalCode = function (e) {
+            e.value = e.value.replace(/[^0-9+]+/gi, '').substr(0, 5);
+            if ($("#paisFigura").val() === "MEX") {
+                e.nextElementSibling.nextElementSibling.style.display = "block";
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'json',
+                    url: "{% url 'cporte:get_cp' %}?cp=" + e.value,
+                    success: function (res) {
+                        const codes = [];
+                        responseCP = res;
+                        res["codigo"].map((x) => codes.push(x.Value));
+                        autocomplete(e, codes);
+                        e.nextElementSibling.nextElementSibling.style.display = "none";
+                    },
+                    error: function (res) {
+                        autocomplete(e, null);
+                        e.nextElementSibling.nextElementSibling.style.display = "none";
+                    }
+                });
+            }
+        }
+
+        postalCodeFigura = function (e) {
+            e.value = e.value.replace(/[^0-9+]+/gi, '').substr(0, 5);
+            if ($("#paisFigura").val() === "MEX") {
+                e.nextElementSibling.style.display = "block";
+                $.ajax({
+                    type: 'GET',
+                    dataType: 'json',
+                    url: "{% url 'cporte:get_cp' %}?cp=" + e.value,
+                    success: function (res) {
+                        const codes = [];
+                        responseCP = res;
+                        res["codigo"].map((x) => codes.push(x.Value));
+                        autocomplete(e, codes);
+                        e.nextElementSibling.style.display = "none";
+                    },
+                    error: function (res) {
+                        autocomplete(e, null);
+                        e.nextElementSibling.style.display = "none";
+                    }
+                });
+            }
+        }
+
+
+        function updateFieldsUbicacion(input) {
+            let cp = actualCP[0]["Value"];
+            let statecode = actualCP[0]["StateCode"];
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: "{% url 'cporte:get_ubicacion' %}?cp=" + cp + "&state_code=" + statecode,
+                success: function (res) {
+                    if (!input.dataset.index) {
+                        //CARGAR ESTADOS
+                        let estados = "<select id='estadoFigura' class='form-control'>";
+                        for (let i = 0; i < res['estados'].length; i++) {
+                            if (res['estados'][i]['Value'] === actualCP[0]['StateCode']) {
+                                estados += "<option value=" + res['estados'][i]['Value'] + " selected>" + res['estados'][i]['Name'] + "</option>"
+                            }
+                            else {
+                                estados += "<option value=" + res['estados'][i]['Value'] + ">" + res['estados'][i]['Name'] + "</option>"
+                            }
+                        }
+                        estados += "</select>"
+                        $("#estadoFigura").replaceWith(estados)
+                        //CARGAR MUNICIPIOS
+                        let municipios = "<select id='municipioFigura' class='form-control'>"
+                        for (let i = 0; i < res['municipios'].length; i++) {
+                            if (res['municipios'][i]['Value'] === actualCP[0]['MunicipalityCode']) {
+                                municipios += "<option value=" + res['municipios'][i]['Value'] + " selected>" + res['municipios'][i]['Name'] + "</option>"
+                            }
+                            else {
+                                municipios += "<option value=" + res['municipios'][i]['Value'] + ">" + res['municipios'][i]['Name'] + "</option>"
+                            }
+                        }
+                        municipios += "</select>"
+                        $("#municipioFigura").replaceWith(municipios);
+
+                        //CARGAR COLONIAS
+                        if (res['colonias'].length !== 0) {
+                            let colonias = "<select id='coloniaFigura' class='form-control'>";
+                            for (let i = 0; i < res['colonias'].length; i++) {
+                                colonias += "<option value=" + res['colonias'][i]['Value'] + ">" + res['colonias'][i]['Name'] + "</option>"
+                            }
+                            colonias += "</select>"
+                            $("#coloniaFigura").replaceWith(colonias);
+                        }
+                        return;
+                    }
+                },
+                error: function (res) {
+                    console.log(res.data);
+                }
+            });
+        }
+
+        function autocomplete(inp, arr) {
+            var val = inp.value;
+            closeAllLists();
+            if (!val || arr == null) { return false };
+            let container = document.createElement("div");
+            container.setAttribute("class", "sugerencias-items");
+            for (let i = 0; i < arr.length; i++) {
+                let b = document.createElement("div");
+                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(val.length);
+                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                b.addEventListener("click", function (e) {
+                    let val = this.getElementsByTagName("input")[0].value;
+                    inp.value = val;
+                    if (inp.dataset.collection === "codigopostal") {
+                        let res = responseCP.codigo.filter((x) => x.Value == val);
+                        actualCP = res;
+                        updateFieldsUbicacion(inp);
+                    }
+                    closeAllLists();
+                    //errorCP(inp);
+                });
+                inp.parentNode.nextElementSibling.appendChild(container);
+                container.appendChild(b);
+            }
+
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("sugerencias-items");
+                for (let i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target, inp);
+            });
+        }
+    });
+
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

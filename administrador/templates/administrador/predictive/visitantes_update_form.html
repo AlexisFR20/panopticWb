@@ -1,0 +1,140 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Visitante
+                <div class="admin-page-title-subheading">
+                   Registro de Visitante
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Análisis de Riesgo</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{%  url 'administrador:visitantes_list' %}"> Registro de Visitante</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Edición de Registro de Visitante
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Edición de Visitante
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        {% if  'OK' in request.GET %}
+                        <p style="color: green">
+                            Página Actualizada
+                            <a href="{% url 'administrador:visitantes_detailview' f_visitantes.id  %}">Ver registro</a>
+                        </p>
+                        {% endif %}         
+                        <form action="" method="post">
+                            {% csrf_token %}                
+                            {{ form.as_p }}                
+                            <div class="text-left">
+                                <input type="submit" class="btn-transition btn btn-primary size16" value="Editar Registro de Visitante" />
+                            </div>
+                        </form>   
+                    </div>
+                </div>
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    $(document).ready(function() {
+
+        // Takes present value in FECHA field
+        var entrada = $('#id_entrada').val();
+        var salida = $('#id_salida').val();        
+        
+        // Change of html portion for DATETIMEPICKER
+        $('input[name="entrada"]').parent().html('<div class="form-group"><div class="input-group date" id="datetimepicker1" data-target-input="nearest"><label style="width: 100%;"for="id_fecha">Hora de Entrada:</label><input type="text" name="entrada" id="entrada" class="form-control datetimepicker-input" data-target="#datetimepicker1"><input type="hidden" name="initial-entrada" id="initial-id_entrada"><div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div></div></div>' );
+
+        $('input[name="salida"]').parent().html('<div class="form-group"><div class="input-group date" id="datetimepicker2" data-target-input="nearest"><label style="width: 100%;"for="id_salida">Hora de Salida:</label><input type="text" name="salida" id="salida" class="form-control datetimepicker-input" data-target="#datetimepicker2"><input type="hidden" name="initial-salida" id="initial-id_salida"><div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div></div></div>' );
+        // Binding of DATETIMEPIKER  to  wrap 
+        $('#datetimepicker1, #datetimepicker2').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm',
+            defaultDate: new Date()
+        });             
+        // Reassigning values for DATETIMEPICKER input wrap        
+        $('#id_entrada').val(entrada);
+        $('#initial-id_entrada').val(entrada);
+        $('#id_salida').val(salida);
+        $('#initial-id_salida').val(salida);
+
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

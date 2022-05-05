@@ -1,0 +1,372 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }  
+
+        .sw>.tab-content {
+            height: auto !important;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/smartwizard@5.0.0/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-boxes size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Recibo de Almacén
+                <div class="admin-page-title-subheading">
+                   Crear Registro de Recibo de Almacén
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Análisis de Riesgo</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{%  url 'administrador:admin_recibo_almacen_index' %}"> Registro de Recibo de Almacén</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Crear Registro de Recibo de Almacén
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Recibo de Almacén
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <form action="" method="post">
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-12 mx-auto"> 
+                        
+                            {% csrf_token %}                
+                            <div class="row">
+                                <!-- Inicio de primer columna-->                                    
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                    <div class="form-group">
+                                        <label># de Empleado</label>
+                                        <input data-validation="length" data-validation-length="2-30" type="text" id="no_emp" name="no_emp" class="form-control mostrar" placeholder="Escriba el # de Empleado" data-validation="required">
+                                    </div>                                      
+                                    <div class="form-group">
+                                        <label>Nombre del Empleado </label>
+                                        <input data-validation="length" data-validation-length="3-100" type="text" id="empleado" name="empleado" class="form-control mostrar" placeholder="Escriba el Nombre del Empleado">
+                                    </div> 
+                                    <div class="form-group">
+                                        <label>Departamento </label>
+                                        <input data-validation="length" data-validation-length="2-100" type="text" id="departamento" name="departamento" class="form-control mostrar" placeholder="Escriba el Departamento">
+                                    </div> 
+                                    <div class="form-group">
+                                        <label>Jefe</label>
+                                        <input data-validation="length" data-validation-length="2-100" type="text" id="jefe" name="jefe" class="form-control mostrar" placeholder="Escriba el Jefe de Departamento" data-validation="required">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Turno</label>
+                                        <input data-validation="length" data-validation-length="2-100" type="text" id="turno" name="turno" class="form-control mostrar" placeholder="Escriba el Turno" data-validation="required">
+                                    </div>
+                                </div> 
+                                <!-- Fin de primer columna-->
+
+                                <!-- Inicio de segunda columna-->                                    
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">                                  
+                                    
+                                    <div class="form-group">
+                                        <label>Nombre del Proveedor</label>
+                                        <input data-validation="length" data-validation-length="2-100" type="text" id="proveedor" name="proveedor" class="form-control mostrar" placeholder="Escriba el Nombre del Proveedor" data-validation="required">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Nombre de la Empresa</label>
+                                        <input data-validation="length" data-validation-length="2-100" type="text" id="empresa" name="empresa" class="form-control mostrar" placeholder="Escriba el Nombre de la Empresa" data-validation="required">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label># Económico de Transporte</label>
+                                        <input data-validation="length" data-validation-length="2-100" type="text" id="num_economico" name="num_economico" class="form-control mostrar" placeholder="Escriba el # Económico de Transporte" data-validation="required">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label># Caja</label>
+                                        <input data-validation="length" data-validation-length="2-100" type="text" id="num_caja" name="num_caja" class="form-control mostrar" placeholder="Escriba el # Caja" data-validation="required">
+                                    </div>
+                                    
+                                </div>                                    
+                                
+                            </div> 
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+                                </div>
+                            </div>          
+                            
+                
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-12 mx-auto">                                    
+                        
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                <hr>
+                                <div class="mb-3 card">
+                                    <div class="card-header-tab card-header-tab-animation card-header">
+                                        <div class="card-header-title">                                            
+                                            <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                                            Entrada / Salida de Material
+                                        </div>                                                        
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mt-3 mb-5">
+                                            <div class="col-md-12 mx-auto">                                    
+                                                
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 field_wrapper">
+                                                       
+                                                        <div class="form-row">
+                                                            <a href="javascript:void(0);" class="btn btn-primary btn-lg add_button size16" title="Add field">Agregar Material</a>
+                                                        </div>  
+                                                        
+                                                    </div>
+                                                </div> 
+                                                        
+                                                    
+                                            </div>
+                                        </div>                                                  
+                                    </div>  
+                                </div>                                                        
+                                <hr>
+                            </div>
+                        </div>          
+                            
+                    </div>
+                </div>
+
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-12 mx-auto">
+                        <button id="enviar" class="btn-shadow btn-wide btn btn-success btn-lg ">Guardar Información</button>
+                    </div>
+                </div>
+                </form>   
+                <br><br>              
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- JavaScript Wizard -->
+<script src="https://cdn.jsdelivr.net/npm/smartwizard@5.0.0/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
+<script>
+    jQuery(document).ready(function($) {
+
+        
+
+        $('#enviar').click(function(){
+
+            var no_emp = $('#no_emp').val();
+            var empleado = $('#empleado').val();
+            var departamento = $('#departamento').val();
+            var jefe = $('#jefe').val();
+            var turno = $('#turno').val();
+
+            $('.error').hide(); 
+
+            if(no_emp == '') {
+                $("#no_emp").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese # de Empleado</div>");
+                return false;
+            } else if(empleado == '') {
+                $("#empleado").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese Nombre del Empleado</div>");
+                return false;
+            } else if(departamento == '') {
+                $("#departamento").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese el Departamento</div>");
+                return false;
+            } else if(jefe == '') {
+                $("#jefe").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese Nombre del Jefe</div>");
+                return false;
+            } else if(turno == '') {
+                $("#turno").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese Turno</div>");
+                return false;
+            }  
+
+            //$(this).removeClass('disabled');
+            
+
+        });
+        $('#tbl-lista').DataTable({    
+            dom: 'Bfrtip',
+            buttons: [
+            {
+                extend: 'pdfHtml5',
+                title: 'Tabla de Visitantes',
+                orientation: 'landscape',
+                //download: 'open',
+                messageTop: 'Reporte visitantes',
+
+                /*customize: function ( doc ) {
+                    doc.content.splice( 1, 0, {
+                        margin: [ 0, 0, 0, 12 ],
+                        alignment: 'center',
+                        image: 'http://panoptic.iottechnologies.mx/static/core/assets/images/logo-panoptic-black.png'
+                    } );
+                }*/
+            }],    
+            "order": [[ 1, "desc" ]],
+            "pageLength":  10,    
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           }
+        });
+    });
+</script>
+<!-- Ends to include JS list -->
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+    
+    var maxField = 10; //Input fields increment limitation
+    var x = 1; //Initial field counter is 1
+    var addButton = $('.add_button'); //Add button selector
+    var wrapper = $('.field_wrapper'); //Input field wrapper 
+
+       
+    
+    //Once add button is clicked
+    $(addButton).click(function(){
+        //Check maximum number of input fields
+
+        var select_tipo_unindad= ' ' +
+        '<div class="position-relative form-group">' +
+        '    <label class="">Seleccione el Tipo de Unidad</label>' +
+        '   <select name="materiales['+x+'][unidad]" class="form-control mostrar selector" data-validation="required">' +
+        '        <option value="0" >-- Seleccione el Tipo de Unidad -- </option>' +
+                {% for v, unidad in tipo_unidad %}                                                   
+        '              <option value="{{ v }}">{{ unidad }}</option>' +
+                {% endfor %}
+        '    </select>' +
+        '</div>';
+
+        if(x < maxField){ 
+            
+            $(wrapper).append(
+                '<hr> ' +
+                '<div class="form-row">' +                                                
+                '    <div class="col-md-4">' +
+                '        <div class="position-relative form-group">' +
+                '            <label>Cantidad</label>' +
+                '            <input name="materiales['+x+'][cantidad]" placeholder="Ingrese la Cantidad" type="text" class="form-control">' +
+                '        </div>' +
+                '    </div>' +
+                '    <div class="col-md-4">' +
+                select_tipo_unindad +
+                '    </div>' +               
+                '    <div class="col-md-4">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="descripcion">Descripción</label>' +
+                '            <input name="materiales['+x+'][desc]" placeholder="Ingrese la Descripción" type="text" class="form-control">' +
+                '       </div>' +
+                '    </div>' +
+                '    <div class="col-md-4">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="num_parte"># de Parte</label>' +
+                '            <input name="materiales['+x+'][noparte]" placeholder="Ingrese # de Parte (En el pase de salida de Almacén" type="text" class="form-control">' +
+                '        </div>' +
+                '    </div>' +
+                '    <div class="col-md-4">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="origen">Origen</label>' +
+                '            <input name="materiales['+x+'][origen]" placeholder="Ingrese el Origen" type="text" class="form-control">' +
+                '        </div>' +
+                '    </div>' +
+                '    <div class="col-md-4">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="destino">Destino</label>' +
+                '            <input name="materiales['+x+'][destino]" placeholder="Ingrese el Destino" type="text" class="form-control">' +
+                '        </div>' +
+                '    </div>' +
+                '    <div class="col-md-12">' +
+                '       <button class="btn btn-danger btn-block btn-lg remove_button "><i class="fas fa-trash"></i> Remover </button>' +
+                '    </div>' +
+                '</div>' 
+            ); //Add field html
+            x++; //Increment field counter
+        }
+    });
+    
+    //Once remove button is clicked
+    $(wrapper).on('click', '.remove_button', function(e){
+        e.preventDefault();
+        //$(this).parent('div.form-row').remove(); //Remove field html
+
+        var confirm_delete = confirm("¿Esta Seguro de Borrar este Material?")
+
+        if(confirm_delete == true) {
+            $(this).closest('div.form-row').remove();
+            x--; //Decrement field counter    
+        }
+        
+    });
+
+    
+});
+</script>
+
+<!-- Ends to include JS list -->
+{% endblock js %}

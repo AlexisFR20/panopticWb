@@ -1,0 +1,42 @@
+<ul class="vertical-nav-menu">                                                                                                    
+    <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="{% url 'entorno:zona0' %}">JEFE DE GRUPO</a></li>      
+    <li class="mm-active">
+        <a href="#">
+            <i class="metismenu-icon pe-7s-lintern negrita"></i>
+            RONDINES
+            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+        </a>
+        <ul>
+            <li>
+                <a href="{% url 'administrador:admin_rondines_resumen' %}">                                              
+                    <i class="fas fa-tachometer-alt"></i>
+                    &nbsp;Dashboard                                         
+                </a>
+            </li>    
+            <li>
+                <a href="{% url 'administrador:admin_rondines_rondin_create' %}">                                              
+                    <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                    &nbsp;Agregar Rondín                                          
+                </a>
+            </li>                          
+            <li>
+                <a href="#">                                              
+                    <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                    &nbsp;Agregar Puntos                                            
+                </a>
+            </li>  
+            <li>
+                <a href="{% url 'administrador:admin_rondines' %}">                                              
+                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                    &nbsp;Listado de Rondines                                            
+                </a>
+            </li>                          
+            <li>                                        
+                <a href="{% url 'administrador:admin_rondines_qr' %}">                                              
+                    <i class="fas fa-qrcode" aria-hidden="true"></i>
+                    &nbsp;Impresi&oacute;n de QR's Rondines                                            
+                </a>
+            </li>                                       
+        </ul>
+    </li>    
+</ul>

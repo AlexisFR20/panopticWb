@@ -1,0 +1,583 @@
+{% load static %}
+<script>
+    $(document).ready(function() {
+
+        var vstart, vend, vplanta = null, tblMovimientos;        
+        moment.locale('es');        
+    
+        $( "select#planta" ).change(function() {            
+            vplanta = $(this).val();
+            $('table#tbl-movimientos tbody tr').remove();     
+            load_DataTable_Ajax(vstart, vend, vplanta);
+            refreshApex(vstart, vend, vplanta);            
+        });
+    
+        $('input[name="dates"]').daterangepicker(
+            {
+                "timePicker": false,
+                //startDate: moment().subtract(2, 'months').format("MM-DD-YYYY"),
+                //endDate: moment().add('1', 'day').format("MM-DD-YYYY"),
+                ranges: {
+                'Hoy': [moment(), moment()],
+                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+                'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+                'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                'Mes pasado': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {            
+                    "applyLabel": "Aplicar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "Desde",
+                    "toLabel": "Hasta",
+                    "customRangeLabel": "Personalizar",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ]
+                
+                }
+            },
+            function(start, end) {                                                    
+                vplanta = $('select#planta').val();
+                vstart = start.format('YYYY-MM-DD HH:mm');                                
+                vend = end.format('YYYY-MM-DD HH:mm');                                
+                if (vstart == vend) {
+                    vend = moment(vstart). add(1, 'days').format('YYYY-MM-DD HH:mm');
+                }
+                load_DataTable_Ajax(vstart, vend, vplanta);
+                refreshApex(vstart, vend, vplanta);               
+            } // fin de (start, end)
+        );          
+        
+        vstart = moment().startOf('day').format('YYYY-MM-DD HH:mm');        
+        vend = moment(vstart). add(1, 'days').format('YYYY-MM-DD HH:mm');                
+        load_DataTable_Ajax(vstart, vend, vplanta);
+
+        //console.log()
+        callChartsMovimientos(vstart, vend, vplanta);                  
+    }); // Ready
+</script>
+
+<script>
+    function refreshApex(vstart, vend, vplanta) {
+        $.ajax({
+            url:  '{% url "administrador:get_en_tiempo_movimientos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (data) {        
+                  
+                  var perObjetivo = 0;
+                  if (data.total > 0) {
+                    perObjetivo = ((data.entiempo*100)/data.total);
+                  }
+
+                  perObjetivo = perObjetivo >= 50 ? '100%': perObjetivo.toFixed(0)+'%';
+
+                  $('div#objetivollegadas').text( perObjetivo );
+                  ApexCharts.exec('chart_mov_llegadas', 'updateSeries',  [{
+                      data: [data.entiempo, data.fueratiempo, data.total]
+                    }], true);    
+                  ApexCharts.exec('chart_mov_llegadas_pie', 'updateSeries', [data.entiempo, data.fueratiempo], true);                
+            } // success end
+        });      
+
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_activos_movimientos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (data) {
+                var diasArray = [];
+                ApexCharts.exec('chart_mov_activos', 'updateSeries', [
+                    { data: data.concluidos }, 
+                    { data: data.activos }, 
+                ]);                
+                ApexCharts.exec('chart_mov_activos', 'updateOptions', {
+                    xaxis: {
+                        categories: data.dias
+                    }
+                }, false, true);
+            }
+        });           
+        
+        $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_valor_movimientos" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+              var diasArray = [];
+              ApexCharts.exec('chart_mov_valores', 'updateSeries', [
+                  { data: data.valores }
+              ]);                
+              ApexCharts.exec('chart_mov_valores', 'updateOptions', {
+                  xaxis: {
+                      categories: data.dias
+                  }
+              }, false, true);
+          }
+      });           
+
+    } // end of refreshApex
+
+
+    function callChartsMovimientos(vstart, vend, vplanta) {
+        // Movimientos Grafica de Tiempos
+        $.ajax({
+            url:  '{% url "administrador:get_en_tiempo_movimientos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (result) {   
+              console.log('result:  ',result)                                                        
+                makeChartsMovimientos(result);                                   
+            }
+        });          
+
+        // Movimientos Grafica de Tiempos
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_activos_movimientos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (result) {                                                                           
+                makeChartsMovsActivos(result);
+            }
+        });      
+        
+        // Movimientos Grafica de Valores
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_valor_movimientos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (result) {                                                                           
+              makeChartsMovsValores(result);
+            }
+        });          
+    } // end of function 
+</script>
+
+<script>
+    function generate(n) {
+        var add = 1, max = 12 - add;   // 12 is the min safe number Math.random() can generate without it starting to pad the end with zeros.   
+
+        if ( n > max ) {
+                return generate(max) + generate(n - max);
+        }
+
+        max        = Math.pow(10, n+add);
+        var min    = max/10; // Math.pow(10, n) basically
+        var number = Math.floor( Math.random() * (max - min + 1) ) + min;
+
+        return ("" + number).substring(add); 
+    }
+
+    function load_DataTable_Ajax(vstart, vend, vplanta = null) {            
+        
+        var rk = generate(4);        
+        var tblBasica = $('#basica').clone();
+        tblBasica.attr('id', 'mov'+rk);
+        tblBasica.removeClass('escondido');
+        tblBasica.css('display', 'block');
+        //$('table#basica').replaceWith(tblBasica);
+        $('div#tblContenedor').html('');
+        $('div#tblContenedor').append(tblBasica);
+
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_lista_movimientos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',            
+            success: function (result) {                                           
+                //$("#tbl-movimientos tbody").empty();
+                //$("#tbl-movimientos tbody").remove();
+                var rutas_riesgo = 0;
+                mArray = JSON.parse(result);                
+                // Muestra cuantas cargas hay en ruta 
+                $('div#cargasenruta').text(mArray.length);
+
+                mArray.forEach(function(key) { 
+                    console.log(key)     ;
+                    //var ischecked = key.fields.ef==true ? 'checked':'';                    
+                    var ischecked = key.fields.ef==true ? 'Si':'No';                    
+                    //var isconfirmacionchecked = key.fields.confirmacion==true ? 'checked':'';      
+                    var isconfirmacionchecked = key.fields.confirmacion==true ? 'Si':'No';      
+                    var fecha = key.fields.fecha == null ? 'Pendiente':moment(key.fields.fecha).format('MMM-DD HH:mm');
+                    var fecha_fin = key.fields.fecha_fin == null ? 'Pendiente':moment(key.fields.fecha_fin).format('MMM-DD HH:mm');              
+                    var estatus = key.fields.estatus;                    
+                    estatus =  estatus.toLowerCase() != "normal"?  '<span class="bgp-color-rojo">' + estatus + '</span>':estatus;
+                    
+                    if  ( estatus.toLowerCase() != "normal" ) {
+                      rutas_riesgo++;                      
+                    } 
+                      
+                    $('table#mov'+rk + ' tbody').append(
+                        "<tr><td><span class='bgp-color-azul mayus'>" +  (key.fields.vehiculo != null? key.fields.vehiculo:'SIN ASIGNAR') + "</span></td>" +
+                        "<td>" + (key.fields.planta != null? key.fields.planta:'SIN ASIGNAR') + "</td>" +
+                        "<td><div  class='truncate-tel' title='" + key.fields.origen + "'>" + key.fields.origen + "</div></td>" +
+                        "<td><div  class='truncate-tel' title='" + key.fields.destino + "'>" + key.fields.destino + "</div></td>" +
+                        "<td title='"+ fecha +"' class='bgp-color-verde mayus'>" + fecha + "</td>" + 
+                        "<td align='center'>" + ischecked  + " </td>" +             
+                        "<td>" +  (key.fields.tiempo_estimado != null? key.fields.tiempo_estimado:'') + "</td>" +                        
+                        "<td>" +  (key.fields.tiempo_estimado_google != null? key.fields.tiempo_estimado_google:'') + "</td>" +                        
+                        "<td align='center'>" + isconfirmacionchecked  + "</td>" + 
+                        "<td class='mayus negrita'>" + estatus + "</td>" +    
+                        "<td title='"+ fecha_fin +"' class='bgp-color-azul mayus'>" + fecha_fin + "</td>" + 
+                        " </td>" +   
+                        "<td>" + key.fields.peso + "</td>" +
+                        "<td>" + key.fields.gls + "</td>" +
+                        "<td>" + g(key.fields.valor_carga) + "</td>" + 
+                        "<td> <a href='movimientos/"+ key.pk +"' title='Ver registro' class='btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center'><i class='fas fa-eye size16'></i></a></td></tr>"       
+
+                    );                  
+                });   
+                
+                $('div#rutasenriesgo').text(rutas_riesgo);
+                             
+            }
+        }).done(function (result) {            
+            makeDataTableMovimientos('mov' + rk);
+        });  
+
+    } // end of load_DataTable_Ajax
+</script>
+
+<script>
+    function makeDataTableMovimientos(tblName) {
+
+        var groupColumn = 0;
+        var table = $('#'+tblName).DataTable({
+            "columnDefs": [
+                { "visible": false, "targets": groupColumn }
+            ],
+            "order": [[ groupColumn, 'asc' ]],
+            "displayLength": 8,
+            "drawCallback": function ( settings ) {
+                var api = this.api();
+                var rows = api.rows( {page:'current'} ).nodes();
+                var last=null;
+    
+                api.column(groupColumn, {page:'current'} ).data().each( function ( group, i ) {
+                    if ( last !== group ) {
+                        $(rows).eq( i ).before(
+                            '<tr class="group"><td colspan="8">'+group+'</td></tr>'
+                        );
+    
+                        last = group;
+                    }
+                } );
+            },
+            "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            }
+        });
+
+    }
+</script>
+
+<script>
+    function makeChartsMovimientos(result) {
+
+        var perObjetivo = 0;        
+        $('div#objetivollegadas').text('%');      
+
+        var options = {
+            series: [{
+            name: 'Movimientos',
+            data: [result.entiempo, result.fueratiempo, result.total]
+          }],
+            chart: {
+            id: 'chart_mov_llegadas',
+            type: 'bar',
+            //height: 450
+          },
+          colors: ['#008C00', '#9D292A', '#333333'],
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '65%',
+              distributed: true
+            },
+          },
+          dataLabels: {
+            enabled: true,
+            formatter: function (val) {
+              return val + " ";
+            },
+            offsetY: 0,
+            style: {
+              fontSize: '12px',
+              colors: ["#f2f2f2"]
+            }
+          },
+          stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+          },
+          fill: {
+            colors: ['#F44336', '#E91E63', '#9C27B0']
+          },
+          xaxis: {
+            categories: ['En Tiempo', 'Fuera de Tiempo', 'Total de Movimientos'],
+          },
+          yaxis: {
+            title: {
+              text: 'No. (Movimientos)'
+            },
+            gridLineColor: 'red',
+            gridLineWidth: 0        
+          },
+          fill: {
+            opacity: 1
+          },
+          grid: {
+            show: true,
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            },               
+         },
+          tooltip: {
+            y: {
+              formatter: function (val) {
+                return "No. " + val + " Movimientos"
+              }
+            }
+          }
+          };
+    
+     
+        var options2 = {            
+            series: [result.entiempo, result.fueratiempo],
+            chart: {
+                id: 'chart_mov_llegadas_pie',
+                width: 380,
+                type: 'pie',
+                 toolbar: {
+                show: true,
+                offsetX: 0,
+                offsetY: 0,
+                tools: {
+                  download: true,
+                  zoom: true,
+                  zoomin: true,
+                  zoomout: true,              
+                },
+                
+                autoSelected: 'zoom' 
+              },
+            },
+            labels: ['En Tiempo', 'Fuera de Tiempo'],
+            colors: ['#008C00', '#9D292A'],
+            legend: {
+                position: 'bottom'
+            },
+            responsive: [{
+                breakpoint: 280,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }]
+            };         
+
+          chart = new ApexCharts(document.querySelector("#chart"), options);
+          chart.render();
+
+          chart2 = new ApexCharts(document.querySelector("#chart2"), options2);
+          chart2.render();
+
+          return { 'chart': chart, 'chart2': chart2 }
+    }
+
+    
+</script>
+
+<script>
+    function makeChartsMovsActivos(result) {
+        var options3 = {
+            series: [{
+            name: 'Concluídos',
+            data: result.concluidos
+          }, {
+            name: 'Activos',        
+            data: result.activos
+          }],
+            chart: {
+            id: 'chart_mov_activos',
+            type: 'bar',
+            height: 350
+          },
+          colors: ['#008C00', '#9D292A'],
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '55%'
+            },
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+          },
+          xaxis: {
+            categories: result.dias
+          },
+          yaxis: {
+            title: {
+              text: 'No. (Movs)'
+            }
+          },
+          fill: {
+            opacity: 1
+          },
+          grid: {
+            show: true,
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            },               
+         },
+          tooltip: {
+            y: {
+              formatter: function (val) {
+                return "No. " + val + " Movs"
+              }
+            }
+          }
+          };
+    
+          var chart3 = new ApexCharts(document.querySelector("#chart3"), options3);
+          chart3.render();
+    }
+</script>
+
+<script>
+  function makeChartsMovsValores(result) {
+      var options4 = {
+          series: [{
+          name: 'Valores',
+          data: result.valores
+        }],
+          chart: {
+          id: 'chart_mov_valores',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: '$ (Movs)'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return "$ " + val + " Movs"
+            }
+          }
+        }
+        };
+  
+        var chart4 = new ApexCharts(document.querySelector("#chart4"), options4);
+        chart4.render();
+  }
+</script>
+
+<script>
+    function g(monetary_value) {
+        var i = new Intl.NumberFormat('en-US', { 
+            style: 'currency', 
+            currency: 'USD' 
+        }).format(monetary_value); 
+        return i;
+    }    
+</script>
+
+<script>
+  let map;
+
+  function initMap() {    
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: {
+        lat: 31.6892055,
+        lng: -106.4280307
+      },
+      zoom: 11
+    });
+
+    new google.maps.Marker({
+        map: map,
+        position: {lat: 31.6892055, lng: -106.4280307},
+        icon: { url: "{% static 'core/assets/images/vehiculo.png' %}"},                    
+    }); 
+  }
+</script>

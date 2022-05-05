@@ -1,0 +1,161 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}   
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>D&D MANAGEMENT&nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Dispositivos GPS
+                <div class="admin-page-title-subheading">
+                    Dispositivos GPS
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a>D&D Management</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="#"> Dispositivos GPS</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Dispositivos GPS
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Dispositivos GPS
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                <div class="row">
+                    <div class="col-md-12"> 
+                        <hr>
+                        <a href="{%  url 'administrador:gpsdevices_create' %}" class="btn btn-primary size16">Agregar Dispositivo GPS</a>
+                        <hr>
+                        <br>
+                        <!--  Data Table Start -->
+                        <table id="tbl-gps-devices" class="table table-striped table-bordered dt-responsive nowrap" data-h="{% if request.user.role.alias_rol == 'super' %}tower{% else %}player{% endif %}" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th class="player">Cliente</th>
+                                    <th style="text-align: center;">GPS ID</th>
+                                    <th>Nombre</th>
+                                    <th style="text-align: center;">ESN</th>
+                                    <th style="width: 6%">¿Activo?'</th>                                    
+                                    <th style="width: 6%">¿Se encuentra asignado?'</th>                                    
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                {% for c in gpsdevice_list|dictsort:"id" reversed %}  <!--model_list -->
+                                <tr>
+                                    <td class="text-center player">{{ c.cliente|default_if_none:'Sin Asignar' }}</td>
+                                    <td class="text-center">{{ c.deviceid }}</td>
+                                    <td><span class="bgp-color-azul">{{ c.devicename }}</span></td>                                    
+                                    <td class="text-center">{{ c.deviceesn }}</td>
+                                    <td class="text-center">
+                                        <input readonly type="checkbox" name="activo" id="activo" class="freeze" {% if c.activo == True %} checked {% endif %}>                                        
+                                    </td>                   
+                                    <td class="text-center">
+                                        <input readonly type="checkbox" name="asignado" id="asignado" class="freeze" {% if c.asignado == True %} checked {% endif %}>                                        
+                                    </td>                                
+                                    <td> 
+                                        <a href="{% url 'administrador:gpsdevices_detailview' c.id  %}" title="Ver registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-eye size16"></i></a>    
+                                        <a href="{% url 'administrador:gpsdevices_update' c.id  %}" title="Editar registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-secondary text-center"><i class="fas fa-edit size16"></i></a>
+                                        <a href="{% url 'administrador:gpsdevices_delete' c.id  %}" title="Borrar registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-danger text-center"><i class="fas fa-trash-alt size16  bgp-color-rojo"></i></a>                            
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>                          
+                            <tfoot>
+                                <tr>   
+                                    <th class="player">Cliente</th>
+                                    <th style="text-align: center;">GPS ID</th>
+                                    <th>Nombre</th>
+                                    <th style="text-align: center;">ESN</th>
+                                    <th style="width: 6%">¿Activo?'</th>                                    
+                                    <th style="width: 6%">¿Se encuentra asignado?'</th>                                    
+                                    <th>Acciones</th>
+                                </tr>
+                            </tfoot>
+                        </table>        
+                        <!-- Data Table End -->
+                    </div>
+                </div>
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    $(document).ready(function() {
+        // DataTable sin orden
+        $('#tbl-gps-devices').DataTable({       
+            "orderable": false,
+            "pageLength":  10,  
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           },    
+           "order": [],
+           "columnDefs": [ {
+             "targets"  : 'no-sort',
+             "orderable": false,
+           }]      
+        });  
+        $(".freeze").bind("click", false);  
+        if ( $('table#tbl-gps-devices').attr('data-h') == 'player' ) {
+            $('.player').css('display', 'none');            
+        }
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

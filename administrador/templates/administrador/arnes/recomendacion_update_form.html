@@ -1,0 +1,91 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Encuestas</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+    <a href="{% url 'administrador:admin_papeleta_detalle' recomendacion.papeleta_id %}" class="btn btn-primary">Volver</a>   
+    <h2>Editar Recomendacion</h2>
+    <main role="main">
+        <div class="container">
+            <div class="row mt-3">
+            <div class="col-md-9 mx-auto">
+                <div>
+                    <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                        <div class="form-group">
+                            <label>Estatus</label>
+                            <select class="form-control" name="status">
+                                <option value="en_proceso" {% if recomendacion.status == "en_proceso" %}selected{% endif %}>En proceso</option>
+                                <option value="vencido" {% if recomendacion.status == "vencido" %}selected{% endif %}>Vencido</option>
+                                <option value="cerrado" {% if recomendacion.status == "cerrado" %}selected{% endif %}>Cerrado</option>
+                                <option value="cancelado" {% if recomendacion.status == "cancelado" %}selected{% endif %}>Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripcion</label>
+                            <textarea class="form-control" name="descripcion" required="">{{recomendacion.descripcion}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Ponderacion de riesgo</label>
+                            <input type="number" class="form-control" value="{{recomendacion.ponderacion}}" name="ponderacion" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Evidencia</label>
+                            <input type="file" class="form-control" value="{{respuesta.calcularRiesgo}}" name="evidencia">
+                        </div>
+                        <div class="form-group">
+                            <label>Costo</label>
+                            <select class="form-control" name="costo">
+                                <option value=0 >No</option>
+                                <option value=1 {% if recomendacion.costo %} selected="" {% endif %}>Si</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="input-group date" id="datetimepicker4" data-target-input="nearest">
+                                <input type="date" class="form-control datetimepicker-input" data-target="#datetimepicker1" name="fecha_compromiso" required="" value="{{recomendacion.fecha_compromiso|date:'Y-m-d'}}" />
+                                
+                            </div>
+                        </div>
+
+                        
+                        <br>
+                        <input type="submit" class="btn btn-primary" value="Guardar Recomendacion" />
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    </main>                
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+
+
+<!-- Date  Picker category -->
+<script src="/static/core/assets/scripts/datepicker.js"></script>
+<script src="/static/core/assets/scripts/bootstrap-datepicker.es.min.js"></script>
+
+<script>
+    
+</script>
+
+
+{% endblock js%}

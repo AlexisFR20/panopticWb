@@ -1,0 +1,142 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-user-graduate size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>D & D Management &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Logro
+                <div class="admin-page-title-subheading">
+                   Ver Registro de Logro
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> D & D Management</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:logros_list' %}">Registro de Logro</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Ver Registro de Logro
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Ver Logro
+                </div>                                                        
+            </div>
+            <div class="card-body">       
+                <hr>
+                <a href="{%  url 'administrador:logros_list' %}" class="btn btn-primary size16">Volver a Historial de Logros</a>
+                <a href="{%  url 'administrador:logros_create' %}" class="btn btn-success size16">Agregar Registro de Logro</a>
+                <hr>
+                <br>         
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+
+                        <form id="paqueteria_detail_form">
+                            <div class="position-relative form-group">
+                                <label for="empelado" class="">Empelado</label>
+                                <input name="empelado" id="empelado" type="text" class="form-control" readonly value="{{ object.user_aguilas }}">
+                            </div> 
+
+                            <div class="position-relative form-group">
+                                <label for="planta" class="">Planta</label>
+                                <input name="planta" id="planta" type="text" class="form-control" readonly value="{{ object.planta }}">
+                            </div> 
+
+                            <div class="position-relative form-group">
+                                <label for="fecha" class="">Fecha</label>
+                                <input name="fecha" id="fecha" type="text" class="form-control" readonly value="{{ object.fecha }}">
+                            </div> 
+
+                            <div class="position-relative form-group">
+                                <label for="logro" class="">Logro</label>
+                                <input name="logro" id="logro" type="text" class="form-control" readonly value="{{ object.logro }}">
+                            </div> 
+
+                            <div class="position-relative form-group">
+                                <label for="accion" class="">Acción</label>
+                                <input name="accion" id="accion" type="text" class="form-control" readonly value="{{ object.accion }}">
+                            </div>                             
+
+                            <div class="position-relative form-group">
+                                <label for="estatus" class="">Estatus</label>
+                                <input name="estatus" id="status" type="text" class="form-control" readonly value="{{ object.estatus }}">
+                            </div> 
+
+                            <div class="position-relative form-group">
+                                <label for="observaciones" class="">Estatus</label>
+                                <textarea name="observaciones" id="status" class="form-control" readonly>{{ object.observaciones }}</textarea>
+                            </div> 
+                        </form>   
+                        
+                    </div>
+                </div>                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+        // No hay nada que ejecutar
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

@@ -1,0 +1,205 @@
+{% load static %}
+<!-- GPS Test category -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=visualization"></script>
+<script>
+    // dom is ready ...
+    $(function(){
+        // set your connect application key and username / password values below ...
+        var APP_KEY      = '66fe3c00-486a-4d1e-a201-ff47f5343198'
+          , CONNECT_ROOT = 'https://connect.calamp.com'
+          , username     = 'jcamarillo'
+          , password     = 'prueba1CTC('
+          , $message     = $('.message');
+
+          var contador = 0;
+
+          console.log('Por realizar autenticación');
+
+        function authenticate(){		
+            var url     = '/connect/services/login?useAuthToken=true&username=' + username + '&password=' + password
+              , request = connectRequest(url, 'POST', 'html')
+              , promise = request.then(function(response) {
+                    $message.text('Retrieving User from Connect ...');
+                    return connectRequest('/connect/services/users/currentUser');
+              }, error);
+            promise.then(retrieveDevices, error);            
+            //setTimeout(function(){ authenticate(); }, 5000);            
+            //authenticate();
+        };
+
+        // retrieve devices for the authenticated user's default account ...
+        function retrieveDevices(response) {                    
+            var account = response.response.results[0].user.account;
+            contador = contador + 1;
+            console.log
+            // GPS List
+            $.ajax({
+                url:  '{% url "administrador:get_ajax_lista_gpsdevices" %}',
+                data: { 'cliente': 1},
+                datatype: 'json',
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',            
+                success: function (result) {         
+                                                                    
+                    console.log('GPS list');
+                    mArray = JSON.parse(result);                               
+
+                    mArray.forEach(function(key) {      
+                        console.log(key.fields.devicename);      
+                        console.log(key.fields.deviceesn);      
+                        console.log('---------------------------');
+
+                        connectRequest('/connect/results/events/device/' + key.fields.deviceesn + '?idType=ESN&v=2.0&pg=1&pgsize=10').then(renderEvents, error);
+                    });  
+
+                } // end success
+            });   // end of ajax
+            
+            //connectRequest('/connect/results/events/device/' + $('div#gpsid').text() + '?idType=ESN&v=2.0&pg=1&pgsize=10').then(renderEvents, error);
+            
+        };
+
+        // upon recieving the response for the events request, render the events ...
+        function renderEvents(response) {
+            ////console.log('AQui');
+            
+            //console.log(response.response);
+            console.log(response.response.results[0].avlEvent.deviceEsn);
+            //console.log(response.response.results[0].avlEvent.address.addressLatitude);
+            //console.log(response.response.results[0].avlEvent.address.addressLongitude);
+            //console.log(response.response.results[0].avlEvent.address.street);
+            //console.log(response.response.results[0].avlEvent.address.city);
+            //console.log(response.response.results[0].avlEvent.address.state);  
+            //console.log('Contador');
+            //console.log(contador);
+            var t = response.response.results;
+            //console.log('Tamano de T');
+            //console.log(t.length);
+            
+            
+            
+            let devLat = response.response.results[0].avlEvent.address.addressLatitude;
+            let devLng = response.response.results[0].avlEvent.address.addressLongitude;
+
+            if (!map) {
+                map = new google.maps.Map(document.getElementById("mapa"), {
+                    center: {
+                    lat: 31.6892055,
+                    lng: -106.4280307
+                    },
+                    zoom: 12
+                });             
+            } else {
+                var center = new google.maps.LatLng(31.6892055, -106.4280307);                
+                //console.log('Moviendo mapa 2');
+                map.panTo(center);
+            }            
+
+            var contentString = '<div id="content">'+
+                '<div id="siteNotice">'+
+                '</div>'+
+                '<h6 id="firstHeading" class="bgp-color-azul">'+ response.response.results[0].avlEvent.deviceEsn+'</h6>'+
+                '<div id="bodyContent">'+
+                '<p>'+ response.response.results[0].avlEvent.address.street + ', ' + response.response.results[0].avlEvent.address.city + ', ' + response.response.results[0].avlEvent.address.state + '</p></div>'+
+                '</div>';
+
+            var infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+            
+            
+            console.log('Posiciones');
+            console.log(devLat, devLng);
+            marker = new google.maps.Marker({                
+                'position' : new google.maps.LatLng(devLat, devLng),
+                'title': response.response.results[0].avlEvent.address.street,                
+                'icon': { url: "{% static 'core/assets/images/vehiculo.png' %}"},
+            });    
+
+            function existsImage(strImagen) {
+                dImage = "";                
+                if (strImagen != "" && strImagen != null && strImagen != '/media/') {
+                    dImage = '<img class="img-fluid" width=100 src="' + strImagen + '"  />'
+                }                
+                return dImage;
+            }
+
+            google.maps.event.addListener(marker, 'click', (function (marker) {
+                return function () {                                            
+                    
+                    $.ajax({
+                        url:  '{% url "administrador:ajax_mov_info_esn" %}',
+                        data: { 'esn': response.response.results[0].avlEvent.deviceEsn },
+                        datatype: 'json',
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',            
+                        success: function (esn) {
+                            console.log('Info de Movimiento ESN ...');
+                            console.log(esn);
+                            if (esn.id != 0) {
+                                console.log('si cumple');
+                                var contentString = '<div id="content" style="width: 95%">'+
+                                    '<div id="siteNotice">' +
+                                    '</div>' +
+                                    '<h6 id="firstHeading"><a href="/backstage/movimientos/'+esn.id+'" class="bgp-color-azul mayus" title="Ver Movimiento">ESN: '+esn.esn+'</a></h6>' +
+                                    '<div id="bodyContent">' +
+                                    '<div class="row">' +
+                                    '<div class="col-md-9">' +
+                                    '<table class="mb-0 table table-striped goleft"> <tbody><tr><td>Nombre</td><td>' + esn.nombre + '</td></tr><tr><td>Matr&iacute;cula</td><td class="mayus">' + esn.matricula+ '</td></tr><tr><td>Destino</td><td><div class="truncate">' + esn.destino + '</div></td></tr><tr><td>Empresa</td><td class="mayus">' + esn.emp_transp + '</td></tr><tr><td>Ubicación</td><td><div class="truncate">'+ response.response.results[0].avlEvent.address.street + ', ' + response.response.results[0].avlEvent.address.city + ', ' + response.response.results[0].avlEvent.address.state + '</div></td></tr></tbody></table>' +                
+                                    '</div>' + // col-md-8
+                                    '<div class="col-md-3">' +
+                                    '<div class="text-center">'+
+                                    existsImage(esn.foto) +                
+                                    '</div>' +
+                                    '</div>' + // col-md-4
+                                    '</div>' + // Row
+                                    '</div>' + // BodyContent
+                                    '</div>';                            
+                                
+                                    infowindow.setContent(contentString);
+                                    infowindow.open(map, marker);
+                                    console.log('Obtenido');
+                                    console.log(response.response.results[0].avlEvent.deviceEsn);  
+                            } // end if 
+                            
+
+                        }
+                    });  
+
+                   
+
+
+                }
+            })(marker));             
+    
+            marker.setMap(map);            
+        };
+
+        // an error occurred, display the error message ...
+        function error(err){
+            $message.text('An Error occurred: ' + err.statusText);
+        };
+
+        /**
+         * Provides a simple utility for creating $.ajax requests specific to Connect.
+         *
+         * @param  url  A valid, Connect service endpoint / URL
+         * @param  method The HTTP method of the given service; either GET, or POST, defaults to POST
+         * @param  type The content type of the request, defaults to json
+         */
+        function connectRequest(url, method, type) {
+            return $.ajax(CONNECT_ROOT + url, {
+                'headers': {'calamp-services-app': APP_KEY}
+              , 'type': method || 'GET'
+              , 'dataType': type || 'json'
+              , 'crossDomain' : true
+              , 'xhrFields': {
+                  'withCredentials': true
+                }
+            });
+        };
+
+        let map;
+        authenticate();        
+    });
+</script>

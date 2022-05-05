@@ -1,0 +1,428 @@
+{% load static %}
+<!-- Mapa Interactivo category -->
+<script>
+    var geocoder;
+    var marker;
+    var map;
+    var campos_max = 100;   //max de 100 campos
+    var x = 1;
+    var nextinput = 0;
+    var markers = [];    
+    var cycle;
+    var qtyOriginal = 0;
+
+    function reordenamientoPuntos() {
+        $('ul#puntosrondines li').each(function(index) {           
+            $('ul#puntosrondines li').eq(index).find( '.punto-pill').text(index );         
+        });
+    }
+
+    function initialize() {         
+        
+        // var initialLat = $('.search_latitude').val();
+        // var initialLong = $('.search_longitude').val();
+       
+        var initialLat = $('div#planta_details').attr('lat');
+        var initialLong = $('div#planta_details').attr('lng');            
+        var centro = { lat: Number(initialLat), lng: Number(initialLong) };           
+         
+        var myOptions = {
+            zoom: 18,
+            center: new google.maps.LatLng(initialLat, initialLong),
+            mapTypeId: 'roadmap'            
+        };
+
+        var latlng = new google.maps.LatLng(initialLat, initialLong);
+        
+        map = new google.maps.Map($('#geomap_rondin')[0], myOptions);        
+
+        var markerImage = new google.maps.MarkerImage('{% static "core/assets/images/ico-qr-marker.png" %}', 
+            new google.maps.Size(48, 48),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(15, 15));                    
+
+        /**
+        * Global marker object that holds all markers.
+        * @type {Object.<string, google.maps.LatLng>} 
+        */
+        
+
+        /**
+        * Concatenates given lat and lng with an underscore and returns it.
+        * This id will be used as a key of marker to cache the marker in markers object.
+        * @param {!number} lat Latitude.
+        * @param {!number} lng Longitude.
+        * @return {string} Concatenated marker id.
+        */
+        var getMarkerUniqueId= function(lat, lng) {
+            return lat.toString().replace(".", "_").replace("-", "__") + '_' + lng.toString().replace(".", "_").replace("-", "__");
+        }
+
+        /**
+        * Creates an instance of google.maps.LatLng by given lat and lng values and returns it.
+        * This function can be useful for getting new coordinates quickly.
+        * @param {!number} lat Latitude.
+        * @param {!number} lng Longitude.
+        * @return {google.maps.LatLng} An instance of google.maps.LatLng object
+        */ 
+        var getLatLng = function(lat, lng) {
+            return new google.maps.LatLng(lat, lng);
+        };
+
+        var labels = [];
+        var punto_desc = '';
+        
+        /**
+        * Agrega al mapa los puntos existentes del rondín
+        */         
+        $('.btn-click-punto').each(function(index){   
+
+            if ( $(this).attr('data-punto-lat') != 0 && $(this).attr('data-punto-lng') != 0) {
+
+                index += 1;
+
+                // Agrega los marcadores con los PUNTOS EXISTENTES en la DB para el rondín correspondiente
+                // al mapa Google Maps
+                
+                var markerId = getMarkerUniqueId($(this).attr('data-punto-lat'), $(this).attr('data-punto-lng')); 
+                punto_desc = $(this).find('.right-desc span').text();
+               
+                var marker = new MarkerWithLabel({
+                    position: getLatLng( $(this).attr('data-punto-lat') , $(this).attr('data-punto-lng') ),
+                    map: map,                    
+                    icon: markerImage,
+                    draggable: false,
+                    labelContent: punto_desc,
+                    labelAnchor: new google.maps.Point(50, -40),
+                    labelClass: "markerlabel",    
+                    id: markerId                           
+                });                                                       
+                
+                marker.id = getMarkerUniqueId(marker.position.lat() , marker.position.lng()); 
+                labels.push(marker);
+                markers.push(marker);    
+                markers[markerId] = marker; // ingreso de marcador en arreglo 
+
+                //console.log(index);
+                
+                // Genera los puntos existentes y los agregar a la lista "puntosrondines"
+                var puntoBase = $('ul#puntosrondines').html();                                
+                $('ul#puntosrondines li').eq(0).clone().appendTo( "ul#puntosrondines" );
+                // Aplica a elemento li
+                $("ul#puntosrondines li").eq(index).removeClass('base');
+
+
+                var lat3 = $(this).attr('data-punto-lat');
+                var lng3 = $(this).attr('data-punto-lng');
+                
+                lat3 = lat3.replace(".", "_").replace("-", "__");
+                lng3 = lng3.replace(".", "_").replace("-", "__");
+                
+                if (index < 10) {
+                    var numPuntoPill  = '0' + index;
+                } else {
+                    var numPuntoPill  = nextinput;
+                }
+                // Agrega atributos de campo al elemento punto de la lista
+                $("ul#puntosrondines li").eq(index).attr('id', $(this).attr('data-punto-id'));
+                $("ul#puntosrondines li").eq(index).attr('lat', $(this).attr('data-punto-lat'));
+                $("ul#puntosrondines li").eq(index).attr('lng', $(this).attr('data-punto-lng'));
+                $("ul#puntosrondines li").eq(index).attr('activo', $(this).attr('data-punto-activo'));
+
+                $("ul#puntosrondines li").eq(index).addClass('limarker_'+lat3+'_'+lng3);
+                $("ul#puntosrondines li").eq(index).addClass('punto');                
+                $("ul#puntosrondines li").eq(index).fadeIn();
+                // Aplica al primer elemento input ORDEN
+                $("ul#puntosrondines li").eq(index).find( '.punto-pill').text(numPuntoPill);         
+                $("ul#puntosrondines li").eq(index).find( 'input').eq(0).attr('id', 'orden'+index);         
+                $("ul#puntosrondines li").eq(index).find( 'input' ).eq(0).attr('name', 'orden'+index );
+                $("ul#puntosrondines li").eq(index).find( 'input' ).eq(0).val(index);
+                // Aplica al segundo elemento input NOMBRE
+                $("ul#puntosrondines li").eq(index).find( 'input').eq(1).attr('id', 'nombre'+index );         
+                $("ul#puntosrondines li").eq(index).find( 'input' ).eq(1).attr('name', 'nombre'+index );
+                $("ul#puntosrondines li").eq(index).find( 'input' ).eq(1).val( punto_desc.trim() );
+                // Aplica al hiperviculo ONCLICK
+                $("ul#puntosrondines li").eq(index).find( 'a' ).attr("onclick","return confirm('¿Está seguro de borrar éste punto?') && DeleteMarker('limarker_" + lat3 +"_"+ lng3 + "', " + "'" + lat3 + "_" + lng3  + "', '" +  $(this).attr('data-punto-id') + "' );");       
+
+
+            } // Fin de If
+
+         }); // Fin de .btn-click-punto click  
+         
+        qtyOriginal =  markers.length;
+
+        var addMarker = google.maps.event.addListener(map, 'idle', function(e) {            
+            if (markers.length <= qtyOriginal) {
+                for (cycle = 0; cycle < markers.length; cycle++) {            
+                    bindMarkerEvents(markers[cycle] ); // bind right click event to marker
+                }
+            }
+        });
+
+        /**
+        * Binds click event to given map and invokes a callback that appends a new marker to clicked location.
+        */ 
+        var labelIndex = 0;        
+        var addMarker = google.maps.event.addListener(map, 'click', function(e) {
+        var lat = e.latLng.lat(); // lat of clicked point
+        var lng = e.latLng.lng(); // lng of clicked point              
+                        
+        var markerId = getMarkerUniqueId(lat, lng); // an that will be used to cache this marker in markers object.
+            
+        /*
+        var marker = new google.maps.Marker({
+            position: getLatLng(lat, lng),
+            map: map,
+            label: '<Punto>: ' + (labels.length+1),
+            id: markerId
+        });
+        */
+
+        var marker = new MarkerWithLabel({
+            position: getLatLng(lat, lng),
+            map: map,                    
+            draggable: false,
+            icon: markerImage,
+            labelContent: 'PUNTO: ' + (labels.length+1),
+            labelAnchor: new google.maps.Point(50, -40),
+            labelClass: "markerlabel",    
+            id: markerId                           
+        });      
+
+        //console.log(marker.id);
+        labels.push(marker);
+        markers.push(marker);           
+
+        //console.log(markers);
+
+        //var content = '<div style = "height:100px"><b>Informaci&oacute;n del punto:</b> <br/>Latitude: ' + lat + '<br />Longitude: ' + lng;
+        var content = '<div style = "height:38px">';
+        
+        //content += '<br /><br /><input type="button" class="btn btn-danger text-uppercase"onclick="DeleteMarker(\'limarker_'+ marker.id + '\',  \'' + marker.id + '\')" value="Eliminar marcador" /></div>';                      
+        
+        content += '<button class="mb-2 mr-2 btn-icon btn-pill btn btn-outline-danger text-uppercase" onclick="DeleteMarker(\'limarker_'+ marker.id + '\',  \'' + marker.id + '\')"><i class="pe-7s-trash btn-icon-wrapper" > </i> Eliminar Punto&nbsp;&nbsp;&nbsp;</button>&emsp; <button title="Latitud: ' + lat + '&nbsp;&nbsp; Longitud: ' + lng + '" class="mb-2 mr-4 btn-icon btn-icon-only btn btn-link btn-sm"><i class="fas fa-question-circle btn-icon-wrapper font-size-xlg"> </i><span class="badge badge-danger badge-dot badge-dot-lg"> </span></button></div> ';                      
+        
+        var infoWindow = new google.maps.InfoWindow({
+            content: content
+        });
+        infoWindow.open(map, marker);
+
+        //var inicia_en = $("div#listar-puntos a.btn-click-punto").length; 
+
+        var inicia_en = $("ul#puntosrondines li").length - 1; 
+        
+        AgregarCampos(lat, lng, inicia_en);
+
+        markers[markerId] = marker; // cache marker in markers object
+        bindMarkerEvents(marker); // bind right click event to marker            
+    });
+
+        /**
+        * Binds right click event to given marker and invokes a callback function that will remove the marker from map.
+        * @param {!google.maps.Marker} marker A google.maps.Marker instance that the handler will binded.
+        */ 
+        var bindMarkerEvents = function(marker) {
+            google.maps.event.addListener(marker, "rightclick", function (point) {                
+
+                var markerId = getMarkerUniqueId(point.latLng.lat(), point.latLng.lng()); 
+
+                console.log('markerId Right');
+                console.log(markerId);
+                
+                var marker = markers[markerId]; // find marker
+
+                removeMarker(marker, markerId); // remove it
+                
+                var lat = point.latLng.lat().toString();
+                var lng = point.latLng.lng().toString();
+
+                var lat2 = lat.replace(".", "_").replace("-", "__");
+                var lng2 = lng.replace(".", "_").replace("-", "__");
+                $('#puntosrondines').find('.limarker_'+lat2+'_'+lng2).remove();
+
+                reordenamientoPuntos();
+            });
+        };
+
+        /**
+        * Removes given marker from map.
+        * @param {!google.maps.Marker} marker A google.maps.Marker instance that will be removed.
+        * @param {!string} markerId Id of marker.
+        */ 
+        var removeMarker = function(marker, markerId) {
+            if ( marker != undefined ) {
+                marker.setMap(null); // set markers setMap to null to remove it from map
+                delete markers[markerId]; // delete marker instance from markers object
+            }
+        };
+
+        //map = new google.maps.Map(document.getElementById("geomap"), options);
+
+        geocoder = new google.maps.Geocoder();
+
+        marker = new google.maps.Marker({
+            map: map,
+            draggable: false,
+            position: latlng
+        });      
+
+        google.maps.event.addListener(marker, "dragend", function () {
+            var point = marker.getPosition();
+            map.panTo(point);
+            geocoder.geocode({'latLng': marker.getPosition()}, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    map.setCenter(results[0].geometry.location);
+                    marker.setPosition(results[0].geometry.location);
+                    $('.search_addr').val(results[0].formatted_address);
+                    $('.search_latitude').val(marker.getPosition().lat());
+                    $('.search_longitude').val(marker.getPosition().lng());
+                }
+            });
+        });    
+    }
+
+    function AgregarCampos(lat, lng, inicia_en){              
+        
+        nextinput = inicia_en + 1;
+        //nextinput = inicia_en + x;
+
+        if (x < campos_max) {                       
+
+            var lat3 = lat.toString();
+            var lng3 = lng.toString();
+            //console.log(lat3 + ' - ' +lng3 );
+            var lat2 = lat3.replace(".", "_").replace("-", "__");
+            var lng2 = lng3.replace(".", "_").replace("-", "__");
+            
+            //campo = '<li class="limarker_'+lat2+'_'+lng2+'" id="rut-'+nextinput+'">Orden: <input size="3" type="text" name="orden'+nextinput+'" id="orden'+nextinput+'" value="'+nextinput+'"/> Nombre: <input size="7"  type="text" name="nombre'+nextinput+'" id="nombre'+nextinput+'" value="Punto '+nextinput+'"/> &nbsp;&nbsp;Latitud: <input type="text" id="lat' + nextinput + '"&nbsp; value="' + lat + '" name="lat' + nextinput + '"&nbsp; /> &nbsp; &nbsp; Lonitud: <input type="text" id="lon' + nextinput + '"&nbsp; name="lon' + nextinput + '"&nbsp;  value="' + lng + '" /></li>';    
+            
+            
+            //nextinput = nextinput - inicia_en;
+            if (nextinput < 10) {
+                var numPuntoPill  = '0' + nextinput;
+            } else {
+                var numPuntoPill  = nextinput;
+            }
+                        
+            var puntoBase = $('ul#puntosrondines').html();                                
+            $('ul#puntosrondines li').eq(0).clone().appendTo( "ul#puntosrondines" );
+            // Aplica a elemento li
+            $("ul#puntosrondines li").eq(nextinput).removeClass('base');
+
+            // Agrega atributos de campo al elemento punto de la lista
+            $("ul#puntosrondines li").eq(nextinput).attr('lat', lat);
+            $("ul#puntosrondines li").eq(nextinput).attr('lng', lng);
+
+            $("ul#puntosrondines li").eq(nextinput).addClass('limarker_'+lat2+'_'+lng2);
+            $("ul#puntosrondines li").eq(nextinput).addClass('punto');
+            //$("ul#puntosrondines li").eq(nextinput).attr('id', 'rut'+nextinput );         
+            $("ul#puntosrondines li").eq(nextinput).fadeIn();
+            // Aplica al primer elemento input ORDEN
+            $("ul#puntosrondines li").eq(nextinput).find( '.punto-pill').text(numPuntoPill);         
+            $("ul#puntosrondines li").eq(nextinput).find( 'input').eq(0).attr('id', 'orden'+nextinput);         
+            $("ul#puntosrondines li").eq(nextinput).find( 'input' ).eq(0).attr('name', 'orden'+nextinput );
+            $("ul#puntosrondines li").eq(nextinput).find( 'input' ).eq(0).val(nextinput);
+            // Aplica al segundo elemento input NOMBRE
+            $("ul#puntosrondines li").eq(nextinput).find( 'input').eq(1).attr('id', 'nombre'+nextinput);         
+            $("ul#puntosrondines li").eq(nextinput).find( 'input' ).eq(1).attr('name', 'nombre'+nextinput );
+            $("ul#puntosrondines li").eq(nextinput).find( 'input' ).eq(1).val('<Escriba nombre del punto>'); 
+            // Aplica al hiperviculo ONCLICK
+            $("ul#puntosrondines li").eq(nextinput).find( 'a' ).attr("onclick","return confirm('¿Está seguro de borrar éste punto?') && DeleteMarker('limarker_" + lat2 +"_"+ lng2 + "', " + "'" + lat2 + "_" + lng2 + "', '' );");           
+
+            x++;
+            //nextinput++;
+        }
+    }
+    
+    function DeleteMarker(id, simpleId, desactivarPuntoId) {            
+        //Recibe el punto para desactivar
+        console.log('Recibe el punto para desactivar:');
+        if (desactivarPuntoId != '') {            
+            console.log('ID: ' + desactivarPuntoId);
+            // Llamada AJAX
+            jQuery.get({                       
+                url: '/backstage/ajax/ajax_desactivar_punto',
+                data: {
+                    'punto_id': Number(desactivarPuntoId)
+                },
+                success: function (data) {                           
+                    console.log(data);
+                }
+            }); // fin de AJAX   
+        } else {
+            console.log('El li no contiene un ID para desactivar');
+        }
+
+        // Elimina li de la lista html
+        $('#puntosrondines').find('.' + id).remove();
+        // Busca el marcador        
+        var marker = markers[simpleId]; 
+                
+        //Encuentra y remueve el marcador del arreglo si lo encontró
+        for (var i = 0; i < markers.length; i++) {
+            
+            if (markers[i].id == simpleId) {
+                //Quita el marcador del mapa
+                //$('li.li'+id).remove();
+                markers[i].setMap(null);
+                //Quita el marcador del arreglo
+                markers.splice(i, 1);
+                return;
+            }
+        }
+    }   
+
+    //initialize();      
+
+    
+$(document).ready(function () {
+    var PostCodeid = '#search_location';
+    
+    $(PostCodeid).autocomplete({
+        source: function (request, response) {
+            geocoder.geocode({
+                'address': request.term
+            }, function (results, status) {
+                response($.map(results, function (item) {
+                    return {
+                        label: item.formatted_address,
+                        value: item.formatted_address,
+                        lat: item.geometry.location.lat(),
+                        lon: item.geometry.location.lng()
+                    };
+                }));
+            });
+        },
+        select: function (event, ui) {
+            $('.search_addr').val(ui.item.value);
+            $('.search_latitude').val(ui.item.lat);
+            $('.search_longitude').val(ui.item.lon);
+            var latlng = new google.maps.LatLng(ui.item.lat, ui.item.lon);
+            marker.setPosition(latlng);
+            initialize();
+        }
+    });
+
+    $('.get_map').click(function (e) {
+        var address = $(PostCodeid).val();
+        geocoder.geocode({'address': address}, function (results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                map.setCenter(results[0].geometry.location);
+                marker.setPosition(results[0].geometry.location);
+                $('.search_addr').val(results[0].formatted_address);
+                $('.search_latitude').val(marker.getPosition().lat());
+                $('.search_longitude').val(marker.getPosition().lng());
+            } else {
+                alert("Geocode was not successful for the following reason: " + status);
+            }
+        });
+        e.preventDefault();
+    });
+
+    
+});    
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s">
+</script>
+<script src="{% static 'core/assets/scripts/jquery-ui.min.js' %}"></script>
+<script src="https://cdn.sobekrepository.org/includes/gmaps-markerwithlabel/1.9.1/gmaps-markerwithlabel-1.9.1.min.js"></script>

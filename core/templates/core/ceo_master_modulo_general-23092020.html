@@ -1,0 +1,673 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic | {{ userdict.page_name | upper }} - {{ userdict.tipousuario | upper }} | Módulo General</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+
+    <style>
+        #map_canvas {
+            margin: 0;
+            padding: 0;
+            min-height: 480px;
+        }
+
+		.as-console-wrapper {
+		  display: none !important;
+		}
+
+		#add-route {
+		  position: absolute;
+		  top: 1px;
+		  right: 1px;
+		}
+
+		#add-waypoint {
+		  position: absolute;
+		  top: 1px;
+		  right: 80px;
+		}
+    </style>
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">
+    {% load static %}
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/mini-logo-panoptic.png' %}" alt="Logo de Panoptic">                                    
+            </div>
+            <div>Panel de Control <button class="mb-2 mr-2 btn btn-light tipousuario">{{ userdict.tipousuario }}<span class="badge badge-success badge-dot badge-dot-lg"> </span></button>
+                <div class="page-title-subheading">
+                    Los siguientes módulos están a su disposición; puede utilizar el menú izquierdo para cualquier opción en particular.
+                </div>
+            </div>
+        </div>
+        <!-- Botones laterales del cuerpo -->
+        <div class="page-title-actions">                                
+            <div class="d-inline-block dropdown">
+                <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+                    <span class="btn-icon-wrapper pr-2 opacity-7">
+                        <i class="fa fa-business-time fa-w-20"></i>
+                    </span>
+                    Acción / Opción a realizar
+                </button>
+                <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-inbox"></i>
+                                <span>
+                                    Mensajes
+                                </span>
+                                <div class="ml-auto badge badge-pill badge-secondary">86</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-book"></i>
+                                <span>
+                                    Incidentes
+                                </span>
+                                <div class="ml-auto badge badge-pill badge-danger">5</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-picture"></i>
+                                <span>
+                                    Evidencias
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a disabled="" class="nav-link disabled">
+                                <i class="nav-link-icon lnr-file-empty"></i>
+                                <span>
+                                    Bitácora
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="d-inline-block pr-3">
+                <select id="custom-inp-top" type="select" class="custom-select">
+                    <option>Periodo...</option>
+                    <option>Últimos 3 meses</option>
+                    <option>En el último mes</option>                                        
+                    <option selected>En los últimos 7 días</option>
+                    <option>Últimas 24 hrs.</option>
+                </select>
+            </div>
+        </div>                             
+    </div>
+</div>                                
+
+<div class="tabs-animation">
+
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-xl-6">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-azul">                        
+                        <div style="position: relative; padding-left: 10px;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-users size48 en-linea ico-sombra" aria-hidden="true"></i>
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea">Zona 0</div>                                           
+                            </div>                             
+                        </div>                                             
+                    </div>                
+                </div>
+                <ul class="list-group list-group-flush">                    
+                    <li class="p-0 list-group-item li-sin-borde">
+                        <div class="grid-menu grid-menu-2col">
+                            <div class="no-gutters row">
+                                <div class="col-sm-6">
+                                    <div id='map1' style='width: auto; height: 662px;'></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="page-title-subheading card-header">
+                                        <h6 class= "negrita bgp-color-azul" style="margin-top: 8px;">Indices Delincuenciales</h6>                                       
+                                    </div>
+                                    <div class="lista-indicadores" style="padding: 8px;">                                        
+                                        <!-- Listado de ïconos delincuenciales -->
+                                        <ul class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle icod-bw" src="{% static 'core/assets\images\icons\delincuenciales-color\casa-habitacion.png' %}" alt="Casa Habitación">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-casa-habitacion progress-bar-striped" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="100"  style="min-width: 4%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Casa Habitación</small>
+                                                                <span>4</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle icod-bw" src="{% static 'core/assets\images\icons\delincuenciales-color\homicidio.png' %}" alt="Homicidio">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-homicidio progress-bar-striped" role="progressbar" aria-valuenow="22" aria-valuemin="0" aria-valuemax="100"  style="min-width: 0%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Homicidio</small>
+                                                                <span>0</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle icod-bw" src="{% static 'core/assets\images\icons\delincuenciales-color\secuestro.png' %}" alt="Secuestro">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-secuestro progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"  style="min-width: 0%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Secuestro</small>
+                                                                <span>0</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>     
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle icod-bw" src="{% static 'core/assets\images\icons\delincuenciales-color\carjacking.png' %}" alt="Carjacking">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-carjacking progress-bar-striped" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"  style="min-width: 0%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Carjacking</small>
+                                                                <span>0</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li> 
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\asalto-a-negocios.png' %}" alt="Asalto a Negocios">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-asalto-negocios progress-bar-striped" role="progressbar" aria-valuenow="6" aria-valuemin="0" aria-valuemax="100"  style="min-width: 6%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Asalto-Negocios</small>
+                                                                <span>6</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>  
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\transeuntes.png' %}" alt="Transeúntes">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-transeuntes progress-bar-striped" role="progressbar" aria-valuenow="11" aria-valuemin="0" aria-valuemax="100"  style="min-width: 1%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Transeúntes</small>
+                                                                <span>11</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\auto-partes.png' %}" alt="Auto Partes">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-auto-partes progress-bar-striped" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"  style="min-width: 5%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Auto Partes</small>
+                                                                <span>5</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>   
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\tiendas-establecidas.png' %}" alt="Tiendas Establecidas">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-tiendas progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"  style="min-width: 0%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Tiendas</small>
+                                                                <span>0</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\hotel.png' %}" alt="Hotel">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-hotel progress-bar-striped" role="progressbar" aria-valuenow="7" aria-valuemin="0" aria-valuemax="100"  style="min-width: 0%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Hotel</small>
+                                                                <span>0</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item padding-0">
+                                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                                    <div class="widget-content-wrapper">
+                                                        <div class="widget-content-left mr-3 bck-white">
+                                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\aeropuerto.png' %}" alt="Aeropuerto">
+                                                        </div>
+                                                        <div class="widget-content-left" style="min-width: 50%;"> 
+                                                            <div class="card-body padding-0">                                                           
+                                                                <div class="mb-3 progress mar-top10">
+                                                                    <div class="progress-bar progress-bar-animated bck-aeropuerto progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"  style="min-width: 0%;"></div>
+                                                                </div>    
+                                                            </div>
+                                                        </div>                                                        
+                                                        <div class="widget-content-right bottom5">
+                                                            <div class="font-size-xlg text-muted">
+                                                                <small class="pr-1 bgp-color-negro negrita">Aeropuerto</small>
+                                                                <span>0</span>                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>                                            
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-xl-6">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-amarillo">                        
+                        <div style="position: relative; padding-left: 10px;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-cog size48 ico-sombra" aria-hidden="true"></i>
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea">Análisis de Riesgo</div>                                           
+                            </div>                             
+                        </div>                                             
+                    </div>                
+                </div>
+                <ul class="list-group list-group-flush">                    
+                    <li class="p-0 list-group-item">
+                        <div class="grid-menu grid-menu-2col">
+                            <div class="no-gutters row">
+                                <div class="col-sm-6">
+                                    <div class="text-center">
+                                        <h6 class= "negrita mayus" style="margin-top: 18px;">Indices Delincuenciales</h6>
+                                    </div>                                    
+                                    <div id="ceo_master_graf_general"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card-header">
+                                        <h6 class= "negrita bgp-color-azul" style="margin-top: 8px;">Recomendaciones</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            <table class="mb-0 table table-striped">                                                
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><i class="header-icon lnr-checkmark-circle bgp-color-verde negrita"> </i></th>
+                                                        <td>
+                                                            <div class="module line-clamp">
+                                                                <span class="item-alerta">Solicitar y contratar monitoristas</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><i class="header-icon lnr-cross-circle bgp-color-rojo negrita"> </i></th>
+                                                        <td>
+                                                            <div class="module line-clamp">                                                            
+                                                                <span class="item-alerta">Solicitar a un externo un estudio de seguridad de puntos vulnerables del sistema de CCTV.</span>      
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><i class="header-icon lnr-cross-circle bgp-color-verde negrita"> </i></th>
+                                                        <td>
+                                                            <div class="module line-clamp">                                                            
+                                                                <span class="item-alerta" title="Instalar una alarma perimetral a través de un láser programado que envíe una señal al panel de alarmas.">Llegar a un acuerdo con el departamento de sistemas para crear el programa de mantenimiento preventivo, para el CCTV.</span>      
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><i class="header-icon lnr-checkmark-circle bgp-color-verde negrita"> </i></th>
+                                                        <td>
+                                                            <div class="module line-clamp">
+                                                                <span class="item-alerta">Arreglar puerta motorizada de estacionamiento principal</span>                                   
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><i class="header-icon lnr-cross-circle bgp-color-rojo negrita"> </i></th>
+                                                        <td>
+                                                            <div class="module line-clamp">
+                                                                <span class="item-alerta">Cambiar de turno a guardia nocturno.</span>                                      
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><i class="header-icon lnr-checkmark-circle bgp-color-verde negrita"> </i></th>
+                                                        <td>
+                                                            <div class="module line-clamp">
+                                                                <span class="item-alerta" title="Se contrae economía mexicana y alerta mundial por coronavirus; medicamentos extranjeros no avalan calidad.">Se contrae economía mexicana y alerta mundial por coronavirus; medicamentos extranjeros no avalan calidad.</span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><i class="header-icon lnr-cross-circle bgp-color-rojo negrita"> </i></th>
+                                                        <td>
+                                                            <div class="module line-clamp">
+                                                                <span class="item-alerta" title="CDMX activa alerta de género: Estados en foco rojo, 19 de 32 estados.">CDMX activa alerta de género: Estados en foco rojo, 19 de 32 estados.</span>      
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><i class="header-icon lnr-cross-circle bgp-color-rojo negrita"> </i></th>
+                                                        <td>
+                                                            <div class="module line-clamp">
+                                                                <span class="item-alerta" title="Alerta en CDMX por alta contaminación ambiental">Alerta en CDMX por alta contaminación ambiental</span>      
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>              
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-xl-6">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-naranja">                        
+                        <div style="position: relative; padding-left: 10px;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-truck size48 ico-sombra" aria-hidden="true"></i>   
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea">D & D Management</div>                                           
+                            </div>                             
+                        </div>                                             
+                    </div>                
+                </div>
+                <ul class="list-group list-group-flush">                    
+                    <li class="p-0 list-group-item">
+
+                        <div class="widget-content pt-2 pl-0 pb-2 pr-0">
+                            <div class="text-center">
+                                <div id="map_canvas"></div>
+                            </div>
+                        </div>                        
+                    </li>
+                </ul>                
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-xl-6">
+            <div class="card-shadow-primary card-border mb-3 profile-responsive card">
+                <div class="dropdown-menu-header">
+                    <div class="dropdown-menu-header-inner bgp-rojo">                        
+                        <div style="position: relative; padding-left: 10px;">
+                            <div class="avatar-icon-wrapper mr-3 avatar-icon-xl btn-hover-shine" style="position: relative; padding-left: 10px; display: inline-block;">
+                                <i class="fa fa-chart-bar size48 ico-sombra" aria-hidden="true"></i> 
+                                <div class="widget-panel-texto diamante-bold mayus septxt-2 pad-left20 en-linea">Predictive Analytics</div>                                           
+                            </div>                             
+                        </div>                                             
+                    </div>                
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="grid-menu grid-menu-2col">
+                            <div class="no-gutters row">
+                                <div class="col-sm-4">
+                                    <div class="card-hover-shadow-2x mb-3 card-438">
+                                        <div class="card-header">                                        
+                                            <h5 class="mayus bgp-color-azul" style="margin: 0 auto;">Capacitación</h5>                                        
+                                        </div>
+                                        <div class="card-body">                                            
+                                            <div class="card-center-a" style="height: 374px;">
+                                                <div class="card-center-b bgp-color-rojo">
+                                                    85 %
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="card-hover-shadow-2x mb-3 card-438">
+                                        <div class="card-header">                                        
+                                            <h5 class="mayus bgp-color-azul" style="margin: 0 auto;">Cobertura</h5>                                        
+                                        </div>
+                                        <div class="card-body">                                            
+                                            <div class="card-center-a" style="height: 374px;">
+                                                <div class="card-center-b bgp-color-rojo">
+                                                    98 %
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="card-hover-shadow-2x mb-3 card-438">
+                                        <div class="card-header">                                        
+                                            <h5 class="mayus bgp-color-azul" style="margin: 0 auto;">Personal Sin Gafete</h5>                                        
+                                        </div>
+                                        <div class="card-body">                                            
+                                            <div class="card-center-a">
+                                                <div class="card-center-b">
+                                                    2
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                    <div class="card-hover-shadow-2x mb-3 card-438">
+                                        <div class="card-header">                                        
+                                            <h5 class="mayus bgp-color-azul" style="margin: 0 auto;">Rondines</h5>                                        
+                                        </div>
+                                        <div class="card-body">                                            
+                                            <div class="card-center-a">
+                                                <div class="card-center-b">
+                                                    152
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+            </div>
+        </div>              
+    </div>
+
+</div>                    
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}    
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+<script>
+    var pathnameInDashboardHome = window.location.pathname;
+    console.log ( pathnameInDashboardHome );
+    if (pathnameInDashboardHome == '/ceo_master/modulo_general') {
+        
+
+        // Gráfica de Estado General
+        var options = {
+            colors : ['#333', '#9D292A'],
+            series: [{
+            name: 'Estado General',
+            data: [82.04]
+          }, {
+            name: 'Nivel de Vulnerabilidad',
+            data: [17.96]
+        }],
+            chart: {
+            type: 'bar',
+            height: 620,
+            stacked: true,
+            toolbar: {
+              show: true
+            },
+            zoom: {
+              enabled: true
+            }
+          },
+          legend: {
+            show: false
+          },
+          yaxis: {
+            labels: {
+              formatter: function (value) {
+                return value + "%";
+              }
+            },
+          },          
+          responsive: [{
+            breakpoint: 480,            
+        }],
+          plotOptions: {
+            bar: {
+              horizontal: false,
+            },
+          },
+          xaxis: {
+            type: 'text',
+            categories: ['Estado General'],
+            labels: {
+                style: {
+                    fontSize: '16px',
+                    fontWeight: 'bold'               
+                },
+            }
+          },
+          fill: {
+            opacity: 0.90
+          },
+          dataLabels: {
+            style: {
+              fontSize: '20px',
+              fontWeight: 'bold',
+              textShadow: '0 1px #333'
+            },
+            formatter: function(val, opt) {
+                return val + " %    "
+            },
+          }
+          };
+  
+          var chart = new ApexCharts(document.querySelector("#ceo_master_graf_general"), options);
+          chart.render();
+
+          // Fin de gráfica General
+    }
+</script>
+{% endblock js %}

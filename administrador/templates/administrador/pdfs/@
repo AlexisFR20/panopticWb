@@ -1,0 +1,208 @@
+
+{% load administrador_extras %}   
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Reporte general: PREDICTIVE ANALYTICS</title>
+        <style type="text/css">
+            body {
+                font-weight: 200;
+                font-size: 14px;
+            }            
+            .txt-uppercase {}
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                color: #007cae;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               text-transform: uppercase;
+               /*padding: 10px 20px 0px 20px;  */
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+            .bg-gris-bajo {background: #c2c2c2;}
+            .bg-gris-fuerte {background: #f2f2f2;}
+        </style>        
+    </head>
+    <body>
+        <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+            <tbody>
+                <tr>
+                    <td style="width: 50px; background-color: #FF0310; height: 50px; ">
+                    </td>
+                    <td style="width: 950px">  &nbsp;</td>                    
+                </tr>
+            </tbody>            
+        </table> 
+
+        <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+            <tbody>
+                <tr>
+                    <td style="width: 50px">
+                    </td>
+                    <td style="width: 150px">
+                        <img class="img-fluid" src="http://panoptic.iottechnologies.mx/static/core/assets/images/logo-reporte-panoptic.png" width=100 height=auto alt="Grupo Águilas">
+                        
+                    </td>
+                    <td style="width: 650px">
+                        <h1 style="font-size: 30px; line-height: 20px;">PREDICTIVE ANALYTICS</h1>
+                        <h2 style="font-size: 20px; text-">Reporte General</h2>
+                    </td>
+                    <td style="width: 50px">
+                    </td>   
+                </tr>
+            </tbody>            
+        </table>
+
+        <br><br>
+
+
+        <br><br>
+
+        <table style="font-famstyle=font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+            <tbody>
+                    <tr>
+
+
+                            <td style="width: 50px"></td>
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center;  vertical-align: top;">               
+                                <h3 style="color:gray; font-size: 18px;">CAPACITACION</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300  src="{{img1}}">                                     
+                            </td>                    
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center; border-radius: 10px; vertical-align: top;">                              
+                                <h3 style="color:gray; font-size: 18px;">FALTAS</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300 src="{{img2}}">               
+                            </td>
+                            <td style="width: 50px"></td>  
+                        </tr>
+
+                        <tr>
+
+                            <td style="width: 50px"></td>
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center;  vertical-align: top;">               
+                                <h3 style="color:gray; font-size: 18px;">BAJAS</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300  src="{{img3}}">                                     
+                            </td>                    
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center; border-radius: 10px; vertical-align: top;">                              
+                                <h3 style="color:gray; font-size: 18px;">VACANTES</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300 src="{{img4}}">               
+                            </td>
+                            <td style="width: 50px"></td>  
+
+
+
+                    </tr>
+
+
+        
+            </tbody>            
+        </table>
+
+        <table>
+
+                    <tr>
+                            <td style="width: 50px"></td>
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center;  vertical-align: top;">               
+                                <h3 style="color:gray; font-size: 18px;">INCIDENTES DE SERVICIO</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300  src="{{img5}}">                                     
+                            </td>                    
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center; border-radius: 10px; vertical-align: top;">                              
+                                <h3 style="color:gray; font-size: 18px;">NÚMERO DE RECIBOS DE ALMACEN</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300 src="{{img6}}">               
+                            </td>
+                            <td style="width: 50px"></td>  
+    
+                     </tr>
+
+                     <tr>
+                            <td style="width: 50px"></td><!-- ya-->
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center;  vertical-align: top;">               
+                                <h3 style="color:gray; font-size: 18px;">CANTIDAD DE EQUIPO INGRESADO</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300  src="{{img7}}">                                     
+                            </td>                    
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 15px 0 10px 0px; text-align: center; border-radius: 10px; vertical-align: top;">                              
+                                <h3 style="color:gray; font-size: 18px;">PAQUETES</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300 src="{{img12}}">               
+                            </td>
+                            <td style="width: 50px"></td>  
+    
+                     </tr>
+        </table>
+
+ 
+        <table>
+
+                    <tr>
+                            <td style="width: 50px"></td>
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center;  vertical-align: top;">               
+                                <h3 style="color:gray; font-size: 18px;">VEHÍCULOS QUE ENTRARON</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300  src="{{img9}}">                                     
+                            </td>                    
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center; border-radius: 10px; vertical-align: top;">                              
+                                <h3 style="color:gray; font-size: 18px;">RONDINES</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300 src="{{img10}}">               
+                            </td>
+                            <td style="width: 50px"></td>  
+    
+                     </tr>
+
+                     <tr>
+                            <td style="width: 50px"></td>
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 15px 0 10px 0px; text-align: center;  vertical-align: top;">               
+                                <h3 style="color:gray; font-size: 18px;">NÚMERO DE ENTRADAS Y SALIDAS DE TRAILERS</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300  src="{{img11}}">                                     
+                            </td>                    
+                            
+                            <td style="width: 450px;  background-color: #e9e9e9; padding: 20px 0 10px 0px; text-align: center; border-radius: 10px; vertical-align: top;">                              
+                                <h3 style="color:gray; font-size: 18px;">ENTRADAS A ÁREAS RESTRINGIDAS</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=300 height=300 src="{{img8}}">               
+                            </td>
+                            <td style="width: 50px"></td>  
+    
+                     </tr>
+        </table>
+        <table>
+
+                    <tr>
+                            <td style="width: 50px"></td>
+                            <td style="width: 100%;  background-color: #e9e9e9; padding: 15px 0 10px 0px; text-align: center;  vertical-align: top;">               
+                                <h3 style="color:gray; font-size: 18px;">REGISTRO DE VISITANTES</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;" width=500 height=350  src="{{img13}}">                                     
+                            </td>                    
+                            
+                            <td style="width: 50px"></td>  
+    
+                     </tr>
+                     <tr>
+                         <td style="width: 50px"></td>
+                        <td style="width: 100%;  background-color: #e9e9e9; padding: 15px 0 10px 0px; text-align: center; border-radius: 10px; vertical-align: top;">                              
+                                <h3 style="color:gray; font-size: 18px;"> EMPLEADOS SIN GAFETE</h3>    
+                                <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 20px 10px; width: 300px; height: 300px;" width=500 height=350 src="{{img14}}">               
+                        </td>
+                        <td style="width: 50px"></td>
+                     </tr>
+
+                    
+        </table>
+        
+    </div>
+    </body>
+</html>

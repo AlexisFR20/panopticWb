@@ -1,0 +1,187 @@
+{% extends 'administrador/bases/base_admin_cuentas.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic | Administrador de Aplicación</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}    
+    <style>
+        .texto-vertical {
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);            
+        }
+        .inner-texto-vertical {
+            font-size: 10px;display:block; text-align: left; background-color: rgb(255, 253, 253); min-height: 116px; color: black;
+        }
+        table.permisos td {
+            vertical-align: middle;
+        }        
+    </style>
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/admin/admin-main-gear.png' %}" alt="Administrator icon">                                    
+            </div>
+            <div>Administrador de Cuentas
+                <div class="admin-page-title-subheading">
+                    Ver Permisos
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions">
+            <div class="row">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a>Administrador Global</a>
+                        </li>
+                        <li class="active breadcrumb-item" aria-current="page">
+                            Inicio
+                        </li>
+                    </ol>
+                </nav>    
+            </div>        
+        </div>        
+    </div>
+</div>                                
+    
+<div class="row" >
+    <!-- <div class="col-md-6 col-lg-6 col-xl-7"> -->
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title fadeblue">
+                    <i class="cardhead fas fa-key" aria-hidden="true"></i>
+                    Ver Permisos por Tipo de Cuenta de Usuario 
+                </div>                            
+            </div>
+
+            <div class="card-body">                           
+                <hr class="seegreen4">
+                {% for area in areas %}
+                <h5 class="card-title"><i class="fas fa-caret-right"></i></i> &nbsp; {{ area.nombre }}</h5>
+                <hr>
+
+                <p>
+                                           
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-12">                        
+                        <form id="frm_{{ area.alias }}">
+                            <table id="" class="table table-bordered dt-responsive nowrap permisos" style="width:100%">
+                                
+                                
+                                {% for permiso in permisos %}      
+                                    {% if permiso.areapermiso.alias == area.alias %}                                 
+                                    <tr bgcolor="#efefef">
+                                        <td class="negrita" style="width: 20%">{{ permiso.nombre }}</td>
+                                        <td>{{ permiso.desc }}</td>
+                                        <td align="center">
+                                            <input readonly type="checkbox" name="estado" id="estado" class="freeze" {% if permiso.estado == True %} checked {% endif %}> &nbsp; Estado
+                                        </td>
+                                        <td>{{ permiso.cliente }}</td>
+                                        <td valign="middle"><button class="mr-2 btn btn-light size13 mayus">Ver Roles</button></td>
+                                    </tr>
+                                    <!-- Roles -->
+                                    <tr>
+                                        <td colspan="5">
+                                            <table id="" class="table table-bordered dt-responsive nowrap" style="width:100%">
+                                                <tr>
+                                                    {% for r in roles %}                            
+                                                    <td align=center>
+                                                        <div class="texto-vertical" style="display: block;">
+                                                            <div class="inner-texto-vertical">
+                                                                {{ r|truncatechars:"18" }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-center" style="display: block;">
+                                                            
+                                                            <input readonly type="checkbox" name="chk_{{ permiso.nombre }}_pos_{{ r.alias_rol }}" id="chk_{{ permiso.nombre }}_pos_{{ r.alias_rol }}" class="freeze">
+
+                                                            {% for pr in permroles %}
+                                                                <p class="negrita escondido">PERMROLES</p>
+                                                                <p class="bgp-color-verde escondido">{{ pr.role.nombre }} | {{ pr.role.alias_rol }}</p>
+                                                                
+                                                                <p class="negrita escondido">ROLES</p>
+                                                                <p class="bgp-color-azul escondido">{{ r.nombre }} | {{ r.alias_rol }}</p>
+                                                                
+                                                                {% if r.alias_rol == pr.role.alias_rol and permiso.id == pr.permiso.id %}
+                                                                <script>
+                                                                    console.log('Check');
+                                                                    console.log('chk_{{ permiso.nombre }}_pos_{{ r.alias_rol }}');
+
+                                                                    setTimeout(function(){ 
+                                                                        $('#chk_{{ permiso.nombre }}_pos_{{ r.alias_rol }}').prop( "checked", true );
+                                                                    }, 500);
+                                                                    
+                                                                </script>
+                                                                
+                                                                {% endif %}
+                                                            {% endfor %}                                                        
+                                                        </div>
+                                                    </td>                                
+                                                    {% endfor %}           
+                                                </tr>
+                                            </table>         
+                                        </td>
+                                    </tr> 
+                                    <!-- Botones-->
+                                    <tr>
+                                        <td colspan="5" align=right>
+                                            <button class="mb-2 mr-2 btn btn-primary mayus size14">Establecer Permisos</button>
+                                        </td>
+                                    </tr>  
+                                    {% endif %} 
+                                {% endfor %}                            
+
+                            </table>    
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+
+
+                <br><br><br><br><br><br>
+
+
+                <hr class="seegreen4">
+
+                  
+            </div>  
+        </div>
+    </div>                      
+</div> 
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+<script>
+$(document).ready(function() {
+    console.log('En funcion YYYY');
+});
+</script>
+{% endblock js %}

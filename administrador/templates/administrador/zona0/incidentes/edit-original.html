@@ -1,0 +1,256 @@
+{% extends 'administrador/bases/base_admin.html' %}
+{% block 'seo_header' %}
+<title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+<meta http-equiv="Content-Language" content="es-MX">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+<meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+{% block css %}
+<!-- Starts to include CSS list -->
+{% for css in css_list %}
+{% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->    
+{% load static %}
+<style>
+   /* Always set the map height explicitly to define the size of the div
+   * element that contains the map. */
+   #map {
+   height: 100%;
+   }        
+</style>
+<link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+{% block 'content' %}
+{% load static %}
+<div class="app-page-title">
+   <div class="page-title-wrapper">
+      <div class="page-title-heading" style="width: 420px;">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-exclamation size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Incidentes 
+               <div class="admin-page-title-subheading">
+                   Edición de Incidente
+               </div>
+           </div>
+        </div>
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-4">
+            </div>
+            <div class="col-lg-8">
+               <nav class="" aria-label="admin breadcrumb">
+                  <ol class="admin breadcrumb pull-right">
+                     <li class="breadcrumb-item">
+                        <a>
+                        <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a> Zona 0</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Incidentes</a>
+                    </li>
+                    <li class="breadcrumb-item" aria-current="page">
+                        <a href="{% url 'administrador:admin_incidentes_index' %}">Incidentes</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Editar Incidente
+                    </li>
+                  </ol>
+               </nav>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="tabs-animation">
+   <div class="row" >
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+         <div class="mb-3 card">
+            <div class="card-body">
+               <div class="row">                  
+                  <div class="col-sm-12 col-md-12 col-lg-12">
+                     <div class="lista-usuarios-card">
+                        <div class="container-fluid">
+                           <div class="form-heading">Edición de Incidente</div>                           
+                           <!-- form start -->
+                           <form  id="frm-crear" role="form" method="POST">
+                              {% csrf_token %}
+                              <div class="container-fluid">
+                                 <div class="row">
+                                       <div class="col-xs-12 col-md-7 col-lg-7">
+                                           
+                                          {% if messages %}
+                                                {% for message in messages %}
+                                                   <div class="alert alert-{{ message.tags }}" role="alert">
+                                                      {{ message }}
+                                                   </div>
+                                                {% endfor %}
+                                          {% endif %}
+                                         
+                                        <div class="position-relative form-group">                        
+                                            <label for="tipo" class="">Tipo de Incidente</label>
+                                            <select id="tipo" name="tipo" data-giro-selected="{{ incidente.tipor.alias }}" class="form-control mostrar selector" data-validation="required">
+                                               <option value="" >-- Seleccione el tipo de Incidente-- </option>
+                                               {% for itipo in itipos.all %}                                                       
+                                                     <option value="{{ itipo.id }}" {% if itipo.id == incidente.tipor.id %} selected {% endif %}>{{ itipo.nombre }}</option>                                                      
+                                               {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Descripción</label>
+                                            <input data-validation="length" data-validation-length="3-100" type="text" id="descripcion" name="descripcion" class="form-control mostrar" placeholder="Descripción del incidente" data-validation="required" value="{{ incidente.descripcion|default_if_none:'Sin especificar' }}">
+                                        </div>  
+
+                                        <div class="form-group">
+                                            <label>Nivel (entre 1 y 6)</label>
+                                            <input data-validation="number" data-validation-allowing="range[1;6]" type="text" id="nivel" name="nivel" class="form-control mostrar" placeholder="De 1 a 6" data-validation="required" value="{{ incidente.nivel }}">
+                                        </div>   
+
+                                        <div class="form-group">
+                                            <label>Fecha mm/dd/YYYY (no modificable)</label>
+                                            <input type="text" id="fecha" name="fecha" class="form-control mostrar" placeholder="Fecha del incidente" readonly value="{{ incidente.fecha_corta|default_if_none:'Sin especificar' }}">
+                                        </div>  
+
+                                        <div class="form-group">
+                                            <label>Hora (no modificable)</label>
+                                            <input type="text" id="hora" name="hora" class="form-control mostrar" placeholder="Hora del incidente" readonly value="{{ incidente.hora|default_if_none:'Sin especificar' }}">
+                                        </div>  
+
+                                        <div class="form-group">
+                                            <label>Lugar (no modificable)</label>
+                                            <input type="text" id="lugar" name="lugar" class="form-control mostrar" placeholder="Lugar del incidente" readonly value="{{ incidente.direccion }} en {{ incidente.ciudad }}, {{ incidente.estado }}. {{ incidente.pais }}">
+                                        </div>  
+
+                                        <div class="form-group">
+                                            <label>URL de la noticia relacionada ( <a href="{{ incidente.url_noticia }}" class="bgp-color-verde" target="_blank">Ver en navegador</a>)</label>
+                                            <input data-validation="length" data-validation-length="1-500" type="text" id="url_noticia" name="url_noticia" class="form-control mostrar" placeholder="URL de la noticia asociada al incidente" data-validation="required" value="{{ incidente.url_noticia|default_if_none:'Sin especificar' }}">
+                                        </div>  
+
+                                        <div class="form-group">
+                                            <label>Cantidad</label>
+                                            <input data-validation="number" data-validation-allowing="range[1;300]" type="text" id="cantidad" name="cantidad" class="form-control mostrar" placeholder="" data-validation="required" value="{{ incidente.cantidad }}">
+                                        </div>                                                           
+
+                                        <!-- Magic button here -->
+                                        <button style="display: none;" id="btn-submit" type="text">Submit</button>    
+                                        <!-- Magic button end -->
+                                    
+                                        <div class="row">
+                                            <div class="col-md-12">  
+                                            <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-confirmar" type="text" title="Actualice los cambios realizados"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Editar Incidente</span></button>
+                                            </div>                                             
+                                        </div>
+                                          
+                                    </div>
+                                 </div>
+
+                                 <!-- Contenido para modal -->
+                                 <div style="display: none;">
+                                    <!-- Titulo -->
+                                    <div id="inTitulo"><span id="customTitulo">Confirmar datos para registro de Incidente</span></div>
+                                    <!-- DescripciÃ³n -->
+                                    <div id="inDescripcion"><p  id="customDescripcion">Editar registro con los datos proporcionados?</p></div>
+                                    <!-- Cuerpo -->
+                                    <div id="inDatos"><p  id="customDatos">Cuerpo de datos aqui</p></div>
+                                 </div>
+                                 <!-- Contenido para modal fin -->
+                              </div>
+                              <!-- /.box-body -->
+                           </form>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+{% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+   jQuery(document).ready(function() {     
+
+      // Validación de forma
+      jQuery.validate({
+         lang: 'es',
+         borderColorOnError : '#9D292A',
+         addValidClassOnAll : true,
+         modules : 'security, file', 
+      });         
+
+      function getDataFromMultiple(cElem) {
+         var ctemp = '';
+         if ($(cElem).hasClass("selector")) {
+            var elemId = $(cElem).attr("id");
+            ctemp = $('#' + elemId + ' option:selected').toArray().map(item => item.text).join();
+            if (ctemp.includes('Seleccione')) {
+               textoInputSelector = 'Sin opciÃ³n escogida';               
+            } else {
+               textoInputSelector = ctemp;
+            }            
+         } else if ($(cElem).is(':checkbox')) {
+            textoInputSelector = $(cElem). prop("checked") == 'on' ? 'SI':'NO';          
+         } else if ($(cElem).is(':radio')) {
+            console.log ( $(cElem).attr('name') )
+            var nameElem = $(cElem).attr('name');            
+            textoInputSelector = $("input[name='"+nameElem+"']:checked").val() == 1 ? 'SI':'NO'; 
+         } else {
+               textoInputSelector = $(cElem).val();
+         }
+         return textoInputSelector;
+      }
+
+      jQuery("#btn-confirmar").on("click", function(event){
+         event.preventDefault();        
+
+         jQuery('p#customDatos').html('');
+            jQuery('#modalDatos').html('');
+            // InserciÃ³n de contenido en elementos de modal
+            jQuery("#modalTitulo").html( jQuery("#inTitulo").html() );
+            jQuery("#modalDescripcion").html( jQuery("#inDescripcion").html() );
+            jQuery("#modalDatos").html( jQuery("#inDatos").html() );
+            jQuery("#mi-modal").modal('show');           
+
+            // get all the inputs into an array.        
+            var $inputs = $('form :input');
+            var values = {};
+            var cTitulo,  cValor, cData = '';
+            
+            $inputs.each(function() {
+               if ($(this).hasClass("mostrar")) {                  
+
+                  if ( $(this).is(':radio')) {
+                     cTitulo = $('label[for="'+ $(this).attr('name') + '"]').text();
+                  } else {
+                     cTitulo = $(this).parent().find('label').text();
+                  }
+                  cValor =  getDataFromMultiple( $(this) );
+                  cData = cData + '<li class="fList"><span class="fTitulo">' + cTitulo + ':</span> ' + cValor + '</li>';
+                  values[this.name] = $(this).val();               
+               }
+            });
+            jQuery('p#customDatos').append('<ul>'+ cData + '</ul>');
+
+      });    
+      
+      jQuery("#btn-enviar").on("click", function(event){         
+         console.log ('Realizando submit de forma');            
+         jQuery("#btn-submit").trigger('click');
+         jQuery("#btn-cerrar").trigger('click');
+      });          
+     
+
+   });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

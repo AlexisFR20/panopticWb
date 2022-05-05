@@ -1,0 +1,199 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic | Administrador de Aplicación</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/admin/admin-main-gear.png' %}" alt="Administrator icon">                                    
+            </div>
+            <div>Control de Administrador Global
+                <div class="admin-page-title-subheading">
+                    Panel principal de control.
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions">
+            <div class="row">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a>Administrador Global</a>
+                        </li>
+                        <li class="active breadcrumb-item" aria-current="page">
+                            Inicio
+                        </li>
+                    </ol>
+                </nav>    
+            </div>        
+        </div>        
+    </div>
+</div>                                
+
+{% if user.getRolU == 'agente_logistico' %} 
+<div class="tabs-animation">
+    
+    <div class="row google" >
+        <!-- <div class="col-md-6 col-lg-6 col-xl-7"> -->
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-5">
+            <div class="mb-3 card">
+                
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title fadeblue">
+                        RONDINES
+                    </div>
+                                
+                </div>
+
+                <div class="card-body">                           
+                    <a href="{% url 'administrador:admin_rondines_resumen' %}">
+                        <img src="{% static 'core/assets/images/ceo-rondines.jpg' %}" alt="Administrator" />
+                    </a>                
+                </div>  
+            </div>
+        </div>   
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-7">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title fadeblue">
+                        FORMATERIA
+                    </div>                                                        
+                </div>
+                <div class="card-body">                                                
+                    <a href="{% url 'administrador:admin_predictive_analytics_dashboard' %}">
+                        <img src="{% static 'core/assets/images/ceo-formateria.jpg' %}" alt="Administrator" />
+                    </a>                    
+                </div>  
+            </div>
+        </div>                  
+    </div> 
+</div>      
+{% else %} 
+<div class="tabs-animation">
+    
+    <div class="row google" >
+        <!-- <div class="col-md-6 col-lg-6 col-xl-7"> -->
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-5">
+            <div class="mb-3 card">
+                
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title fadeblue">
+                        <i class="cardhead fa fa-user-circle" aria-hidden="true"></i>
+                        Últimos Usuarios &nbsp; <i class="fas fa-chevron-right"></i> &nbsp; Águilas
+                    </div>
+                                
+                </div>
+
+                <div class="card-body">                           
+                    <table class="mb-0 table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre completo</th>
+                                <th>Rol / Cargo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for uag in ultimos_usuarios_aguilas %}
+                            <tr data-user-id="{{ uag.id }}">
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ uag.first_name }} {{ uag.last_name }}</td>
+                                <td>                                    
+                                    <button class="mb-2 mr-2 btn-pill btn-hover-shine btn btn-light labelCargo">{{ uag.getRol|default_if_none:"SIN CARGO ASIGNADO" }}</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="btn-actions-pane-right text-capitalize">
+                        <a href="{% url 'administrador:admin_perfiles_personal_index' %}" title="Grupo Águilas" class="mb-2 mr-2 btn-square btn btn-outline-secondary todosaguilas size12"></a>
+                    </div>                                              
+                </div>  
+            </div>
+        </div>   
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-7">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title fadeblue">
+                        <i class="cardhead fa fa-user-circle" aria-hidden="true"></i>
+                        Últimos Usuarios &nbsp; <i class="fas fa-chevron-right"></i> &nbsp; Clientes
+                    </div>                                                        
+                </div>
+                <div class="card-body">                                                
+                    <table class="mb-0 table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th style="width:25%">Nombre completo</th>                                
+                                <th>Razón Social</th>
+                                <th>Domicilio</th>                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for uuc in ultimos_usuarios_clientes %}
+                            <tr data-user-id="{{ uuc.id }}">
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ uuc.nombre|default_if_none:'Sin Asignar' }}</td>
+                                <td><div class="truncate">{{ uuc.razon_social|default_if_none:'Sin Asignar' }}</div></td>
+                                <td>{{ uuc.domicilio|default_if_none:'Sin Asignar' }}</td>                                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="btn-actions-pane-right text-capitalize">
+                        <a href="{% url 'administrador:cliente_list' %}" title="Clientes" class="mb-2 mr-2 btn-square btn btn-outline-secondary todosclientes size12"></a>
+                    </div> 
+                </div>  
+            </div>
+        </div>                  
+    </div> 
+</div>      
+{% endif %} 
+
+              
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+<script>
+jQuery(document).ready(function() {
+    jQuery('tr').click(function() {
+        var row_user_id = jQuery( this ).attr('data-user-id');            
+        window.location.href  =  '/backstage/perfiles/global/ver/' + row_user_id;        
+    } );
+});
+</script>
+{% endblock js %}

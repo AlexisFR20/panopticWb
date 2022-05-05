@@ -1,0 +1,176 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */       
+        #geomap_rondin {
+		    width: 100%;
+		    height: 400px;
+		}
+        #ui-id-1 {
+            display:block !important;
+            z-index: 9999;
+            cursor: pointer;
+        }        
+        .wickedpicker{z-index: 9999;}
+    </style>        
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">                
+                <i class="fas fa-plus-circle size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Regiones &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Editar Región
+                <div class="admin-page-title-subheading">
+                    Editar Región
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'administrador:admin_sucursales_index' %}"> Regiones</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Ediar Región</a>
+                            </li>                            
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>    
+    </div>
+</div>    
+<div class="row">
+    {% if  messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}         
+</div>
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">             
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">
+                    <i class="cardhead fas fa-globe size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Editar Sucursal
+                </div>                
+            </div>           
+                
+            <div class="card-body" style="position: relative;">
+                <div class="main-card card">
+                    <div class="card-body minHeightBlock">
+                        <div class="container">
+                            <!-- Forma para crear rondin -->
+                            <form id="frm-crear-rondin" role="form" method="POST"> 
+                                {% csrf_token %}                                                         
+                                <div class="row">
+                                    <!-- Inicio de primer columna-->                                    
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <!-- Nombre de la Región -->
+                                        <div class="form-group">
+                                            <label>Nombre de la Región </label>
+                                            <input data-validation="length" data-validation-length="8-50" type="text" id="nombre" name="nombre" class="form-control mostrar" placeholder="Escriba un nombre para la región" data-validation="required" value="{{ region.nombre }}">
+                                        </div>  
+                                        
+                                        <!-- Alias de la Región -->
+                                        <div class="form-group">
+                                            <label>Alias </label>
+                                            <input data-validation="length" data-validation-length="3-100" type="text" id="alias" name="alias" class="form-control mostrar" placeholder="Escriba el alias de la región" value="{{ region.alias }}">
+                                        </div> 
+
+                                        <!-- Telefono de la Región -->
+                                        <div class="form-group">
+                                            <label>ID Numérico</label>
+                                            <input data-validation="length" type="number" id="idnumerico" name="idnumerico" class="form-control mostrar" placeholder="Escriba un entero que represente la región" value="{{ region.idnumerico }}">
+                                        </div> 
+                                    </div> 
+                                                                                                                                                
+                                </div>                                    
+                                    
+                                </div>
+                                <div class="row" style="padding-top: 80px;">   
+                                    <div class="col-md-12">
+                                        <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-rondin-guardar" type="submit" title="Guardar rondín"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Editar Región</span></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Fin de Forma para crear rondin-->
+                        </div>                        
+                    </div>
+                </div>
+                <div class="resize-triggers"><div class="expand-trigger"><div style="width: 502px; height: 432px;"></div></div><div class="contract-trigger"></div></div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+</div> <!--  end of row -->  
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    $('.scrollbar-container').each(function () {
+        const ps = new PerfectScrollbar($(this)[0], {
+            wheelSpeed: 2,
+            wheelPropagation: false,
+            minScrollbarLength: 20
+        });
+    });    
+    const ps = new PerfectScrollbar('.scrollbar-sidebar', {
+        wheelSpeed: 2,
+        wheelPropagation: true,
+        minScrollbarLength: 20
+    });
+    $(document).ready(function() { 
+       
+       var ciudad_val = $('#ciudad').attr('data-ciudad-selected');
+       $("#ciudad").val(ciudad_val).change();    
+
+       var estado_val = $('#estado').attr('data-estado-selected');
+       $("#estado").val(estado_val).change();  
+
+    });
+
+    
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

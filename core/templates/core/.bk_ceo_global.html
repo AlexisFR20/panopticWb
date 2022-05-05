@@ -1,0 +1,293 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic | {{ userdict.page_name | upper }} - {{ userdict.tipousuario | upper }} | Global</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }    
+        #news_feed {height: 100%;} 
+        #list_news{background: rgba(0,0,0,.8);}   
+        .widget-heading a {color: rgba(255, 255, 255, 0.8) !important;}
+
+        .scrollbar
+        {
+            margin-left: 30px;
+            float: left;
+            height: 150px;
+            width: auto;
+            background: #3d3d3d;
+            overflow-y: scroll;
+            margin-bottom: 25px;
+        }
+
+        .force-overflow
+        {
+            min-height: 450px;
+        }
+
+        .style-1::-webkit-scrollbar-track
+        {
+            -webkit-box-shadow: inset 0 0 6px rgba(95, 95, 95, 0.3);
+            border-radius: 10px;
+            background-color: #3d3d3d;
+        }
+
+        .style-1::-webkit-scrollbar
+        {
+            width: 6px;
+            background-color: #3d3d3d;
+        }
+
+        .style-1::-webkit-scrollbar-thumb
+        {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(211, 206, 206, 0.3);
+            background-color: #5c5b5b;
+        }
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/mini-logo-panoptic.png' %}" alt="Logo de Panoptic">                                    
+            </div>
+            <div>Panel de Control <button class="mb-2 mr-2 btn btn-light tipousuario">{{ userdict.tipousuario }}<span class="badge badge-success badge-dot badge-dot-lg"> </span></button>
+                <div class="page-title-subheading">
+                    Los siguientes módulos están a su disposición; puede utilizar el menú izquierdo para cualquier opción en particular.
+                </div>
+            </div>
+        </div>                                 
+    </div>
+</div>                                
+
+<div class="tabs-animation">
+    
+    <div class="row google" >
+        <!-- <div class="col-md-6 col-lg-6 col-xl-7"> -->
+        <div class="col-md-12 col-lg-6 col-xl-8">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        <p>
+                            <i class="fa fa-map-marker icon-gradient bgp-naranja size20"> </i>
+                            Mapa de Calor 
+                        </p>
+                    </div>
+                    
+                    <div class="a-derecha">  
+                        <!-- Boton Ubicaciones Críticas -->                    
+                        <div class="d-inline-block pr-3 hidden">                            
+                            <a href="/ceo_master/modulo_general" id="btnIconoModulo" title="Ver vista Modular"></a>
+                        </div>
+                    </div>   
+
+
+                </div>
+                <div class="card-body">                                                
+                    <div id='mapacalor' style='width: 100%; height: 974px;'>
+                    </div>
+                </div>  
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-6 col-xl-4">
+            <div class="mb-3 text-white card-border bg-dark card">
+                <div  style="padding: 0px 4px">
+                    <div class="card-header"><i class="header-icon pe-7s-note2 bgp-color-amarillo-intenso"> </i>Alertas externas (Política, Ambiental. Sociales, Tecnológicas…)
+                    </div>                
+                    <!-- Noticias de Internet Políticas  -->
+                    <span class="bgp-color-amarillo-intenso size14 negrita">Políticas</span><hr style="border: 2px solid rgb(214, 214, 214)"/> 
+                    <div id="news_feed" class="movehere tab-content scrollbar style-1" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+                        <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                        <ul id="list_news_Politicas" data-criterio="politica" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                        </ul>
+                    </div>
+                    <!-- Noticias de Internet Sociales  -->
+                    <span class="bgp-color-amarillo-intenso size14 negrita">Sociales</span><hr style="border: 2px solid rgb(214, 214, 214)"/> 
+                    <div id="news_feed" class="movehere tab-content scrollbar style-1" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+                        <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                        <ul id="list_news_Sociales" data-criterio="sociales" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                        </ul>
+                    </div>
+                    <!-- Noticias de Internet Ambientales  -->
+                    <span class="bgp-color-amarillo-intenso size14 negrita">Ambientales</span><hr style="border: 2px solid rgb(214, 214, 214)"/> 
+                    <div id="news_feed" class="movehere tab-content scrollbar style-1" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+                        <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                        <ul id="list_news_Ambientales" data-criterio="ambientales"  class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                        </ul>
+                    </div>
+                    <!-- Noticias de Internet Legales  -->
+                    <span class="bgp-color-amarillo-intenso size14 negrita">Legales</span><hr style="border: 2px solid rgb(214, 214, 214)"/> 
+                    <div id="news_feed" class="movehere tab-content scrollbar style-1" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+                        <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+                        <ul id="list_news_Legales" data-criterio="legales"  class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div>   
+<!-- aqui  -->
+<div id="baseCustom" class="baseCustom escondido">
+    <div class="buHeader" style="background-image: url('{% static 'core/assets/images/planta-default.jpg' %}');">                
+    </div>
+    <div class="infoUBH5_Wrapper" data-click="" onclick="">                
+        <h5 class="infoUBH5 planta-nombre"></h5>
+        <span class="small planta-ubicacion"></span>                                
+    </div>
+    <div class="col-md-12" style="padding: 0px;"><br/>
+        <p class="contendor-planta-estatus"><b>ESTATUS:&nbsp &nbsp;</b><span class="planta-estatus mayus negrita"></span>&emsp;<b>ÍNDICE DE PONDERACIÓN:&nbsp &nbsp;</b><span class="planta-ponderacion mayus negrita"></span></p>  
+    </div>
+    <div class="row infoContent">   
+        
+        <div class="col-md-12 pad-bot20">
+            <h5 class="bgp-color-rojo mayus negrita text-center">Predictive Analytics </h5><hr>
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <span class="negrita mayus">Cobertura:</span><br/><span class="planta-cobertura size16">&nbsp;AAA%</span>
+                </div>
+                <div class="col-md-3 text-center">
+                    <span class="negrita mayus">Capacitaciones:</span><br/><span class="planta-capacitacion size16">&nbsp;AAA%</span>
+                </div>
+                <div class="col-md-3 text-center">
+                    <span class="negrita mayus">Rondines:</span><br/><span class="planta-rondines size16">&nbsp;AAA%</span>
+                </div>
+                <div class="col-md-3 text-center">
+                    <span class="negrita mayus">Emp. Sin Gafete:</span><br/><span class="planta-empleadosg size16">&nbsp;AAA%</span>
+                </div>
+            </div>
+        </div>  <!-- col-md-12 -->      
+        <div class="col-md-6">                                        
+            <h5 class="bgp-color-amarillo mayus negrita text-center">Análisis de Riesgo </h5><hr>                    
+            <div class="planta-wrapper-vulnerabilidad" style="display: none;"></div> 
+            <div class="wait text-center">
+                <div class="loader-wrapper d-flex justify-content-center align-items-center">
+                    <div class="loader">
+                        <div class="ball-pulse-rise">
+                            <div style="background-color: rgb(253, 126, 20);"></div>
+                            <div style="background-color: rgb(253, 126, 20);"></div>
+                            <div style="background-color: rgb(253, 126, 20);"></div>
+                            <div style="background-color: rgb(253, 126, 20);"></div>
+                            <div style="background-color: rgb(253, 126, 20);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h5 class="bgp-color-naranja mayus negrita text-center">D&D Management </h5><hr>
+            <br><br>
+            <div class="listaActivos" class="row" style="display: none;"></div>
+            <div class="listaFinalizados" class="row" style="display: none;"></div>
+
+            <div class="sonbotones">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <a class="a_movs_activo mb-2 mr-2 btn-transition btn btn-outline-warning" style="width: 100%;">Movimientos Activos</a>
+                    </div>                        
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <a class="a_movs_finalizado mb-2 mr-2 btn-transition btn btn-outline-warning" style="width: 100%;">Movimientos Finalizados</a>
+                    </div>                        
+                </div>
+            </div> <!-- sonbotones -->
+            
+        </div>
+    </div>
+</div> <!-- baseCustom -->
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+
+<script>
+
+    $(document).ready(function() {
+        moment.locale('es');       
+        
+        function alertasInternet() {
+            var estado = false;
+            var arrNoticias = [];
+    
+            $('[id^="list_news_"]').each(function( index ) {  
+                arrNoticias.push($(this).attr('id'));
+    
+                var idNoticia = $(this).attr('id');
+                var criterio = $(this).attr('data-criterio');
+    
+                $.ajax({
+                    async: false,
+                    url:  "{% url 'news_rss' %}",
+                    data: { 'criterio': criterio },
+                    datatype: 'json',
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',            
+                    success: function(result) {                    
+                        estado = true;
+                        var news_list = result.entries;
+                        $.each(news_list, function(){                                
+                            $('#'+idNoticia).append(
+                                '<li class="list-group-item bg-dark">'+
+                                '    <div class="widget-content p-0">'+
+                                '        <div class="widget-content-wrapper">'+
+                                '            <div class="widget-content-left mr-3">'+
+                                '                <i class="fas fa-play-circle"></i>'+
+                                '            </div>'+                        
+                                '            <div class="widget-content-left">' +
+                            '                <div class="widget-heading"><a href="' +this.link + '">' + this.title + '</a></div>' +
+                            '                <div class="widget-subheading">'+moment(this.published).format("DD-MM-YYYY HH:mm:ss")+' </div>' +
+                            '            </div>' + 
+                                '        </div>' +
+                                '    </div>' +
+                                '</li> '                            
+                            );   
+                        });
+                    }
+                }); // fin ajax
+    
+            });
+            console.log(arrNoticias);
+    
+            
+            return estado;
+        }
+    
+        alertasInternet();
+    
+        var dTimer = 0
+        var amountScroll = 70;;
+        if (dTimer == 0) {
+            dTimer = setInterval(function () {
+                $('.movehere').animate({ scrollTop: amountScroll }, 'slow');
+                amountScroll += 70;
+            }, 2000);
+        }
+
+        
+    });
+</script>
+{% endblock js %}

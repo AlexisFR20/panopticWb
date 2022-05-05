@@ -1,0 +1,313 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+
+{% block 'content' %}
+
+
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-users-cog size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Predictive Analytics &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Estados de Fuerza
+                <div class="admin-page-title-subheading">
+                   Asignación de Estados de Fuerza en Unidades de Negocio
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions" style="min-width: 580px;">
+
+            <div class="input-group">                
+              
+              <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+              {% for cliente in clientes.all %}                                                   
+                      <option value="{{ cliente.id }}">{{ cliente }}</option>
+              {% endfor %}
+              </select>            
+              &emsp;
+              <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+                {% for planta in plantas.all %}
+                    <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                {% endfor %}
+              </select>
+              &emsp;
+              <input name="dates" required="required" class="form-control" style="width: 58px;">                      
+              &emsp;            
+  
+            </div>   
+        </div>    
+    </div>
+</div>   
+
+<div id="container">
+
+
+</div>
+
+<!--div class="row" >        
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">     
+                    <h3>
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Estados de Fuerza  <span class="badge badge-pill badge-secondary">{{ estadosfuerza.count }}</span>
+                    </h3>                                       
+                </div>                                                        
+            </div>
+            <div class="card-body">
+                <a href="{% url 'administrador:admin_estados_fuerza_create' %}" class="btn btn-primary">Nuevo estado de fuerza</a>
+
+                {% for ef in estadosfuerza %}
+                <div class="card">
+                  <div class="card-header" style="background-color: #eee">
+                      <h3>
+                        <a href="{% url 'administrador:admin_estados_fuerza_edit' ef.id %}" title="Editar estado de fuerza" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-edit size16"></i></a>
+                        <a href="#" class="btnsInDataTable btn-transition border-0 btn btn-outline-warning text-center"> <i class="fas fa-trash-alt size16  bgp-color-rojo"></i></a>
+                        {{ef.planta}} | {{ef.role.nombre}}
+                      </h3>    
+                  </div>
+                  <div class="card-body">
+                    
+                      <p>{{ef.fecha_inicio}}</p>
+                      <p><b>Horas:</b> {{ ef.horas}}</p>
+                      <p><b>Personas:</b> {{ ef.personas}}</p>
+                      <h4>
+                        {% if ef.cobertura_set.first %}
+                        <a href="{% url 'administrador:admin_estados_fuerza_cobertura_create' ef.id %}" title="Editar cobertura" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-edit size16"></i></a>
+                        <b>Cobertura:</b> <span class="bgp-color-cafe-tenue">{{ ef.cobertura_set.first.porcentaje|stringformat:".2f" }}%</span> ({{ef.cobertura_set.first.total}}/{{ef.total}})
+                        {% else %}
+                        <a href="{% url 'administrador:admin_estados_fuerza_cobertura_create' ef.id %}" class="btn btn-primary">Agregar cobertura</a>
+                        {% endif %}
+                      </h4>
+                      <table class="table table-striped">
+                          <thead>
+                              <tr>
+                                  <th>Turno</th>
+                                  <th>Lunes</th>
+                                  <th>Martes</th>
+                                  <th>Miércoles</th>
+                                  <th>Juevez</th>
+                                  <th>Viernes</th>
+                                  <th>Sábado</th>
+                                  <th>Domingo</th>
+                                  <th>Total</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                  <th>Día</th>
+                                  <td>{{ef.ld}}</td>
+                                  <td>{{ef.md}}</td>
+                                  <td>{{ef.mid}}</td>
+                                  <td>{{ef.jd}}</td>
+                                  <td>{{ef.vd}}</td>
+                                  <td>{{ef.sd}}</td>
+                                  <td>{{ef.dd}}</td>
+                                  <td><b>{{ef.totalDia}}</b></td>
+                              </tr>
+
+                              <tr>
+                                  <th>Noche</th>
+                                  <td>{{ef.ln}}</td>
+                                  <td>{{ef.mn}}</td>
+                                  <td>{{ef.min}}</td>
+                                  <td>{{ef.jn}}</td>
+                                  <td>{{ef.vn}}</td>
+                                  <td>{{ef.sn}}</td>
+                                  <td>{{ef.dn}}</td>
+                                  <td><b>{{ef.totalNoche}}</b></td>
+                              </tr>
+                              <tr>
+                                  <td colspan="8"></td>
+                                  <td style="border-top: 1px solid black"><b>{{ef.total}}</b></td>
+                              </tr>
+                          </tbody>
+
+                      </table>
+
+                  </div>
+                </div>
+                
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div-->
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    jQuery(document).ready(function() {
+        jQuery('#tbl-estados-fuerza').DataTable({       
+            "order": [[ 1, "desc" ]],
+            "pageLength":  10,    
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           }
+        });
+    });
+</script>
+
+<script>
+    
+    $(document).ready(function() {
+
+
+        var startDate1 = moment().subtract(1, 'months')
+        var endDate1 = moment().add('1', 'months')
+
+        jQuery("#cliente").on('change', function (e) {
+            updatePlantaSelector(this);
+        });
+
+        updatePlantaSelector(document.getElementById("cliente"));
+
+        
+
+        function updatePlantaSelector(selector){
+            var optionSelected = $("option:selected", selector);
+            var valueSelected = selector.value;
+
+            console.log("Cliente seleccionado", valueSelected)
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").hide();
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").addClass('hidden');
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").removeClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").show();
+            $("#planta option[data-cliente-id=" + valueSelected + "]").addClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").removeClass('hidden');
+
+            //$("#planta option[value='']").show()
+            //$("#planta option[value='']").addClass('visible')
+            //$("#planta option[value='']").removeClass('hidden')
+
+            var val = $('#planta option.visible').first().attr("value");
+
+            $('#planta').val(val);
+
+            loadAjax($('#cliente').val(), $('#planta').val(), startDate1.format('YYYY-MM-DD'), endDate1.format('YYYY-MM-DD'))
+
+        }
+
+        $('#planta').on('click', function(){
+          loadAjax($('#cliente').val(), $('#planta').val(), startDate1.format('YYYY-MM-DD'), endDate1.format('YYYY-MM-DD'))
+        });
+
+      
+        $('input[name="dates"]').daterangepicker(
+        {
+          "timePicker": false,
+          startDate: startDate1.format('YYYY-MM-DD'),
+          endDate: endDate1.format('YYYY-MM-DD'),
+          weekStart: 1,
+          ranges: {
+            'Hoy': [moment(), moment()],
+            'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+            'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+            'Este mes': [moment().startOf('month'), moment().endOf('month')],
+            'Mes anterior': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          },
+          "locale": {    
+              format: 'YYYY-MM-DD',        
+              "applyLabel": "Aplicar",
+              "cancelLabel": "Cancelar",
+              "fromLabel": "Desde",
+              "toLabel": "Hasta",
+              "customRangeLabel": "Personalizar",
+              "daysOfWeek": [
+                  "Do",
+                  "Lu",
+                  "Ma",
+                  "Mi",
+                  "Ju",
+                  "Vi",
+                  "Sa"
+              ],
+              "monthNames": [
+                  "Enero",
+                  "Febrero",
+                  "Marzo",
+                  "Abril",
+                  "Mayo",
+                  "Junio",
+                  "Julio",
+                  "Agosto",
+                  "Setiembre",
+                  "Octubre",
+                  "Noviembre",
+                  "Diciembre"
+              ]
+           
+          }
+        },
+        
+        function(start, end) {    
+          console.log(start.format('YYYY-MM-DD') + " - " + end.format('YYYY-MM-DD'));
+          startDate1 = start
+          endDate1 = end
+        }
+      );   
+
+
+      $('input[name="dates"]').on('apply.daterangepicker', function(ev, picker) {
+          //console.log("click");
+          loadAjax($('#cliente').val(), $('#planta').val(), startDate1.format('YYYY-MM-DD'), endDate1.format('YYYY-MM-DD'))
+            
+      });
+
+      function loadAjax(cliente, planta, start, end){
+        if ($('#planta').val() != "") {
+            //loadRondinReport();     
+            $.ajax({
+                url:  '{% url "analytics:estados_fuerza_ajax" %}',
+                data: { 'cliente_id': cliente, 'planta_id': planta, "start": start, "end": end},
+                type: 'GET',
+                success: function (result) {
+                    console.log("result", result)
+                    //mArray = JSON.parse(result)
+                    $("#container").html(result)
+                }
+
+            });  // Fin de Ajax
+
+          } else {
+            alert('Seleccione la Unidad de Negocio / Cliente primero por favor.');
+          }
+      }
+    
+    });
+    </script>
+  </script>
+<!-- Ends to include JS list -->
+{% endblock js %}

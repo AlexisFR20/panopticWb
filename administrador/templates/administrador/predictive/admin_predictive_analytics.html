@@ -1,0 +1,975 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-tachometer-alt"></i> &nbsp; Dashboard
+                <div class="admin-page-title-subheading">
+                   Dashboard Predictive Analytics
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Predictive Analytics</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="#"> Dashboard</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Dashboard Predictive Analytics
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">            
+            <div class="card-body text-center">                                                                     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="input-group">                
+              
+                    <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+                        <option value="" >-- Cliente --</option>
+                        {% for cliente in clientes.all %}                                                   
+                        <option value="{{ cliente.id }}">{{ cliente }}</option>
+                        {% endfor %}
+                    </select>            
+                    &emsp;
+                    <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Unidad de Negocio --</option>
+                        {% for planta in plantas.all %}
+                        <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                        {% endfor %}
+                    </select>
+                    &emsp;
+                    <input id="dates" name="dates" required="required" class="form-control" style="width: 58px;">                      
+                    &emsp;            
+
+                </div>              
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-truck-moving" aria-hidden="true"></i>
+                    E/S de Trailers
+                </div>                                                        
+            </div>
+            <div class="card-body">   
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartESTrailers"></canvas>
+                    </div>                    
+                </div>
+            </div>  
+        </div>
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card"  style="background-color: #fbfbfb;">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-clipboard-list" aria-hidden="true"></i>
+                    Revisión 18 Puntos
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">                    
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChart18Puntos"></canvas>
+                    </div>
+                </div>                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Visitantes
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartRegistroVisitantes"></canvas>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card"  style="background-color: #fbfbfb;">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Vehiculos
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartRegistroVehiculos"></canvas>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Entrada de Quimicos 
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartEntradaQuimicos"></canvas>
+                    </div>                    
+                </div>
+            </div>  
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Paquetería
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">                    
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartRegistroPaqueteria"></canvas>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>  
+</div> 
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Empleados sin gafetes 
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartEmpleadosSinGafetes"></canvas>
+                    </div>                    
+                </div>
+            </div>  
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Areas Restringidas
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartRegistroAreaRestringidas"></canvas>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>  
+</div> 
+
+ 
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Recibos
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartRegistroRecibido"></canvas>
+                    </div>
+                    
+                </div>
+            </div>  
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Entrada de equipo
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartEntradaEquipo"></canvas>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>  
+</div> 
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Incidente de servicio
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartIncidenteServicio"></canvas>
+                    </div>                    
+                </div>
+            </div>  
+        </div>
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Estado de fuerza
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <canvas id="barChartEstadoFuerza"></canvas>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div> 
+</div>
+
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+
+        $('input[name="dates"]').daterangepicker(
+            {
+                "timePicker": true,
+                //startDate: moment().subtract(2, 'months').format("MM-DD-YYYY"),
+                //endDate: moment().add('1', 'day').format("MM-DD-YYYY"),
+                ranges: {
+                'Hoy': [moment(), moment()],
+                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+                'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+                'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {            
+                    "applyLabel": "Aplicar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "Desde",
+                    "toLabel": "Hasta",
+                    "customRangeLabel": "Personalizar",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Setiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ]
+                
+                }
+            },
+            function(start, end) {                    
+                //if ($('#planta').val() != "" && $('#cliente').val() != "" ) {                    
+                  //  Load18PointsReport();                    
+                //} else {
+                  //  alert('Seleccione la Unidad de Negocio / Cliente primero por favor *.');
+                //}
+                Load18PointsReport();                                    
+            }
+        );   
+        // barChartESTrailers
+        var canvas = document.getElementById("barChartESTrailers");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPorcentaje = {
+            labels: ["Porcentaje de Riesgo", "Porcentaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Porcentajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [1, 2]
+                }
+            ]
+        };        
+        var optionsEntornoPorcentaje = {
+                title: {
+                        display: true,
+                        text: 'Porcentajes de Entorno',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPorcentaje = new Chart(ctx, {
+            type: 'bar',
+            data: dataEntornoPorcentaje,
+            options: optionsEntornoPorcentaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChart18Puntos
+        var canvas = document.getElementById("barChart18Puntos");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'doughnut',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartRegistroVisitantes
+        var canvas = document.getElementById("barChartRegistroVisitantes");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'doughnut',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartRegistroVehiculos
+        var canvas = document.getElementById("barChartRegistroVehiculos");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'bar',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartEntradaQuimicos
+        var canvas = document.getElementById("barChartEntradaQuimicos");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'bar',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartRegistroPaqueteria
+        var canvas = document.getElementById("barChartRegistroPaqueteria");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'doughnut',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartEmpleadosSinGafetes
+        var canvas = document.getElementById("barChartEmpleadosSinGafetes");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'doughnut',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartRegistroAreaRestringidas
+        var canvas = document.getElementById("barChartRegistroAreaRestringidas");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'bar',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartRegistroRecibido
+        var canvas = document.getElementById("barChartRegistroRecibido");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'bar',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartEntradaEquipo
+        var canvas = document.getElementById("barChartEntradaEquipo");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'doughnut',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartIncidenteServicio
+        var canvas = document.getElementById("barChartIncidenteServicio");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'doughnut',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });
+
+        //////////////////////////////////////////////////////////////////////////////////
+
+        // barChartEstadoFuerza
+        var canvas = document.getElementById("barChartEstadoFuerza");
+        var ctx = canvas.getContext('2d');
+
+        Chart.defaults.global.defaultFontColor = '#547B99';
+        Chart.defaults.global.defaultFontSize = 16;
+
+        var dataEntornoPuntaje = {
+            labels: ["Puntaje de Riesgo", "Puntaje de Vulnerabilidad"],
+            datasets: [
+                {
+                    label: "Puntajes ",
+                    fill: true,
+                    backgroundColor: [
+                        '#9D292A',
+                        '#DDDDDD'],
+                    data: [0.4, 0.6]
+                }
+            ]
+        };        
+        var optionsEntornoPuntaje = {
+                title: {
+                        display: true,
+                        text: 'Puntajes',
+                        position: 'bottom',
+                        fontSize: 14
+                    },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            display: false
+                        },
+                        gridLines: {
+                            display: false
+                         }
+                    }]
+                }
+        };
+
+        var myBarChartEntornoPuntaje = new Chart(ctx, {
+            type: 'bar',
+            data: dataEntornoPuntaje,
+            options: optionsEntornoPuntaje
+        });     
+
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

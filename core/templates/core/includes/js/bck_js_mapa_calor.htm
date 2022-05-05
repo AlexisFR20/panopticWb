@@ -1,0 +1,155 @@
+{% load static %}
+<script>
+    //JS Mapa de Calor 
+
+let map, heatmap;
+
+var gBlue = [
+            'rgba(70, 0, 0, 0)',
+            'rgba(255, 128, 0, 1)',
+            'rgba(42, 0, 0, 1)',
+            'rgba(109, 50, 0, 1)',
+            'rgba(0, 102, 51, 1)',
+            'rgba(255, 255, 55, 1)'            
+        ];
+
+var color = 'azul';
+
+function initMap() {
+  map = new google.maps.Map(document.getElementById("mapacalor"), {
+    zoom: 8.5,
+    center: {lat: 31.6540214, lng: -106.5189754},
+    mapTypeId: "roadmap"
+  });
+
+  setMarkers(map);
+
+  heatmap = new google.maps.visualization.HeatmapLayer({
+    data: getPoints(),
+    map: map,
+    gradient: gBlue
+  });  
+}
+
+function changeGradient() {
+        const gradient = [
+            'rgba(255, 0, 0, 0)',
+            'rgba(255, 0, 0, 1)',
+            'rgba(255, 255, 0, 1)',
+            'rgba(0, 255, 0, 1)',
+            'rgba(173, 255, 47, 1)',
+            'rgba(255, 0, 0, 1)'    
+        ];
+
+        const gBlue = [
+            'rgba(70, 0, 0, 0)',
+            'rgba(255, 128, 0, 1)',
+            'rgba(42, 0, 0, 1)',
+            'rgba(109, 50, 0, 1)',
+            'rgba(0, 102, 51, 1)',
+            'rgba(255, 255, 55, 1)'   
+        ];
+        
+        if (color == 'rojo') {
+            heatmap.set("gradient", gBlue);
+            color='azul';
+        } else if (color == 'azul') {
+            heatmap.set("gradient", gradient);
+            color='rojo';
+        }
+        
+}
+
+function changeRadius() {
+  heatmap.set("radius", heatmap.get("radius") ? null : 20);
+}
+
+function getPoints() {
+        return [
+            {% for o in incidentes %}
+            new google.maps.LatLng({{ o.lat}}, {{ o.lng }}),                
+            {% endfor %}                    
+        ];
+}
+
+function setMarkers(map) {    
+    // Shapes define the clickable region of the icon. The type defines an HTML
+    // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+    // The final coordinate closes the poly by connecting to the first coordinate.
+    var shape = {
+        coords: [1, 1, 1, 47, 30, 47, 30, 1],
+        type: 'poly'
+    };      
+    
+    var czindex = 500;           
+
+    var ico_plantas = {             
+        'optimo': { 'img': "{% static 'core/assets/images/yazaki/yazaki-marker.png' %}" },
+        'relevante': { 'img': "{% static 'core/assets/images/alert-icon-plant.gif' %}" },
+    }; 
+
+    // Visualización de plantas de cliente
+
+    var czindex = 900, vplantStatus;   
+
+    {% for planta in plantas %}      
+        var pnombre = '{{ planta.nombre }}';         
+        vplantStatus = '{{ planta.status }}';
+
+        //console.log(vplantStatus);
+
+        var marker = new google.maps.Marker({
+            position: {lat: {{ planta.lat}}, lng: {{ planta.lng }} },
+            map: map,
+            icon: ico_plantas.{{ planta.status }}.img,
+            shape: shape,
+            title: pnombre.toUpperCase(),
+            zIndex: czindex
+        });
+
+        circle = new google.maps.Circle({
+            map: map,
+            radius: 1000,
+            fillColor: '#8EE5EE',
+            strokeColor: '#50A6C2'
+        });
+
+        circle.bindTo('center', marker, 'position');
+
+        marker.setZIndex(1000000);
+
+        var estado_planta = '<span class="bgp-color-verde">Óptimo</span>';
+        var nivelCobertura = 100;
+        
+        if (nivelCobertura < 80 ) {
+            estado_planta = '<span class="bgp-color-rojo">Relevante</span>';                
+         
+
+            marker.infowindow = new google.maps.InfoWindow({
+                content: '<div class="popupCustom"><div class="buHeader"></div><div class="infoUBH5_Wrapper"><img src="{% static "core/assets/images/yazaki/yazaki-marker.png" %}"/><h5 class="infoUBH5">***' + pnombre.toUpperCase() + '</h5><span class="small">{{ planta.direccion }}, {{ planta.ciudad }}, {{ planta.estado }}, {{ planta.pais }} </span></div> <br> <div class="row infoContent"><div class="col-md-6"><p><b>Nivel de Seguridad:</b>' + estado_planta + '</p><p><b>Incidentes logísticos</b></p><hr/><p><b style="color: black;">PREDICTIVE ANALYTICS - COBERTURA</b><br/><img src="{% static "core/assets/images/red-gauge.png" %}"/><span class="txtCobertura">' + nivelCobertura + '% </span></p></div><div class="col-md-6"><div class="scroll_wrapper"><div class="scroll_content"> <p><b>Seguridad Electrónica</b>: 84.17%</p><p>Falla eléctrica total en planta G3783-Yak5 por explosión de estación de gasolina.</p><p>La planta {{ planta.nombre }} quedó en un 75% afectada por razones de tormentas eléctricas y vientos fuertes en la ciudad, debido a que se dio una alerta roja desde el gobierno mexicano.<br/>Se tiene un estimado de varias horas antes de que la tormenta y los vientos fuertes se retiren.</p></div></div></div></div></div>',
+                maxWidth: 720
+            });   
+
+        }  else if (nivelCobertura >= 80 ) {
+            marker.infowindow = new google.maps.InfoWindow({
+                content: '<div class="popupCustom"><div class="buHeader"></div><div class="infoUBH5_Wrapper"><img src="{% static "core/assets/images/yazaki/yazaki-marker.png" %}"/><h5 class="infoUBH5">***' + pnombre.toUpperCase() + '</h5><span class="small">{{ planta.direccion }}, {{ planta.ciudad }}, {{ planta.estado }}, {{ planta.pais }} </span></div> <br> <div class="row infoContent"><div class="col-md-6"><p><b>Nivel de Seguridad:</b>' + estado_planta + '</p><p><b>Incidentes logísticos</b></p><hr/><p><b style="color: black;">PREDICTIVE ANALYTICS - COBERTURA</b><br/><img src="{% static "core/assets/images/green-gauge.png" %}"/><span class="txtCoberturaOptima">' + nivelCobertura + '% </span></p></div><div class="col-md-6"><div class="scroll_wrapper"><div class="scroll_content"> <p><b>Seguridad Electrónica</b>: 84.17%</p><p>Falla eléctrica total en planta G3783-Yak5 por explosión de estación de gasolina.</p><p>La planta {{ planta.nombre }} quedó en un 75% afectada por razones de tormentas eléctricas y vientos fuertes en la ciudad, debido a que se dio una alerta roja desde el gobierno mexicano.<br/>Se tiene un estimado de varias horas antes de que la tormenta y los vientos fuertes se retiren.</p></div></div></div></div></div>',
+                maxWidth: 720
+            });    
+        }                    
+        
+        marker.addListener('click', function() {
+            this.infowindow.open(map, this);
+        });                
+        
+    {% endfor %}  
+    
+    
+}   
+
+</script>
+
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=visualization&callback=initMap">
+</script>
+
+ 

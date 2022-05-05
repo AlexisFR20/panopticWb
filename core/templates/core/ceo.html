@@ -1,0 +1,181 @@
+{% extends 'core/bases/base_dashboard.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Inicio **</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">
+    {% load static %}
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/mini-logo-panoptic.png' %}" alt="Logo de Panoptic">                                    
+            </div>
+            <div> <button class="mb-2 mr-2 btn btn-light">ADMIN<span class="badge badge-success badge-dot badge-dot-lg"> </span></button>  Panel de Control
+                <div class="page-title-subheading">
+                    Los siguientes módulos están a su disposición; puede utilizar el menú izquierdo para cualquier opción en particular. ***
+                </div>
+            </div>
+        </div>
+        <!-- Botones laterales del cuerpo -->
+        <div class="page-title-actions">                                
+            <div class="d-inline-block dropdown">
+                <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+                    <span class="btn-icon-wrapper pr-2 opacity-7">
+                        <i class="fa fa-business-time fa-w-20"></i>
+                    </span>
+                    Acción / Opción a realizar
+                </button>
+                <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-inbox"></i>
+                                <span>
+                                    Mensajes
+                                </span>
+                                <div class="ml-auto badge badge-pill badge-secondary">86</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-book"></i>
+                                <span>
+                                    Incidentes
+                                </span>
+                                <div class="ml-auto badge badge-pill badge-danger">5</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-picture"></i>
+                                <span>
+                                    Evidencias
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a disabled="" class="nav-link disabled">
+                                <i class="nav-link-icon lnr-file-empty"></i>
+                                <span>
+                                    Bitácora
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="d-inline-block pr-3">
+                <select id="custom-inp-top" type="select" class="custom-select">
+                    <option>Periodo...</option>
+                    <option>Últimos 3 meses</option>
+                    <option>En el último mes</option>                                        
+                    <option selected>En los últimos 7 días</option>
+                    <option>Últimas 24 hrs.</option>
+                </select>
+            </div>
+        </div>                             
+    </div>
+</div>             
+
+<img src="{% static 'core/assets/images/inicio-seo.jpg' %}" class="img-fluid" alt="Responsive image">
+
+
+                    
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+
+
+<script> 
+        
+
+    jQuery(".circle-progress-primary").circleProgress({
+        value: .64,
+        size: 52,
+        lineCap: "round",
+        fill: {
+            color: "#3f6ad8"
+        }
+    });
+
+    // Gráfica Barra Mixed
+
+    var options = {
+      colors: ['#4572A7', '#AA4643'],        
+      chart: {
+        height: 535,
+        type: 'line',
+      },
+      series: [{
+        name: 'Hechos Delictivos',
+        type: 'column',
+        data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320]             
+      }, {
+        name: 'Porcentaje',
+        type: 'line',
+        data: [23, 42, 35, 27, 43, 22, 12, 31, 22, 22]
+      }],
+      stroke: {
+        width: [0, 4]
+      },     
+      title: {
+        text: 'Indices Delincuenciales en Ciudad Juárez 2019 Anual'
+      },
+      fill: {
+        type: 'solid',
+        colors: ['#1A73E8', '#B32824', '#9D292A', '#002F82', '#1A73E8', '#B32824', '#9D292A', '#002F82', '#9D292A', '#002F82'],
+        opacity: 0.85
+      },
+      // labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      labels: ['Casa Habitación', 'Homicidio', 'Secuestro', 'Carjacking', 'Asalto a Negocios', 'Transeúntes', 'Auto Partes', 'Tiendas Establecidas', 'Hotel', 'Aeropuerto'],
+      xaxis: {
+        type: 'text',
+        labels: {
+            style: {
+                colors: ['#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A'],
+            },
+        }
+      },
+      yaxis: [{
+        title: {
+          text: 'Hechos Delictivos',
+        },
+
+      }, {
+        opposite: true,
+        title: {
+          text: 'Porcentaje'
+        }
+      }]
+
+    }
+
+    var chart = new ApexCharts(
+      document.querySelector("#mymixedchart"),
+      options
+    );
+
+    chart.render();
+</script>
+
+{% endblock js %}
+
+

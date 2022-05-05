@@ -1,0 +1,462 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */       
+        #geomap{
+		    width: 100%;
+		    height: 400px;
+		}
+        #ui-id-1 {
+            display:block !important;
+            z-index: 9999;
+            cursor: pointer;
+        }
+        #puntosrondines {margin-top: 30px;} 
+        .wickedpicker{z-index: 9999;}
+    </style>        
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">                
+                <i class="fas fa-plus-circle size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Rondines &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Crear Rondín
+                <div class="admin-page-title-subheading">
+                    Crear Rondín
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Rondines</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Crear Rondín</a>
+                            </li>                            
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>    
+    </div>
+</div>    
+
+<div class="row">    
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+        {% if  messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}     
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">
+                    <i class="cardhead pe-7s-lintern size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Crear Nuevo Rondín
+                </div>
+                <div class="btn-actions-pane-right text-capitalize actions-icon-btn">
+                    <div class="btn-group">
+                        <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-icon btn-icon-only btn btn-link">
+                            <i class="lnr-cog btn-icon-wrapper bgp-color-verde"></i>
+                        </button>
+                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu-right rm-pointers dropdown-menu-shadow dropdown-menu-hover-link dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(28px, 36px, 0px);">
+                            <h6 tabindex="-1" class="dropdown-header bgp-color-azul" style="margin: 0px;">
+                                Acciones
+                            </h6>
+                            <button type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon lnr-inbox"> </i><span>Acción 1</span></button>
+                            <button type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon lnr-file-empty"> </i><span>Acción 2</span></button>
+                            <button type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon lnr-book"> </i><span>Acción 3</span></button>
+                            <div tabindex="-1" class="dropdown-divider"></div>
+                            <div class="p-1 text-right">
+                                <button class="mr-2 btn-shadow btn-sm btn btn-link">Ver algo</button>
+                                <button class="mr-2 btn-shadow btn-sm btn btn-primary">Action General</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+                
+            <div class="card-body" style="position: relative;">
+                <div class="widget-content pt-0 w-100">
+                    <div class="widget-content-outer">
+                        <div class="container">
+                            <!-- Forma para crear rondin -->
+                            <form id="frm-crear-rondin" action="{% url 'administrador:admin_rondines_rondin_create' %}" role="form" method="POST">                                                          
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <!-- Nombre de Rondín -->
+                                        <div class="form-group">
+                                            <label>Nombre de Rondín</label>
+                                            <input data-validation="length" data-validation-length="8-50" type="text" id="nombre" name="nombre" class="form-control mostrar" placeholder="Escriba un nombre corto para el rondín"  data-validation="required">
+                                        </div>
+
+                                        <!-- Lista de Guardias en la Organización-->
+                                        <div class="position-relative form-group">
+                                            <label for="admin_aguilas" class="">Seleccione un Guardía</label>
+                                            <select id="admin_aguilas" name="admin_aguilas" class="form-control mostrar selector" data-validation="required">
+                                                <option value="0" >-- Seleccione un Guardía -- </option>                                   
+                                                {% for guardia in guardias %}}
+                                                <option value="{{ guardia.id }}">{{ guardia.first_name }} {{ guardia.last_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Selección de cliente -->                                          
+                                        <div class="position-relative form-group"><label for="cliente" class="">Seleccione el cliente asociado</label>
+                                            <select id="cliente" name="cliente" class="form-control mostrar selector" data-validation="required">
+                                            <option value="0" >-- Seleccione el cliente -- </option>
+                                            {% for cliente in clientes.all %}                                                   
+                                                    <option value="{{ cliente.id }}">{{ cliente }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Selección de Unidad de Negocio por cliente para el usuario -->                                          
+                                        <div class="position-relative form-group">
+                                            <label for="planta" class="">Seleccione la Unidad de Negocio asociada</label>
+                                            <select name="planta" id="planta" class="form-control mostrar selector" data-validation="required">
+                                            <option value="0" >-- Seleccione Unidad de Negocio -- </option>
+                                            {% for planta in plantas.all %}
+                                                    <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+
+                                </div>
+
+                                <div class="col-md-6">    
+                                    <!-- Tiempo Estimado para Rondín-->
+                                    <div class="position-relative form-group">
+                                            <label for="tiempo_estimado" class="">Tiempo Estimado</label>
+                                            <select id="tiempo_estimado" name="tiempo_estimado" class="form-control mostrar selector" data-validation="required">
+                                            <option value="0" >-- Seleccione tiempo -- </option>                                                                       
+                                                    <option value="30">30 minutos</option>
+                                                    <option value="45">45 minutos</option>
+                                                    <option value="60">60 minutos</option>
+                                                    <option value="90">90 minutos</option>
+                                                    <option value="120">120 minutos</option>
+                                                    <option value="150">150 minutos</option>
+                                            </select>
+                                    </div>                                             
+
+                                    <!-- Correros de contacto -->
+                                    <div class="position-relative form-group">
+                                        <label for="correos_contacto" class="">Correos de contacto</label>
+                                        <textarea name="text" rows="1" id="correos_contacto" class="form-control"></textarea>
+                                    </div>                                    
+                                    
+                                </div>
+                                <br><br>
+                                <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary get_map" id="btn-rondin" type="submit" title="Guardar rondín"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Guardar Rondín</span></button>
+                            </div>
+                            </form>
+                            <!-- Fin de Forma para crear rondin-->
+                        </div>                        
+                    </div>
+                </div>
+                <div class="resize-triggers"><div class="expand-trigger"><div style="width: 502px; height: 432px;"></div></div><div class="contract-trigger"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title font-size-lg text-capitalize font-weight-normal">Income</div>
+                <div class="btn-actions-pane-right text-capitalize actions-icon-btn">
+                    <div class="btn-group">
+                        <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-icon btn-icon-only btn btn-link">
+                            <i class="lnr-cog btn-icon-wrapper"></i>
+                        </button>
+                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu-right rm-pointers dropdown-menu-shadow dropdown-menu-hover-link dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(28px, 36px, 0px);">
+                            <h6 tabindex="-1" class="dropdown-header">
+                                Header
+                            </h6>
+                            <button type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon lnr-inbox"> </i><span>Menus</span></button>
+                            <button type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon lnr-file-empty"> </i><span>Settings</span></button>
+                            <button type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon lnr-book"> </i><span>Actions</span></button>
+                            <div tabindex="-1" class="dropdown-divider"></div>
+                            <div class="p-1 text-right">
+                                <button class="mr-2 btn-shadow btn-sm btn btn-link">View Details</button>
+                                <button class="mr-2 btn-shadow btn-sm btn btn-primary">Action</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>           
+                
+            <div class="p-0 card-body" style="position: relative;">
+                <div class="widget-content pt-0 w-100">
+                    <div class="widget-content-outer">
+                        <div class="widget-content-wrapper">
+                            wsswsw
+                        </div>                        
+                    </div>
+                </div>
+                <div class="resize-triggers"><div class="expand-trigger"><div style="width: 502px; height: 432px;"></div></div><div class="contract-trigger"></div></div>
+            </div>
+        </div>
+    </div>
+</div> <!--  end of row -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead pe-7s-lintern size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Crear Nuevo Rondín para Unidad de Negocio
+                </div>                                                           
+            </div>
+            <div class="card-body">     
+                                                          
+                <!--  Código Mapa  -->
+                <div class="row">
+                        
+                        <div class="col-md-12">                                    
+                            <div id="ya no es forma">
+                                
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-12 col-lg-6">    
+                                        
+                                        <!-- Nombre de Rondín -->
+                                        <div class="form-group">
+                                            <label>Nombre de Rondín</label>
+                                            <input data-validation="length" data-validation-length="8-50" type="text" id="nombre" name="nombre" class="form-control mostrar" placeholder="Escriba un nombre corto para el rondín"  data-validation="required">
+                                            </div>
+
+                                        <!-- Lista de Guardias en la Organización-->
+                                        <div class="position-relative form-group">
+                                            <label for="guard" class="">Seleccione un Guardía</label>
+                                            <select id="guard" name="guard" class="form-control mostrar selector" data-validation="required">
+                                                <option value="0" >-- Seleccione un Guardía -- </option>                                   
+                                                {% for guardia in guardias %}}
+                                                <option value="{{ guardia.id }}">{{ guardia.first_name }} {{ guardia.last_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Selección de cliente -->                                          
+                                        <div class="position-relative form-group"><label for="cliente" class="">Seleccione el cliente asociado</label>
+                                            <select id="cliente" name="cliente" class="form-control mostrar selector" data-validation="required">
+                                            <option value="0" >-- Seleccione el cliente -- </option>
+                                            {% for cliente in clientes.all %}                                                   
+                                                    <option value="{{ cliente.id }}">{{ cliente }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+
+                                            <!-- Selección de Unidad de Negocio por cliente para el usuario -->                                          
+                                            <div class="position-relative form-group"><label for="planta" class="">Seleccione la Unidad de Negocio asociada</label>
+                                            <select name="planta" id="planta" class="form-control mostrar selector" data-validation="required">
+                                            <option value="0" >-- Seleccione Unidad de Negocio -- </option>
+                                            {% for planta in plantas.all %}
+                                                    <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Tiempo Estimado para Rondín-->
+                                        <div class="position-relative form-group">
+                                            <label for="tiempo_estimado" class="">Tiempo Estimado</label>
+                                            <select id="tiempo_estimado" name="tiempo_estimado" class="form-control mostrar selector" data-validation="required">
+                                            <option value="0" >-- Seleccione tiempo -- </option>                                                                       
+                                                    <option value="30">30 minutos</option>
+                                                    <option value="45">45 minutos</option>
+                                                    <option value="60">60 minutos</option>
+                                                    <option value="90">90 minutos</option>
+                                                    <option value="120">120 minutos</option>
+                                                    <option value="150">150 minutos</option>
+                                            </select>
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="col-xs-12 col-md-12 col-lg-6">                                           
+                                        
+                                        <!-- Correros de contacto -->
+                                        <div class="position-relative form-group">
+                                            <label for="correos_contacto" class="">Correos de contacto</label>
+                                            <textarea name="text" id="correos_contacto" class="form-control"></textarea>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label>Fecha de Alta</label>
+                                            <input id="date_joined" type="text" name="date_joined" class="form-control" pattern="(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d" placeholder="MM/DD/YYYY" value="{% now 'm/d/Y' %}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Hora de Alta</label>
+                                            <input id="hour_joined" type="text" name="hour_joined" class="form-control" placeholder="HH:mm" value="">
+                                        </div>
+                                        
+                                    </div> 
+                                    <div class="col-xs-12 col-md-12 col-lg-12">
+                                        <div class="form-heading">Detalles de ubicación</div>
+                                    </div>
+                                    <div class="col-xs-12 col-md-12 col-lg-6">
+                                            <div class="mb-2 mr-2 position-relative input-group">
+                                                <input type="text" id="search_location" class="form-control" placeholder="Buscar ubicación" value="Rio Yaqui 4010">
+                                                
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-primary get_map text-uppercase" type="button">
+                                                        Localizar
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-2 mr-2 position-relative form-group">
+                                                <ul id="puntosrondines"></ul>
+                                            </div>     
+                                        </div>
+                                        <div class="col-xs-12 col-md-12 col-lg-6">
+                                            <!-- Map to go here -->
+                                            <!--div id="map"></div-->
+                                            <!-- display google map -->
+                                            <div id="geomap"></div>
+
+                                            <!-- display selected location information -->
+                                            <div class="escondido">
+                                                <h4>Detalles de ubicación</h4>
+                                                <p>Dirección: <input type="text" class="search_addr" size="45"></p>
+                                                <p>Latitud: <input type="text" class="search_latitude" size="30"></p>
+                                                <p>Longitud: <input type="text" class="search_longitude" size="30"></p>
+                                            </div>
+                                            <br><br>
+                                            <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary get_map" id="btn-rondinX" type="submit" title="Guarde Rondines"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Guardar Rondín</span></button>
+                                        </div>
+                                        
+                                                
+                                        
+                                    </div>
+                                </div>                              
+                            </form>
+
+                            
+                        </div>
+                        
+                        
+                    </div>
+                <!-- Código Mapa Fin  -->
+            </div>  
+        </div>
+</div> 
+    
+
+  
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    $(document).ready(function() {
+       
+        /*var today = moment().format('MM/DD/YYYY');
+
+        $('input[name="date_joined"]').val(today);
+        $('#date_joined').attr("data-date", moment( $('#date_joined').val() ).format("YYYY-MM-DD HH:mm") );
+
+        $("#date_joined").on("change", function() {        
+            $('#date_joined_real').attr("data-date", moment( $('#date_joined').val() ).format("YYYY-MM-DD HH:mm") );
+            $('#date_joined_real').val( moment( $('#date_joined').val() ).format("YYYY-MM-DD HH:mm") );
+             $('#hour_joined').val( moment( $('#date_joined_real').val() ).format("HH:mm") );
+        }).trigger("change")*/
+
+        $('input[name="date_joined"]').datepicker({
+            format: 'mm/dd/yyyy',
+            language: 'es'
+        });
+
+        var options = {
+            //now: "12:35", //hh:mm 24 hour format only, defaults to current time
+            twentyFour: false,  //Display 24 hour format, defaults to false
+            upArrow: 'wickedpicker__controls__control-up',  //The up arrow class selector to use, for custom CSS
+            downArrow: 'wickedpicker__controls__control-down', //The down arrow class selector to use, for custom CSS
+            close: 'wickedpicker__close', //The close class selector to use, for custom CSS
+            hoverState: 'hover-state', //The hover state class to use, for custom CSS
+            title: 'Seleccione una Hora', //The Wickedpicker's title,
+            showSeconds: false, //Whether or not to show seconds,
+            timeSeparator: ' : ', // The string to put in between hours and minutes (and seconds)
+            secondsInterval: 1, //Change interval for seconds, defaults to 1,
+            minutesInterval: 1, //Change interval for minutes, defaults to 1
+            beforeShow: null, //A function to be called before the Wickedpicker is shown
+            afterShow: null, //A function to be called after the Wickedpicker is closed/hidden
+            show: null, //A function to be called when the Wickedpicker is shown
+            clearable: false, //Make the picker's input clearable (has clickable "x")
+        };
+        $('#hour_joined').wickedpicker(options);
+
+        /*$('input[name="hour_joined"]').datetimepicker({
+            format: 'HH:mm'
+        });*/
+
+        /*$('input[name="alta_rondin"]').val(today);
+        $('#alta_rondin').attr("data-date", moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+
+        $("#alta_rondin").on("change", function() {        
+            $('#alta_rondin_real').attr("data-date", moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+            $('#alta_rondin_real').val( moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+             $('#hour_joined').val( moment( $('#alta_rondin_real').val() ).format("HH:mm") );
+        }).trigger("change")*/
+
+         // Muestra las unidades de negocio según el cliente seleccionado
+        $('#cliente').on('change', function() {
+            clienteSeleccionado = $("#cliente").val();   
+
+            if ( clienteSeleccionado != 0 ) {
+            $("#planta option").each(function() {               
+                var elSeleccionado =  $(this).val();
+                
+                if (  $(this).attr('data-cliente-id') == clienteSeleccionado) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }            
+            });         
+            } else {
+            $('[name="planta"]').val('0').change();
+                $("#planta option").show();
+            }         
+        }); 
+
+        $('input[name="alta_rondin"]').datepicker({
+            format: 'mm/dd/yyyy',
+            language: 'es'
+        });
+
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

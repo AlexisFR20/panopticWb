@@ -1,0 +1,845 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Informe</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+        {% for css in css_list %}
+            {% include 'core/includes/css/'|add:css|add:'.htm' %}
+        {% endfor %}
+        <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="mini-logo-panoptic">
+                    <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>
+                </div>
+                <div>INFORME 
+                    <div class="page-title-subheading">
+                        El siguiente dashboard es una representación de las estadísticas generales.
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-title-actions">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a> General</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div> <!-- Page title actions -->
+
+        </div> <!-- Page Title Wrapper -->
+    </div>
+
+<div class="row" >
+    <h3>ZONA 0</h3>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-body text-center">
+                <h5 class="card-title size20 bgp-color-azul">Cliente: {{ vcliente.nombre }}</h5>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="exampleSelect" class=""><b>Seleccione una Ciudad</b></label>
+                            <select id="ciudad" name="ciudad" class="form-control mostrar selector" style="min-width: 144px;">
+                                <option value="" >-- Seleccione una Ciudad --</option>
+                                {% for ciudad in ciudades %}
+                              <option value="{{ ciudad.nombre }}">{{ ciudad.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="exampleEmail" class=""><b>Fecha a Comparar</b></label>
+
+                            <input id="dates_old" name="dates_old" required="required" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="position-relative form-group">
+                            <label for="exampleEmail" class=""><b>Fecha a Actual</b></label>
+
+                            <input id="dates_now" name="dates_now" required="required" class="form-control">
+                        </div>
+                    </div>
+
+                </div>
+          </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-8">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">
+                    <i class="cardhead fas fa-exclamation size16" aria-hidden="true"></i>
+                    Índice delictivo
+                </div>
+            </div>
+            <div class="card-body">
+               <div id="chart1"></div>
+               <hr>
+               <div id="chart2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <h3>Analisis de Riesgo</h3>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+    <div class="mb-3 card">
+        <div class="card-body text-center">
+            <div class="input-group">
+                <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;"
+                    data-validation="required">
+                    {% for cliente in clientes.all %}
+                        <option value="{{ cliente.id }}">{{ cliente }}</option>
+                    {% endfor %}
+                </select>
+                &emsp;
+                <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector"
+                data-validation="required">
+                <option value="">-- Unidad de Negocio (todas) --</option>
+                {% for planta in plantas %}
+                    <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}">{{ planta }}</option>
+                {% endfor %}
+                </select>
+                &emsp;
+                <button id="aplicar" class="btn btn-primary">APLICAR</button>
+                &emsp;
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-10">
+        <div class="mb-3 card" style="background-color: #fbfbfb;">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    RESULTADO GENERAL EN LAS SIGUIENTES CATEGORÍAS
+                </div>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                        <!-- Grafica General de Vulnerabilidad-->
+                        <div id="barChartResultadoGralVulnerabilidad">
+                            <p class="bgp-greymeout small">Generando gráfica...</p>
+                            <div class="loader-wrapper d-flex justify-content-center align-items-center">
+                                <div class="loader">
+                                    <div class="square-spin">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                        <!-- Grafica de Porcentaje por Area -->
+                        <div id="barChartPorcentajePorArea">
+                            <p class="bgp-greymeout small">Generando gráfica...</p>
+                            <div class="loader-wrapper d-flex justify-content-center align-items-center">
+                                <div class="loader">
+                                    <div class="square-spin">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                        <select id="cat-selector" class="form-control selector" style="display: none;">
+                            <option value="entorno">Entorno</option>
+                            <option value="infraestructura">Infraestructura</option>
+                            <option value="seguridad_operativa">Seguridad Operativa</option>
+                            <option value="seguridad_electronica">Seguridad Electronica</option>
+                            <option value="logistica">Logística</option>
+                        </select>
+                        <!-- Grafica de Áreas-->
+                        <div id="barChartResultArea">
+                            <p class="bgp-greymeout small">Generando gráfica...</p>
+                            <div class="loader-wrapper d-flex justify-content-center align-items-center">
+                                <div class="loader">
+                                    <div class="square-spin">
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="row">
+        Predictive Analytics
+    </div>
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+
+<script>
+    $(document).ready(function(){
+    $('input[name="dates_old"]').daterangepicker(
+        {
+            //"timePicker": true,
+            "showDropdowns": true,
+            //"showWeekNumbers": true,
+            //"showISOWeekNumbers": true,
+            "autoApply": true,
+            //"autoUpdateInput": false,
+            "startDate": moment().subtract(2, 'months').format("MM-DD-YYYY"),
+            "endDate": moment().add('1', 'day').format("MM-DD-YYYY"),
+            "opens": "center",
+            "ranges": {
+                'Hoy': [moment(), moment()],
+                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+                'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+                'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                //'Últimos 2 meses': [moment().subtract(2, 'month').startOf('month'), moment().subtract(2, 'month').endOf('month')],
+                //'Últimos 3 meses': [moment().subtract(3, 'month').startOf('month'), moment().subtract(3, 'month').endOf('month')],
+                //'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "locale": {
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Personalizar",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Setiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ]
+
+            }
+        },
+        function (start, end, label) {
+            vciudad = $('select#ciudad').val();
+            console.log(vciudad);
+            //vplanta = $('select#planta').val();
+            vstart = start.format('YYYY-MM-DD');
+            vend = end.format('YYYY-MM-DD');
+
+            if (vciudad == '') {
+                alert('Seleccione una Ciudad por favor !!!');
+                return false;
+            }
+            if (vstart == vend) {
+                vend = moment(vstart).add(1, 'days').format('YYYY-MM-DD HH:mm');
+            }
+            refresh_dashboars_old(vstart, vend, vciudad);
+        });
+
+    /**************************************************************************************/
+
+            
+
+    function refresh_dashboars_old(vstart, vend, vciudad) {
+
+        var iconos = {
+            {% for tipo in tipo_incidentes %}
+            '{{ tipo.alias }}': { 'nombre': "{{ tipo.nombre }}", 'img': "/media/{{ tipo.icono }}" },
+            {% endfor %}
+        };
+
+        $('#rango_fecha').text("De " + moment(vstart).format('DD-MM-YYYY') + " a " + moment(vend).format('DD-MM-YYYY'));
+        //$('#nombre_ciudad_old').text(vciudad);
+        $('#count_indices_old').empty();
+
+        var data_results = "";
+        var totales = "";
+        console.log("?vstart=" + vstart + "&vend=" + vend + "&vciudad=" + vciudad);
+        $.ajax({
+            url: "{% url 'entorno:incidentes_ajax' %}",
+            data: {
+                'vstart': vstart,
+                'vend': vend,
+                'vciudad': vciudad
+            },
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            success: function (result) {
+
+            $('#count_indices')
+            data_results = result.Totales;
+            totales = result.Total_Incidentes;
+
+            if (data_results != 'None') {
+                //console.log(result);
+
+
+                if (totales == '0') {
+
+                    $('#count_indices_old').append(
+                        '<li class="list-group-item">' +
+                        '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                        '       <h6 class="bgp-color-rojo negrita text-uppercase text-center">No Hay registros todavía</h6>' +
+                        '    </div>' +
+                        '</li>'
+                    );
+                    return false;
+                }
+
+
+                var indice_chart = '';
+                var indice_label_chart = '';
+                $.each(data_results, function () {
+                    //console.log(this[0] + ' - ' + this[1] + ' - ' + this[2] + ' - ' + this[3]);
+                    indice_chart += this[2] + ", ";
+                    indice_label_chart += this[0] + ", ";
+
+
+                    //var nombre_incidente = this.tipo;
+
+                    var tipo_incidente = this[1];
+                    var count_indices = this[2];
+                    var indicessss = 0;
+                    var promedio_indices = 0;
+                    var subio = '';
+                    var flecha = '';
+
+                    indicessss = this[2] * 100;
+                    promedio_indices = parseFloat(indicessss / this[3]).toFixed(2);
+                    if (isNaN(promedio_indices) || promedio_indices == Infinity) {
+                        promedio_indices = parseFloat(0).toFixed(2);
+                    }
+
+
+                    if (this[3] > this[2]) {
+                        subio = 'Incremento';
+                        flecha = '<i class="fa fa-arrow-up"></i>';
+
+                    } else {
+                        subio = 'Decremento';
+                        flecha = '<i class="fa fa-arrow-down"></i>';
+                    }
+                    //? parseFloat(this[3]).toFixed(2) : "0";
+
+                    $('#count_indices_old').append(
+                        '<li class="list-group-item">' +
+                        '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                        '        <div class="widget-content-wrapper">' +
+                        '            <div class="widget-content-left mr-3 bck-white">' +
+                        '                <img width="42" class="rounded-circle icod-bw" src="' + iconos[tipo_incidente].img + '" alt="Casa Habitación">' +
+                        '            </div>' +
+                        '            <div class="widget-content-left">' +
+                        '                <div class="widget-heading">' + iconos[tipo_incidente].nombre + '</div>' +
+                        '                <div class="widget-subheading">' + subio + ' </div>' +
+                        '            </div>' +
+                        '            <div class="widget-content-right">' +
+                        '                <div class="font-size-xlg text-muted">' +
+                        '                    <small class="bgp-color-naranja opacity-9 pr-1">' + promedio_indices + '%</small>' +
+                        '                    <span id="' + tipo_incidente + '_old">' + count_indices + '</span>' +
+                        '                    <small class="text-danger pl-2">' +
+                        '                        ' + flecha +
+                        '                    </small>' +
+                        '                </div>' +
+                        '            </div>' +
+                        '        </div>' +
+                        '    </div>' +
+                        '</li>'
+                    );
+                });
+
+                //var arr_lbl1 = indice_chart.split(", ");
+                //var arr_lbl2 = indice_label_chart.split(", ");
+
+                //ApexCharts.exec('char_inc', 'updateSeries',  [{
+                //data: arr_lbl1,
+                //xaxis: {
+                //  categories: arr_lbl2,
+                //}
+                //}], true, true);
+            }
+        }
+    });
+}
+
+$('input[name="dates_now"]').daterangepicker(
+        {
+            "showDropdowns": true,
+            //"showWeekNumbers": true,
+            //"showISOWeekNumbers": true,
+            "autoApply": true,
+            //"autoUpdateInput": true,
+            "startDate": moment().subtract(2, 'months').format("MM-DD-YYYY"),
+            "endDate": moment().add('1', 'day').format("MM-DD-YYYY"),
+            "opens": "center",
+            "ranges": {
+                'Hoy': [moment(), moment()],
+                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+                'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+                'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "locale": {
+                "applyLabel": "Aplicar",
+                "cancelLabel": "Cancelar",
+                "fromLabel": "Desde",
+                "toLabel": "Hasta",
+                "customRangeLabel": "Personalizar",
+                "daysOfWeek": [
+                    "Do",
+                    "Lu",
+                    "Ma",
+                    "Mi",
+                    "Mi",
+                    "Ju",
+                    "Vi",
+                    "Sa"
+                ],
+                "monthNames": [
+                    "Enero",
+                    "Febrero",
+                    "Marzo",
+                    "Abril",
+                    "Mayo",
+                    "Junio",
+                    "Julio",
+                    "Agosto",
+                    "Setiembre",
+                    "Octubre",
+                    "Noviembre",
+                    "Diciembre"
+                ]
+
+            }
+        },
+        function (start, end, label) {
+            vciudad = $('select#ciudad').val();
+            console.log(vciudad);
+
+            //vplanta = $('select#planta').val();
+            vstart = start.format('YYYY-MM-DD');
+
+            vend = end.format('YYYY-MM-DD');
+
+            console.log(moment(vstart).add(1, 'years').format('YYYY-MM-DD'));
+            console.log('********************************************************');
+            console.log(moment(vend).add(1, 'years').format('YYYY-MM-DD'));
+
+            if (vciudad == '') {
+                alert('Seleccione una Ciudad por favor !!!');
+                return false;
+            }
+            if (vstart == vend) {
+                vend = moment(vstart).add(1, 'days').format('YYYY-MM-DD HH:mm');
+            }
+            refresh_dashboars_now(vstart, vend, vciudad);
+        });
+
+        function refresh_dashboars_now(vstart, vend, vciudad){           
+            var shape = {
+                coords: [1, 1, 1, 47, 30, 47, 30, 1],
+                type: 'poly'
+            };
+            var iconos = { 
+            {% for tipo in tipo_incidentes %}  
+            '{{ tipo.alias }}': { 'nombre': "{{ tipo.nombre }}", 'img': "/media/{{ tipo.icono }}" }, 
+            {% endfor %}  
+            };             
+            
+            $('#rango_fecha').text("De " + moment(vstart).format('DD-MM-YYYY') +" a " + moment(vend).format('DD-MM-YYYY'));
+            $('#nombre_ciudad').text(vciudad);
+            $('#count_indices').empty();
+
+            var data_results = "";
+            var totales = "";
+            //console.log("?vstart="+vstart+"&vend="+vend+"&vciudad="+vciudad);
+            $.ajax({
+                url:  "{% url 'entorno:incidentes_ajax' %}",
+                data: { 
+                    'vstart': vstart, 
+                    'vend': vend, 
+                    'vciudad': vciudad
+                },
+                datatype: 'json',
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',            
+                success: function (result) {
+                    
+                    $('#count_indices')
+                    data_results = result.Totales;
+                    totales = result.Total_Incidentes;
+
+                    data_incidentes = result.Incidente;
+
+                    if(data_results != 'None') {
+                        console.log(result);
+
+                        if(totales == '0') {
+
+                            $('#count_indices').append(
+                                '<li class="list-group-item">' +
+                                '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                                '       <h6 class="bgp-color-rojo negrita text-uppercase text-center">No Hay registros todavía</h6>' +
+                                '    </div>' +
+                                '</li>' 
+                            );
+                            return false;
+                        }
+
+
+                        var indice_chart = '';
+                        var indice_label_chart = '';
+                        var arr_lbl2 = '';
+                        $.each(data_results, function(){
+                            //console.log(this[0] + ' - ' + this[1] + ' - ' + this[2] + ' - ' + this[3]);
+                            indice_chart += this[2] + ", ";
+                            indice_label_chart += this[0] + ", ";
+
+                            
+                            //var nombre_incidente = this.tipo;
+                            var tipo_incidente = this[1];
+                            var count_indices = this[2];
+                            var indicessss = 0;
+                            var promedio_indices = 0;
+                            var subio = '';
+                            var flecha = '';
+
+                            var valor_a = '';
+                            var valor_b = '';
+
+                            //valor_a = $("#"+tipo_incidente+"_old").val();
+                            //valor_b = $("#"+tipo_incidente+"_now").val();
+                            var old_text ='';
+                            if($('input[name="dates_old"]').val() != ""){
+                                 old_text= $("#"+tipo_incidente+"_old").text();
+                                arr_lbl2 += old_text + ", ";
+                            } else {
+                                arr_lbl2 = '';
+                            }
+                            //console.log('2 - '+ arr_lbl2);
+                            $('#count_indices').append(
+                                '<li class="list-group-item">' +
+                                '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                                '        <div class="widget-content-wrapper">' +
+                                '            <div class="widget-content-left mr-3 bck-white">' +
+                                '                <img width="42" class="rounded-circle icod-bw" src="' + iconos[tipo_incidente].img + '" alt="Casa Habitación">' +
+                                '            </div>' +
+                                '            <div class="widget-content-left">' +
+                                '                <div class="widget-heading">' + iconos[tipo_incidente].nombre + '</div>' +
+                                '                <div id="'+tipo_incidente+'_txt" class="widget-subheading">'+subio+' </div>' +
+                                '            </div>' +
+                                '            <div class="widget-content-right">' +
+                                '                <div class="font-size-xlg text-muted">' +
+                                '                    <small id="'+tipo_incidente+'_pro" class="bgp-color-naranja opacity-9 pr-1">%</small>' +
+                                '                    <span id="'+tipo_incidente+'_now">' + old_text + ' <i class="fas fa-arrows-alt-h hide_icon"></i> ' + count_indices + '</span>' +
+                                '                    <small id="'+tipo_incidente+'_arrow" class="text-danger pl-2">' +
+                                '                        ' + flecha + 
+                                '                    </small>' +
+                                '                </div>' +
+                                '            </div>' +
+                                '        </div>' +
+                                '    </div>' +
+                                '</li>' 
+                            ); 
+
+                            if($('input[name="dates_old"]').val() != ""){
+                                $("#"+tipo_incidente+"_pro").removeClass('escondido');
+                                $('.hide_icon').removeClass('escondido');
+                                $("#"+tipo_incidente+"_arrow").removeClass('escondido');
+                                $("#chart2").removeClass('escondido');
+
+                                valor_a = parseFloat($("#"+tipo_incidente+"_old").text());
+                                valor_b = parseFloat(count_indices);
+
+                                //console.log("A " + valor_a + " B " + valor_b);
+                                indicessss = valor_b*100;
+
+                                promedio_indices = parseFloat( indicessss / valor_a ).toFixed(2);
+
+                                //console.log("A " + valor_a + " B " + valor_b + " C " + indicessss + " D " + promedio_indices);
+
+                                if( isNaN(promedio_indices) || promedio_indices == Infinity ){
+                                    promedio_indices = parseFloat( 0 ).toFixed(2);
+                                }
+
+                                $("#"+tipo_incidente+"_pro").text(promedio_indices+'%');
+
+
+                                if (valor_b == valor_a) {
+                                    subio = 'Sin Cambio';
+                                    flecha = '<i class="fas fa-equals"></i>'; 
+                                }
+                                else if (valor_b > valor_a) {
+                                    subio = 'Incremento';
+                                    flecha = '<i class="fa fa-arrow-up"></i>'; 
+                                } else {
+                                    subio = 'Decremento';
+                                    flecha = '<i class="fa fa-arrow-down"></i>';
+                                }
+                                $("#"+tipo_incidente+"_txt").text(subio);
+                                $("#"+tipo_incidente+"_arrow").html(flecha);
+                            } else {
+                                $("#"+tipo_incidente+"_pro").addClass('escondido');
+                                $('.hide_icon').addClass('escondido');
+                                $("#"+tipo_incidente+"_arrow").addClass('escondido');
+                                $("#chart2").addClass('escondido');
+                            }
+
+                            //console.log(promedio_indices + "-" + valor_a + "-" + valor_b);                         
+                        });
+
+                        
+
+                        //console.log(data_incidentes);
+                        var czindex = 500;
+                        
+                        var infowindow = new google.maps.InfoWindow();
+                        var contentString;
+                        $.each(data_incidentes, function(){
+                            var infowindow = null;
+                            //console.log("lat: " + this.fields.lat + ", lng: " + this.fields.lng + ", tipo: " + this.fields.tipo);
+                            const location = { lat: this.fields.lat, lng: this.fields.lng };
+                            const marker = new google.maps.Marker({
+                                position: location,
+                                map: map,
+                                icon: iconos[this.fields.tipo].img,
+                                shape: shape,
+                                title: this.fields.titulo.toUpperCase(),
+                                zIndex: czindex
+                            });
+
+                            marker.infowindow = new google.maps.InfoWindow({
+                                content: '<h3 class="infoh3"><b>'+this.fields.titulo+'</h3><hr/><h6><span class="infoh6">TIPO:</span><span class="spantipo">' + this.fields.tipo.toUpperCase() + '</span><hr/></h6><p class="infop"></p><p class="infop">'+this.fields.direccion+', '+this.fields.ciudad+', '+this.fields.estado+', '+this.fields.pais+' | Fecha: '+this.fields.fecha+' | Fuente: Diario MX</p><a href="'+this.fields.url_noticia+'" data-id="'+this.fields.id+'" class="hoverme mb-1 mr-1 btn btn-default" target="_new">Ver Incidente Relacionado</a>'
+                            });
+                            
+                            marker.addListener('click', function() {
+                                //this.infowindow.close(map, this);                                
+                                this.infowindow.open(map, this);
+
+                            });  
+
+                            /*marker.addListener('closeclick',function(){
+                               this.infowindow.close(map, this);
+                            });*/         
+
+                            markers.push(marker);           
+                            ++czindex;
+                            //markers.push(marker);
+
+                        });
+
+
+                        var arr_lbl1 = indice_chart.split(", ");
+                        arr_lbl2 = arr_lbl2.split(", ");
+
+                        //console.log(arr_lbl1+"-"+arr_lbl2);
+
+                        ApexCharts.exec('char_inc1', 'updateOptions', {
+                            title: {
+                                text: 'Índice delictivo '+ $('input[name="dates_now"]').val()
+                            }
+                        });
+
+                        ApexCharts.exec('char_inc1', 'updateSeries', [
+                            { data: arr_lbl1 }
+                        ]); 
+
+                        ApexCharts.exec('char_inc2', 'updateOptions', {
+                            title: {
+                                text: 'Índice delictivo '+ $('input[name="dates_old"]').val()
+                            }
+                        });
+
+                        ApexCharts.exec('char_inc2', 'updateSeries', [
+                            { data: arr_lbl2 }
+                        ]); 
+                    }
+                }
+            }); 
+            //deleteMarkers();
+        }       
+});
+</script>
+
+<script>
+    console.log("****** incidentes: {{ tipo_incidentes }}")
+    var iconos = [ {% for tipo in tipo_incidentes %} '{{ tipo.nombre }}', {% endfor %} ]; 
+    var options1 = {
+      series: [{
+      name: 'Índice delictivo 1',
+      data: []
+    }],
+      chart: {
+        id: 'char_inc1',
+      type: 'bar',
+      height: 500
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '55%',                            
+      },
+    },
+    colors:['#9D292A'],
+    title: {
+      text: 'Índice delictivo 1'
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: iconos,
+    },
+    yaxis: {
+      title: {
+        text: 'Índice delictivo'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    grid: {
+      show: true,
+      yaxis: {
+          lines: {
+              show: false
+          }
+      },               
+   },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+            console.log(val);
+          return " Índice delictivo total " + val
+        }
+      }
+    }
+    };
+
+    var chart1 = new ApexCharts(document.querySelector("#chart1"), options1);
+    chart1.render();
+
+
+    
+    var options2 = {
+      series: [{
+      name: 'Índice delictivo 2',
+      data: []
+    }],
+      chart: {
+        id: 'char_inc2',
+      type: 'bar',
+      height: 500
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '55%',                            
+      },
+    },
+    colors:['#008ffb'],
+    title: {
+      text: 'Índice delictivo 2'
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: iconos,
+    },
+    yaxis: {
+      title: {
+        text: 'Índice delictivo'
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    grid: {
+      show: true,
+      yaxis: {
+          lines: {
+              show: false
+          }
+      },               
+   },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+            console.log(val);
+          return " Índice delictivo total " + val
+        }
+      }
+    }
+    };
+
+    var chart2 = new ApexCharts(document.querySelector("#chart2"), options2);
+    chart2.render();
+</script>
+
+{% endblock js %}

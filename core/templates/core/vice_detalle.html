@@ -1,0 +1,576 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic | {{ userdict.page_name | upper }} - {{ userdict.tipousuario | upper }} | Detalle</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">
+    {% load static %}
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/mini-logo-panoptic.png' %}" alt="Logo de Panoptic">                                    
+            </div>
+            <div>Panel de Control <button class="mb-2 mr-2 btn btn-light tipousuario">{{ userdict.tipousuario }}<span class="badge badge-success badge-dot badge-dot-lg"> </span></button>
+                <div class="page-title-subheading">
+                    Los siguientes módulos están a su disposición; puede utilizar el menú izquierdo para cualquier opción en particular. ***
+                </div>
+            </div>
+        </div>
+        <!-- Botones laterales del cuerpo -->
+        <div class="page-title-actions">                                
+            <div class="d-inline-block dropdown">
+                <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-shadow dropdown-toggle btn btn-info">
+                    <span class="btn-icon-wrapper pr-2 opacity-7">
+                        <i class="fa fa-business-time fa-w-20"></i>
+                    </span>
+                    Acción / Opción a realizar
+                </button>
+                <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu dropdown-menu-right">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-inbox"></i>
+                                <span>
+                                    Mensajes
+                                </span>
+                                <div class="ml-auto badge badge-pill badge-secondary">86</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-book"></i>
+                                <span>
+                                    Incidentes
+                                </span>
+                                <div class="ml-auto badge badge-pill badge-danger">5</div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link">
+                                <i class="nav-link-icon lnr-picture"></i>
+                                <span>
+                                    Evidencias
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a disabled="" class="nav-link disabled">
+                                <i class="nav-link-icon lnr-file-empty"></i>
+                                <span>
+                                    Bitácora
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="d-inline-block pr-3">
+                <select id="custom-inp-top" type="select" class="custom-select">
+                    <option>Periodo...</option>
+                    <option>Últimos 3 meses</option>
+                    <option>En el último mes</option>                                        
+                    <option selected>En los últimos 7 días</option>
+                    <option>Últimas 24 hrs.</option>
+                </select>
+            </div>
+        </div>                             
+    </div>
+</div>                                
+
+<div class="tabs-animation">
+
+    <div class="row" class="pruebatexto" style="display: none;">
+        <div class="col-12">
+            <p style="font-family: 'diamante-light', Tahoma, Arial; font-size: 26px;">
+                Prueba de texto - diamante light
+            </p>
+            <p style="font-family: 'diamante-light', Tahoma, Arial; font-size: 26px;">
+                Prueba de texto - diamante-efregular
+            </p>
+            <p style="font-family: 'diamante-medium-regular', Tahoma, Arial; font-size: 26px;">
+                Prueba de texto - diamante-medium-regular
+            </p>
+            <p style="font-family: 'diamante-bold', Tahoma, Arial; font-size: 26px;">
+                Prueba de texto - diamante-bold
+            </p>
+            <p style="font-family: 'diamante-extrabold', Tahoma, Arial; font-size: 26px;">
+                Prueba de texto - diamante-extrabold
+            </p>                                
+        </div>
+    </div>
+    <!-- Indicadores Superiores -->
+    <div class="row">
+        <div class="col-md-12 col-lg-6 col-xl-5">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        <i class="header-icon bgp-color-rojo pe-7s-note2"></i>
+                        Indices Delincuenciales
+                    </div>
+                    <div class="btn-actions-pane-right">
+                        <small class="bgp-color-naranja opacity-9 pr-1">En los últimos 7 días</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <h6 class="bgp-color-rojo negrita text-uppercase font-size-md">Ciudad Juárez</h6>
+                        <!-- Listado de ïconos delincuenciales -->
+                        <ul class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bck-white">
+                                            <img width="42" class="rounded-circle icod-bw" src="{% static 'core/assets\images\icons\delincuenciales-color\casa-habitacion.png' %}" alt="Casa Habitación">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Casa Habitación</div>
+                                            <div class="widget-subheading">Incremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">20%</small>
+                                                <span>19</span>
+                                                <small class="text-danger pl-2">
+                                                    <i class="fa fa-arrow-up"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle icod-bw" src="{% static 'core/assets\images\icons\delincuenciales-color\homicidio.png' %}" alt="Homicidio">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Homicidio</div>
+                                            <div class="widget-subheading">Incremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">40%</small>
+                                                <span>32</span>
+                                                <small class="text-danger pl-2">
+                                                    <i class="fa fa-arrow-up"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle icod-bw" src="{% static 'core/assets\images\icons\delincuenciales-color\secuestro.png' %}" alt="Secuestro">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Secuestro</div>
+                                            <div class="widget-subheading">Decremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">10%</small>
+                                                <span>25</span>
+                                                <small class="text-success pl-2">
+                                                    <i class="fa fa-arrow-down"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle icod-bw" src="{% static 'core/assets\images\icons\delincuenciales-color\carjacking.png' %}" alt="Carjacking">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Carjacking</div>
+                                            <div class="widget-subheading">Incremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">4%</small>
+                                                <span>21</span>
+                                                <small class="text-danger pl-2">
+                                                    <i class="fa fa-arrow-up"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\asalto-a-negocios.png' %}" alt="Asalto a Negocios">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Asalto a Negocios</div>
+                                            <div class="widget-subheading">Decremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">12%</small>
+                                                <span>9</span>
+                                                <small class="text-success pl-2">
+                                                    <i class="fa fa-arrow-down"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\transeuntes.png' %}" alt="Transeúntes">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Transeúntes</div>
+                                            <div class="widget-subheading">Decremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">22%</small>
+                                                <span>17</span>
+                                                <small class="text-success pl-2">
+                                                    <i class="fa fa-arrow-down"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\auto-partes.png' %}" alt="Auto Partes">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Auto Partes</div>
+                                            <div class="widget-subheading">Incremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">3%</small>
+                                                <span>11</span>
+                                                <small class="text-danger pl-2">
+                                                    <i class="fa fa-arrow-up"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\tiendas-establecidas.png' %}" alt="Tiendas Establecidas">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Tiendas Establecidas</div>
+                                            <div class="widget-subheading">Decremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">1%</small>
+                                                <span>3</span>
+                                                <small class="text-success pl-2">
+                                                    <i class="fa fa-arrow-down"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\hotel.png' %}" alt="Hotel">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Hotel</div>
+                                            <div class="widget-subheading">Incremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">2%</small>
+                                                <span>11</span>
+                                                <small class="text-danger pl-2">
+                                                    <i class="fa fa-arrow-up"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">
+                                    <div class="widget-content-wrapper">
+                                        <div class="widget-content-left mr-3 bgp-white">
+                                            <img width="42" class="rounded-circle" src="{% static 'core/assets\images\icons\delincuenciales-color\aeropuerto.png' %}" alt="Aeropuerto">
+                                        </div>
+                                        <div class="widget-content-left">
+                                            <div class="widget-heading">Aeropuerto</div>
+                                            <div class="widget-subheading">Decremento </div>
+                                        </div>
+                                        <div class="widget-content-right">
+                                            <div class="font-size-xlg text-muted">
+                                                <small class="bgp-color-naranja opacity-9 pr-1">1%</small>
+                                                <span>11</span>
+                                                <small class="text-success pl-2">
+                                                    <i class="fa fa-arrow-down"></i>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-6 col-xl-7">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        <i class="header-icon bgp-color-rojo pe-7s-note2"></i>
+                        Indices Delincuenciales
+                    </div>
+                    <div class="btn-actions-pane-right">
+                        <small class="bgp-color-naranja opacity-9 pr-1">En los últimos 7 días</small>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="tab-minimal-1">
+                    <div class="card-body">
+                        <div id="mymixedchart"></div>
+                    </div>
+                </div>
+
+                <div class="main-card mb-3 card">
+                    <div class="card-header"><i class="header-icon lnr-checkmark-circle"> </i>Información
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                                <p>Por medio del mapa presente identificaremos los problemas sucedidos dentro del área de las unidaes de negocio del cliente, mismas que puede abarcar un sólo punto, como es el caso de una planta maquiladora, o bien un conjunto de plantas en diferentes regiones, estados, ciudades.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- <div class="col-md-6 col-lg-6 col-xl-7"> -->
+        <div class="col-md-12 col-lg-6 col-xl-7">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        <i class="header-icon lnr-apartment icon-gradient bgp-azul"> </i>
+                        Mapa de Calor Delincuencial
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id='map' style='width: 100%; height: 500px;'></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-6 col-xl-5">
+            <div class="mb-3 text-white card-border bg-dark card">
+                <div class="card-header"><i class="header-icon pe-7s-note2 icon-gradient bg-warm-flame"> </i>Alertas externas (Política, Ambiental. Sociales, Tecnológicas…)
+                </div>
+                <div class="card-body">
+
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-dark">
+                            <div class="widget-content p-0">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left mr-3">
+                                        <img width="42" class="rounded-circle" src="{% static 'core/assets/images/red-arrow.png' %}" alt="">
+                                    </div>
+                                    <div class="widget-content-left">
+                                        <div class="widget-heading">Falla eléctrica total en planta G3783-Yak5 por <br/>Explosión de Gasolinera a 200 mts.</div>
+                                        <div class="widget-subheading">Ciudad Juárez, Chih. | Sábado 03 Noviembre | 8:20am.</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                        <div role="group" class="btn-group-sm btn-group">
+                                            <button type="button" class="btn-shadow btn btn-danger">Abrir alerta</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            <div class="widget-content p-0">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left mr-3">
+                                        <img width="42" class="rounded" src="{% static 'core/assets/images/blue-arrow.png' %}" alt="">
+                                    </div>
+                                    <div class="widget-content-left">
+                                        <div class="widget-heading">Huelga de maestros en transcurso en Av. Paseo de la Victoria</div>
+                                        <div class="widget-subheading">Ciudad Juárez | Sábado 03 Noviembre | 8:20am.</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                        <div class="badge badge-primary">Abrir Alerta</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            <div class="widget-content p-0">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left mr-3">
+                                        <img width="42" class="rounded" src="{% static 'core/assets/images/blue-arrow.png' %}" alt="">
+                                    </div>
+                                    <div class="widget-content-left">
+                                        <div class="widget-heading">Excelsior: Nuevas normas en el sector laboral afectando empleados con ingresos de salario mínimo.</div>
+                                        <div class="widget-subheading">CDMX | Sábado 03 Noviembre | 6:00am.</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                        <div class="badge badge-primary">Abrir Alerta</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            <div class="widget-content p-0">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left mr-3">
+                                        <img width="42" class="rounded" src="{% static 'core/assets/images/blue-arrow.png' %}" alt="">
+                                    </div>
+                                    <div class="widget-content-left">
+                                        <div class="widget-heading">HManifestaciones de transportistas en Ciudad de México afectando a miles de transeúntes.</div>
+                                        <div class="widget-subheading">CMDX  | Viernes 02 Noviembre | 9:00am.</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                        <div class="badge badge-primary">Abrir Alerta</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            <div class="widget-content p-0">
+                                <div class="widget-content-wrapper">
+                                    <div class="widget-content-left mr-3">
+                                        <img width="42" class="rounded" src="{% static 'core/assets/images/blue-arrow.png' %}" alt="">
+                                    </div>
+                                    <div class="widget-content-left">
+                                        <div class="widget-heading">Se anuncia una reducción en Impuestos en frontera del 8% del país.</div>
+                                        <div class="widget-subheading">CDMX | Sábado 03 Noviembre | 8:20am.</div>
+                                    </div>
+                                    <div class="widget-content-right">
+                                        <div class="badge badge-primary">Abrir Alerta</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                </div>
+                <div class="d-block text-right card-footer">
+                    <button class="mr-2 text-white btn btn-link btn-sm btn-primary">Administrar Alertas</button>
+                    <button class="btn  btn-link btn-sm btn-warning btn-lg">Acciones</button>
+                </div>
+            </div>
+        </div>
+    </div>                                         
+</div>
+                    
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+
+
+<script> 
+    // Gráfica Barra Mixed
+
+    var options = {
+      colors: ['#4572A7', '#AA4643'],        
+      chart: {
+        height: 535,
+        type: 'line',
+      },
+      series: [{
+        name: 'Hechos Delictivos',
+        type: 'column',
+        data: [440, 505, 414, 671, 227, 413, 201, 352, 752, 320]             
+      }, {
+        name: 'Porcentaje',
+        type: 'line',
+        data: [23, 42, 35, 27, 43, 22, 12, 31, 22, 22]
+      }],
+      stroke: {
+        width: [0, 4]
+      },     
+      title: {
+        text: 'Indices Delincuenciales en Ciudad Juárez 2019 Anual'
+      },
+      fill: {
+        type: 'solid',
+        colors: ['#1A73E8', '#B32824', '#9D292A', '#002F82', '#1A73E8', '#B32824', '#9D292A', '#002F82', '#9D292A', '#002F82'],
+        opacity: 0.85
+      },
+      // labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      labels: ['Casa Habitación', 'Homicidio', 'Secuestro', 'Carjacking', 'Asalto a Negocios', 'Transeúntes', 'Auto Partes', 'Tiendas Establecidas', 'Hotel', 'Aeropuerto'],
+      xaxis: {
+        type: 'text',
+        labels: {
+            style: {
+                colors: ['#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A', '#9D292A'],
+            },
+        }
+      },
+      yaxis: [{
+        title: {
+          text: 'Hechos Delictivos',
+        },
+
+      }, {
+        opposite: true,
+        title: {
+          text: 'Porcentaje'
+        }
+      }]
+
+    }
+
+    var chart = new ApexCharts(
+      document.querySelector("#mymixedchart"),
+      options
+    );
+
+    chart.render();
+</script>
+
+{% endblock js %}
+
+

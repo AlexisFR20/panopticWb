@@ -1,0 +1,298 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Encuestas</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+    <style>
+        #mapa{
+            width: 100%;
+            height: 780px;
+            border: 1px solid #c9c9c9;            
+        }
+        table.goleft td {
+            text-align: left !important;
+        } 
+    </style>    
+{% endblock css %}
+
+{% load render_table from django_tables2 %}
+{% block 'content' %}
+    <div class="app-page-title">    
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="mini-logo-panoptic">
+                    <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+                </div>
+                <div>D&D Management&nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Movimientos
+                    <div class="admin-page-title-subheading">
+                    Detalle de Movimiento
+                    </div>
+                </div>
+            </div> 
+
+            <div class="page-title-actions">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a>D&D Management</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'administrador:admin_movimientos_lista' %}"> Movimientos</a>
+                        </li>
+                        <li class="active breadcrumb-item" aria-current="page">
+                            <a href="#">Detalle de Movimiento</a> 
+                        </li>
+                    </ol>
+                </nav>     
+            </div> <!-- Page title actions -->
+
+        </div> <!-- Page Title Wrapper -->
+    </div>  <!-- app page title -->
+
+    
+
+    <!-- Vista de Movimiento -->
+
+    <div class="row">          
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">                                            
+                        <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                        Ver Detalle de Movimiento
+                    </div>                                                        
+                </div>
+                <div class="card-body">       
+                    <hr>
+                    <a href="{% url 'administrador:admin_movimientos_lista' %}" class="btn btn-primary size16">Volver a lista de Movimientos</a>
+                    <a href="{% url 'administrador:admin_movimientos_crear' %}" class="btn btn-primary size16">Crear Movimiento</a>
+                    <hr>
+                    <br>         
+                    <div class="row mt-3 mb-5">
+                        <div class="col-md-9 mx-auto"> 
+                            <!-- Datos -->
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Nombre del Chofer</label>
+                                                <input name="chofer" id="chofer" type="text" class="form-control" readonly value="{{ movimiento.chofer.first_name }} {{ movimiento.chofer.last_name }} {{ movimiento.chofer.last_name }}">
+                                            </div>
+                                        </div>  
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Nomber de Relevo</label>
+                                                <input name="relevo" id="relevo" type="text" class="form-control" readonly value="{{ movimiento.relevo.first_name }} {{ movimiento.relevo.last_name }}">
+                                            </div>        
+                                        </div>  
+                                    </div>    
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input type="hidden" id="imagen" name="imagen" value="/media/{{ movimiento.chofer.imagen }}">                                            
+                                            <input type="hidden" id="placas" name="placas" value=" {{ movimiento.vehiculo.placas }}">                                            
+                                            <input type="hidden" id="emp_transp" name="emp_transp" value=" {{ movimiento.emp_transp }}">                                            
+                                        </div>
+                                    </div>                                
+                                    <div class="position-relative form-group">
+                                        <label class="">Vehiculo</label>
+                                        <input name="vehiculo" id="vehiculo" type="text" class="form-control" readonly value="{{ movimiento.vehiculo }}">
+                                    </div>
+                                    <div class="position-relative form-group">
+                                        <label class="">Empresa Transportista</label>
+                                        <input name="transportista" id="transportista" type="text" class="form-control" readonly value="{{ movimiento.emp_transp|default_if_none:"Sin Asignar" }}">
+                                    </div>
+                                    <div class="position-relative form-group">
+                                        <label class="">Informacion de carga</label>
+                                        <input name="infocarga" id="infocarga" type="text" class="form-control" readonly value="{{ movimiento.infocarga }}">
+                                    </div>    
+                                    <div class="row" style="background-color: #d8e6dd;padding: 4px 0;">
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Valor de carga</label>
+                                                <input name="valor_carga" id="valor_carga" type="text" class="form-control" readonly value="{{ movimiento.valor_carga|default_if_none:'' }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Tiempo estimado</label>
+                                                <input name="tiempo_estimado" id="tiempo_estimado" type="text" class="form-control" readonly value="{{ movimiento.tiempo_estimado|default_if_none:'' }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>  
+                                    <div class="position-relative form-group">
+                                        <label class="">Tiempo estimado Google</label>
+                                        <input name="tiempo_estimado_google" id="tiempo_estimado_google" type="text" class="form-control" readonly value="{{ movimiento.tiempo_estimado_google|default_if_none:'' }}">
+                                    </div>                                                                 
+                                    <div class="position-relative form-check pad-bot20">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="doc_completa" id="doc_completa" class="form-check-input freeze" {% if object.doc_completa == True %} checked {% endif %}> Documentacion completa
+                                        </label> 
+                                    </div>
+                                    <div class="position-relative form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="puente" id="puente" class="form-check-input freeze" {% if object.puente == True %} checked {% endif %}> Puente
+                                        </label> 
+                                    </div>
+                                    <hr>
+                                    <div class="row" style="background-color: #f3f3f3;padding: 4px 0; margin-bottom: 20px;">
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Orígen</label>
+                                                <input name="origen" id="origen" type="text" class="form-control" readonly value="{{ movimiento.origen }}">
+                                            </div>
+                                            <div class="position-relative form-group">
+                                                <label class="">Coordenadas Orígen</label>
+                                                <input name="origen_coords" id="origen_coords" type="text" class="form-control" readonly value="{{ movimiento.origen_coords }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Destino</label>
+                                                <input name="destino" id="destino" type="text" class="form-control" readonly value="{{ movimiento.destino }}">
+                                            </div>                                    
+                                            <div class="position-relative form-group">
+                                                <label class="">Coordenadas Destino</label>
+                                                <input name="destino_coords" id="destino_coords" type="text" class="form-control" readonly value="{{ movimiento.destino_coords }}">
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Remolque</label>
+                                                <input name="remolque" id="remolque" type="text" class="form-control" readonly value="{{ movimiento.remolque|default_if_none:'' }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Tipo de Movimiento</label>
+                                                <input name="tipo_movimiento" id="tipo_movimiento" type="text" class="form-control" readonly value="{{ movimiento.tipo_movimiento|default_if_none:''|upper }}">
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">GLS</label>
+                                                <input name="gls" id="gls" type="number" class="form-control" readonly value="{{ movimiento.gls|upper }}">
+                                            </div>        
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">LTS</label>
+                                                <input name="lts" id="lts" type="number" class="form-control" readonly value="{{ movimiento.lts|upper }}">
+                                            </div>        
+                                        </div>
+                                    </div>      
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Peso</label>
+                                                <input name="peso" id="peso" type="text" class="form-control" readonly value="{{ movimiento.peso }}">
+                                            </div>                  
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                                            <div class="position-relative form-group">
+                                                <label class="">Peaje</label>
+                                                <input name="peaje" id="peaje" type="text" class="form-control" readonly value="{{ movimiento.peaje|default_if_none:'' }}">
+                                            </div>
+                                        </div>
+                                    </div>         
+                                    <!-- Datos de Movimiento -->
+                                </div>  
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-8 text-center">
+                                    <div id="estatus" class="position-relative text-center mayus estado-{% if movimiento.estatus == 'Medio' %}medio{% elif movimiento.estatus == 'Relevante' %}relevante{% else %}normal{% endif %}" data-estatus="{{movimiento.estatus}}">                                        
+                                        ESTATUS: <b>{{ movimiento.estatus }}</b>
+                                    </div>
+                                    <div id="mapa"></div>                                    
+                                    <div id="gpsid" class="escondido">{{ movimiento.vehiculo.gpsdevice.deviceesn }}</div>
+                                    <div id="marcador" class="escondido"></div>
+                                </div>  
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <button class="mb-2 mr-2 btn btn-primary btn-lg btn-block size18 mayus" data-toggle="collapse" href="#collapseVerTicket" >Tickets <span class="badge badge-pill badge-light">{{ tickets.count }}</span></button>                                                 
+                                    <div class="row pad-bot20">
+                                        <div class="col-md-12">
+                                            <div class="collapse" id="collapseVerTicket" style="">                                                
+                                                    {% for t in tickets %}
+                                                        <a href="{{BASE_URL}}/media/{{t.imagen }}" data-fancybox="" data-caption="nota" class="avatar-icon-wrapper btn-hover-shine pull-right">
+                                                            <div class="avatar-icon rounded">
+                                                                    <img src="{{BASE_URL}}/media/{{ t.imagen }}" alt="Evidencia">
+                                                            </div>
+                                                        </a>
+                                                    {% endfor %}                                                                    
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button class="mb-2 mr-2 btn btn-primary btn-lg btn-block size18 mayus" data-toggle="collapse" href="#collapseVerIncidentes" >Incidentes <span class="badge badge-pill badge-light">{{ incidentes.count }}</span></button>                                                 
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="collapse" id="collapseVerIncidentes" style="">  
+                                                {% for i in incidentes %}
+                                                    <div class="card col-md-12">
+                                                        <div class="card-header">
+                                                            {{i.fecha}}
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <span class="bgp-color-azul">{{i.notas}}</span>
+                                                            <div class="row" style="position: relative; left: 20px !important;">
+                                                                {% for e in i.evidencia_incidente_vial.all %}
+                                                                    <a href="{{ e.evidencia.url }}" data-fancybox="" data-caption="nota" class="avatar-icon-wrapper btn-hover-shine pull-right">
+                                                                        <div class="avatar-icon rounded">
+                                                                                <img src="{{ e.evidencia.url }}" alt="Evidencia">
+                                                                        </div>
+                                                                    </a>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+            
+                                                    </div>
+                                                {% endfor %}                                                         
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                  
+                                    
+
+                                    
+                                </div> <!-- col-md-12 -->
+                            </div>  <!-- Row-->   
+                            <!-- Fin de Datos -->
+                        </div>
+                    </div>                
+                </div>  
+            </div>
+        </div> 
+    </div> 
+    <!-- Fin de Vista de Movimiento -->    
+            
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

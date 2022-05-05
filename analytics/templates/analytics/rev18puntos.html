@@ -1,0 +1,274 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Revisión 18 Puntos</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+     {% load static %}    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Revisión 18 Puntos
+                <div class="admin-page-title-subheading">
+                   Historial
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions" style="min-width: 580px; display: none; ">
+
+            <div class="input-group">                
+              
+              <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+              <option value="" >-- Cliente --</option>
+              {% for cliente in clientes.all %}                                                   
+                      <option value="{{ cliente.id }}">{{ cliente }}</option>
+              {% endfor %}
+              </select>            
+              &emsp;
+              <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+                <option value="">-- Unidad de Negocio --</option>
+                {% for planta in plantas.all %}
+                    <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                {% endfor %}
+              </select>
+              &emsp;
+              <input id="dates" name="dates" required="required" class="form-control" style="width: 58px;">                      
+              &emsp;            
+  
+            </div>   
+        </div>      
+    </div>
+</div>                                
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Historial
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}                   
+                <div id="historial">                    
+                    <p>Listado de los revisiones 18 Puntos más recientes.</p>
+                    <hr><br>
+                    <!--  Data Table Start -->
+                    <table id="tbl-historial" class="table table-striped table-bordered dt-responsive nowrap"  style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th style="text-align: center;">Incidente(s)</th>
+                                <th>Inspección por</th>
+                                <th style="text-align: center;">No. Contenedor</th>
+                                <th>Planta</th>
+                                <th>Transportista</th>
+                                <th style="text-align: center;">No. Sello</th>
+                                <th style="text-align: center;">Acciónes</th>
+                                
+                                <!--th class="escondido">Defensa</th>
+                                <th class="escondido">Motor</th>
+                                <th class="escondido">Llantas</th>
+                                <th class="escondido">Piso de cabina</th>
+                                <th class="escondido">Tanque de combustible</th>
+                                <th class="escondido">Cabina</th>
+                                <th class="escondido">Suspensión de aire</th>
+                                <th class="escondido">Flecha Embrague</th>
+                                <th class="escondido">Quinta rueda</th>
+                                <th class="escondido">Debajo de la Plataforma</th>
+                                <th class="escondido">Puertas Internas y Externas</th>
+                                <th class="escondido">Piso Interior de la Caja</th>
+                                <th class="escondido">Paredes Laterales</th>
+                                <th class="escondido">Paredes Frontal</th>
+                                <th class="escondido">Techo</th>
+                                <th class="escondido">Unidad de refigeración</th>
+                                <th class="escondido">Escape</th>
+                                <th class="escondido">Revisión del sello</th>
+                                <th>Acción</th-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for revision in revisiones %}
+                            <tr>
+                                <td>{{ revision.p18_fecha }}</td>
+                                <td align="center">{% if revision.onEvidence %} <a href="{% url 'analytics:f18puntos_historial_show' rev_id=revision.id %}" class="mb-2 mr-2 btn btn-warning" title="Ver evidencias relacionadas a esta revisión."><i class="fas fa-archive size16 bgp-color-cafe-tenue"></i> <span class="incidentes badge badge-pill badge-light">{{ revision.qtyEvidence }}</span></a>{% endif %}</td>
+                                <td class="bgp-color-azul">{{ revision.inspecionado_por.first_name }} {{ revision.inspecionado_por.last_name }}</td>
+                                <td align="center">{{ revision.n_contenedor }}</td>
+                                <td class="bgp-color-naranja">{{ revision.planta | upper }}</td>
+                                <td>{{ revision.transportista }}</td>
+                                <td align="center">{{ revision.n_sello }}</td> 
+                                <td align="center"> 
+                                    <a href="{% url 'analytics:f18puntos_historial_show' rev_id=revision.id %}" title="Ver registro 18 Puntos" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-eye size16"></i></a>
+                                </td>
+                                <!--td class="escondido">{% if revision.defensa == 0 %} No {% elif revision.defensa == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">{% if revision.motor == 0 %} No {% elif revision.motor == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">{% if revision.llantas == 0 %} No {% elif revision.llantas == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">{% if revision.piso_cabina == 0 %} No {% elif revision.piso_cabina == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">{% if revision.tanque_conbustible == 0 %} No {% elif revision.tanque_conbustible == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">{% if revision.cabina == 0 %} No {% elif revision.cabina == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">{% if revision.suspension_aire == 0 %} No {% elif revision.suspension_aire == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">{% if revision.flecha_embrague == 0 %} No {% elif revision.flecha_embrague == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">{% if revision.quinta_rueda == 0 %} No {% elif revision.quinta_rueda == 1 %}  Si {% endif %}</td>
+                                <td class="escondido">
+                                    {% if revision.debajo_plataforma == 0 %} 
+                                        No 
+                                    {% elif revision.debajo_plataforma == 1 %}  
+                                        Si 
+                                    {% elif revision.debajo_plataforma == 2 %} 
+                                        N/A 
+                                    {% endif %}
+                                </td>
+                                <td class="escondido">
+                                    {% if revision.puertas_internas_externas == 0 %} 
+                                        No 
+                                    {% elif revision.puertas_internas_externas == 1 %}  
+                                        Si
+                                    {% elif revision.puertas_internas_externas == 2 %}   
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td class="escondido">
+                                    {% if revision.piso_interior_cajas == 0 %} 
+                                        No 
+                                    {% elif revision.piso_interior_cajas == 1 %} 
+                                        Si 
+                                    {% elif revision.piso_interior_cajas == 2 %}
+                                        N/A
+                                    {% endif %} 
+                                </td>
+                                <td class="escondido">
+                                    {% if revision.paredes_laterales == 0 %} 
+                                        No 
+                                    {% elif revision.paredes_laterales == 1 %} 
+                                        Si 
+                                    {% elif revision.paredes_laterales == 2 %} 
+                                        N/A 
+                                    {% endif %}
+                                </td>
+                                <td class="escondido">
+                                    {% if revision.pared_frontal == 0 %} 
+                                        No 
+                                    {% elif revision.pared_frontal == 1 %} 
+                                        Si 
+                                    {% elif revision.pared_frontal == 2 %} 
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td class="escondido">
+                                    {% if revision.techo == 0 %} 
+                                        No 
+                                    {% elif revision.techo == 1 %} 
+                                        Si 
+                                    {% elif revision.techo == 2 %} 
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td class="escondido">
+                                    {% if revision.unidad_refrigeracion == 0 %} 
+                                        No 
+                                    {% elif revision.unidad_refrigeracion == 1 %} 
+                                        Si 
+                                    {% elif revision.unidad_refrigeracion == 2 %} 
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td class="escondido">
+                                    {% if revision.escape == 0 %}
+                                        No 
+                                    {% elif revision.escape == 1 %}                                      
+                                        Si 
+                                    {% elif revision.escape == 2 %}  
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td class="escondido">
+                                    {% if revision.revision_sello == 0 %} No {% elif revision.revision_sello == 1 %}  Si {% endif %}
+                                </td->
+                                <td> 
+                                    <a href="#" title="Ver registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-eye size16"></i></a>
+                                    <!--a href="{% url 'administrador:admin_tipo_movimiento_edit' tipo_mov_id=1 %}" title="Editar registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-secondary text-center"><i class="fas fa-edit size16"></i></a>
+                                    <a href="#" title="Imprimir PDF" class="btnsInDataTable btn-transition border-0 btn btn-outline-secondary text-center"><i class="fas fa-file-pdf size16"></i></a-->
+                                </td->
+                            </tr> 
+                            {% endfor %}     
+                        </tbody>                          
+                        <tfoot>
+                            <tr>   
+                                <th>Fecha</th>
+                                <th style="text-align: center;">Incidente(s)</th>
+                                <th>Inspección por</th>
+                                <th style="text-align: center;">No. Contenedor</th>
+                                <th>Planta</th>
+                                <th>Transportista</th>
+                                <th style="text-align: center;">No. Sello</th>
+                                <th style="text-align: center;">Acciónes</th>
+                                <!--th class="escondido">Defensa</th>
+                                <th class="escondido">Motor</th>
+                                <th class="escondido">Llantas</th>
+                                <th class="escondido">Piso de cabina</th>
+                                <th class="escondido">Tanque de combustible</th>
+                                <th class="escondido">Cabina</th>
+                                <th class="escondido">Suspensión de aire</th>
+                                <th class="escondido">Flecha Embrague</th>
+                                <th class="escondido">Quinta rueda</th>
+                                <th class="escondido">Debajo de la Plataforma</th>
+                                <th class="escondido">Puertas Internas y Externas</th>
+                                <th class="escondido">Piso Interior de la Caja</th>
+                                <th class="escondido">Paredes Laterales</th>
+                                <th class="escondido">Paredes Frontal</th>
+                                <th class="escondido">Techo</th>
+                                <th class="escondido">Unidad de refigeración</th>
+                                <th class="escondido">Escape</th>
+                                <th class="escondido">Revisión del sello</th>
+                                <th>Acción</th-->
+                            </tr>
+                        </tfoot>
+                    </table>        
+                    <!-- Data Table End -->
+                </div>
+                
+            </div>  
+        </div>
+    </div> 
+</div>       
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+
+{% include 'core/includes/js/modulo_predictive/js_revision_18.htm' %}
+<!-- Ends to include JS list -->
+{% endblock js%}
+

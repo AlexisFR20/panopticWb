@@ -1,0 +1,377 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        } 
+        .bgp-fondo-verde { 
+            background-color: green;
+            color: white;
+            width: 100%;
+            padding: 3px 4px; }
+        .bgp-fondo-rojo { 
+            background-color: #9D292A;             
+            color: white;
+            width: 100%;
+            padding: 3px 4px;}
+        #list_news { background: rgba(0,0,0,.8); }       
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-map-marker size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>MAPA DE CALOR &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Mapa de Calor
+                <div class="admin-page-title-subheading">
+                   Mapa
+                </div>
+            </div>
+        </div>   
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Zona 0</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a>Mapa de Calor</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Mapa de Calor con Unidades de Negocio
+                            </li>
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>                                 
+    </div>
+</div>                                
+    
+<div class="row" >
+    <div class="col-md-12 col-lg-12 col-xl-8">
+    <!-- <div class="col-md-12 col-lg-12 col-xl-12"> -->
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">
+                    <i class="fa fa-map-marker icon-gradient bgp-naranja size20"> </i>&nbsp;&nbsp;
+                    Mapa de calor
+                </div>
+                 
+            </div>
+            <div id="floating-panel" style='margin-left:20px; margin-top:15px;'>
+                <button onclick="changeGradient()" class="mb-2 mr-2 btn btn-primary size14 mayus" >Cambio de color</button>
+                <button onclick="changeRadius()" class="mb-2 mr-2 btn btn-primary size14 mayus">Cambio de radio</button>
+            </div>
+            <div class="card-body">                                                
+                <div id='mapacalor' style='width: 100%; height: 850px;'>
+                </div>
+            </div>  
+        </div>
+    </div>         
+    <div class="col-md-12 col-lg-12 col-xl-4">
+        <h5 class="negrita bgp-color-azul">Noticias de Internet</h5>           
+        <!-- Noticias de Internet Políticas  -->
+        <span class="bgp-color-negro size14 negrita">Políticas</span><hr style="border: 2px solid rgb(8, 36, 161)"/> 
+        <div id="news_feed" class="movehere tab-content" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+            <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+            <ul id="list_news_Politicas" data-criterio="politica" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+            </ul>
+        </div>
+        <!-- Noticias de Internet Sociales  -->
+        <span class="bgp-color-negro size14 negrita">Sociales</span><hr style="border: 2px solid rgb(8, 36, 161)"/> 
+        <div id="news_feed" class="movehere tab-content" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+            <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+            <ul id="list_news_Sociales" data-criterio="sociales" class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+            </ul>
+        </div>
+        <!-- Noticias de Internet Ambientales  -->
+        <span class="bgp-color-negro size14 negrita">Ambientales</span><hr style="border: 2px solid rgb(8, 36, 161)"/> 
+        <div id="news_feed" class="movehere tab-content" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+            <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+            <ul id="list_news_Ambientales" data-criterio="ambientales"  class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+            </ul>
+        </div>
+        <!-- Noticias de Internet Legales  -->
+        <span class="bgp-color-negro size14 negrita">Legales</span><hr style="border: 2px solid rgb(8, 36, 161)"/> 
+        <div id="news_feed" class="movehere tab-content" style="max-height: 180px;overflow-x: hidden;scroll-behavior: smooth;overflow-y: scroll; ">                        
+            <h6 id="news_title" class="bgp-color-rojo negrita text-uppercase font-size-md"></h6>
+            <ul id="list_news_Legales" data-criterio="legales"  class="rm-list-borders rm-list-borders-scroll list-group list-group-flush">
+            </ul>
+        </div>
+    </div>
+</div> <!-- Row -->
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        
+        <div class="baseCustomX escondido">
+            <div class="buHeader">                
+            </div>
+            <div class="infoUBH5_Wrapper" data-click="ceo_global{{ plantaSlug }}" onclick="location.href=\'' + plantaSlug + '\'">
+                <img src="{% static "core/assets/images/yazaki/yazaki-marker.png" %}"/>
+                <h5 class="infoUBH5">' + pnombre.toUpperCase() + '</h5>
+                <span class="small"> </span>
+            </div><br>
+            <div class="row infoContent">
+                <div class="col-md-6">
+                    <p><b>Nivel de Seguridad:</b>' + estado_planta + '</p>
+                    <p><b>Incidentes logísticos</b></p>
+                    <hr/>
+                    <p>
+                        <b style="color: black;">PREDICTIVE ANALYTICS - COBERTURA</b><br/>
+                        <img src="{% static "core/assets/images/red-gauge.png" %}"/>
+                        <span class="txtCobertura">' + nivelCobertura + '% </span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <div class="scroll_wrapper">
+                        <div class="scroll_content"> 
+                            <p><b>Seguridad Electrónica</b>: 84.17%</p>
+                            <p>Falla eléctrica total en planta G3783-Yak5 por explosión de estación de gasolina.</p>
+                            <p>La planta {{ planta.nombre }} quedó en un 75% afectada por razones de tormentas eléctricas y vientos fuertes en la ciudad, debido a que se dio una alerta roja desde el gobierno mexicano.<br/>Se tiene un estimado de varias horas antes de que la tormenta y los vientos fuertes se retiren.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- baseCustomX -->
+
+        <div id="baseCustom" class="baseCustom escondido">
+            <div class="buHeader" style="background-image: url('{% static 'core/assets/images/planta-default.jpg' %}');">                
+            </div>
+            <div class="infoUBH5_Wrapper" data-click="" onclick="">                
+                <h5 class="infoUBH5 planta-nombre"></h5>
+                <span class="small planta-ubicacion"></span>                                
+            </div>
+            <div class="col-md-12" style="padding: 0px;"><br/>
+                <p class="contendor-planta-estatus"><b>ESTATUS:&nbsp &nbsp;</b><span class="planta-estatus mayus negrita"></span>&emsp;<b>PONDERACIÓN:&nbsp &nbsp;</b><span class="planta-ponderacion mayus negrita"></span>&emsp;<b>Núm. Visitantes &nbsp;</b><span class="planta-visitantes mayus negrita"></span></p>  
+            </div>
+            <div class="row infoContent">   
+                
+                <div class="col-md-12 pad-bot20">
+                    <h5 class="bgp-color-rojo mayus negrita text-center">Predictive Analytics </h5><hr>
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <span class="negrita mayus">Cobertura:</span><br/><span class="planta-cobertura size16">&nbsp;AAA%</span>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <span class="negrita mayus">Capacitación:</span><br/><span class="planta-capacitacion size16">&nbsp;AAA%</span>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <span class="negrita mayus">Rondines:</span><br/><span class="planta-rondines size16">&nbsp;AAA%</span>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <span class="negrita mayus">Emp. Sin Gafete:</span><br/><span class="planta-empleadosg size16">&nbsp;AAA%</span>
+                        </div>
+                    </div>
+                </div>  <!-- col-md-12 -->      
+                <div class="col-md-6">                                        
+                    <h5 class="bgp-color-amarillo mayus negrita text-center">Análisis de Riesgo </h5><hr>                    
+                    <div class="planta-wrapper-vulnerabilidad" style="display: none;"></div> 
+                    <div class="wait text-center">
+                        <div class="loader-wrapper d-flex justify-content-center align-items-center">
+                            <div class="loader">
+                                <div class="ball-pulse-rise">
+                                    <div style="background-color: rgb(253, 126, 20);"></div>
+                                    <div style="background-color: rgb(253, 126, 20);"></div>
+                                    <div style="background-color: rgb(253, 126, 20);"></div>
+                                    <div style="background-color: rgb(253, 126, 20);"></div>
+                                    <div style="background-color: rgb(253, 126, 20);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="bgp-color-naranja mayus negrita text-center">D&D Management </h5><hr>
+                    <br><br>
+                    
+                    <div class="mapacalorscroll scroll-area-xs" style="height: 150px !important; display: none;">
+                        <div class="scrollbar-container">
+                            <div class="p-3">
+                                <a href="#" class="a_movs_regresar bgp-color-naranja text-right negrita" style="float: right; text-decoration: none;"><i class="fas fa-chevron-left"></i> &nbsp;REGRESAR</a>
+                                <div class="listaActivos" class="row" style="display: none;"></div>
+                                <div class="listaFinalizados" class="row" style="display: none;"></div>            
+                            </div>
+                        <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div></div></div>
+                    </div> 
+
+                    <div class="sonbotones">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                <a class="a_movs_activo mb-2 mr-2 btn-transition btn btn-outline-warning" style="width: 100%;">Movimientos Activos</a>
+                            </div>                        
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                <a class="a_movs_finalizado mb-2 mr-2 btn-transition btn btn-outline-warning" style="width: 100%;">Movimientos Finalizados</a>
+                            </div>                        
+                        </div>
+                    </div> <!-- sonbotones -->
+                    
+                </div>
+            </div>
+        </div> <!-- baseCustom -->
+
+    </div> <!-- col -->
+</div> <!-- Row -->>
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    
+  $(document).ready(function() {
+
+    moment.locale('es');        
+
+    function alertasInternet() {
+        var estado = false;
+        var arrNoticias = [];
+
+        $('[id^="list_news_"]').each(function( index ) {  
+            arrNoticias.push($(this).attr('id'));
+
+            var idNoticia = $(this).attr('id');
+            var criterio = $(this).attr('data-criterio');
+
+            $.ajax({
+                async: false,
+                url:  "{% url 'administrador:news_rss' %}",
+                data: { 'criterio': criterio },
+                datatype: 'json',
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',            
+                success: function(result) {                    
+                    estado = true;
+                    var news_list = result.entries;
+                    $.each(news_list, function(){    
+                        $('#'+idNoticia).append(
+                            '<li class="list-group-item">' +
+                            '    <div class="widget-content pad-lista-iconos-delincuenciales bgp-grislight">' +
+                            '        <div class="widget-content-wrapper">' +
+                            '            <div class="widget-content-left mr-3 bck-white">' +
+                            '                <i class="fas fa-play-circle"></i>' +
+                            '            </div>' +
+                            '            <div class="widget-content-left">' +
+                            '                <div class="widget-heading"><a href="' +this.link + '">' + this.title + '</a></div>' +
+                            '                <div class="widget-subheading">'+moment(this.published).format("DD-MM-YYYY HH:mm:ss")+' </div>' +
+                            '            </div>' +                    
+                            '        </div>' +
+                            '    </div>' +
+                            '</li>' 
+                        );        
+                    });
+                }
+            }); // fin ajax
+
+        });
+        
+        return estado;
+    }
+
+    alertasInternet();
+
+    var dTimer = 0
+    var amountScroll = 70;;
+    if (dTimer == 0) {
+        dTimer = setInterval(function () {
+            $('.movehere').animate({ scrollTop: amountScroll }, 'slow');
+            amountScroll += 70;
+        }, 2000);
+    }
+    
+    $('input[name="dates"]').daterangepicker(
+      {
+        "timePicker": true,
+        startDate: moment().subtract(2, 'months').format("MM-DD-YYYY"),
+        endDate: moment().add('1', 'day').format("MM-DD-YYYY"),
+        ranges: {
+          'Hoy': [moment(), moment()],
+          'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+          'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+          'Este mes': [moment().startOf('month'), moment().endOf('month')],
+          'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        "locale": {            
+            "applyLabel": "Aplicar",
+            "cancelLabel": "Cancelar",
+            "fromLabel": "Desde",
+            "toLabel": "Hasta",
+            "customRangeLabel": "Personalizar",
+            "daysOfWeek": [
+                "Do",
+                "Lu",
+                "Ma",
+                "Mi",
+                "Ju",
+                "Vi",
+                "Sa"
+            ],
+            "monthNames": [
+                "Enero",
+                "Febrero",
+                "Marzo",
+                "Abril",
+                "Mayo",
+                "Junio",
+                "Julio",
+                "Agosto",
+                "Setiembre",
+                "Octubre",
+                "Noviembre",
+                "Diciembre"
+            ]
+         
+        }
+      },
+      function(start, end) {    
+        //console.log(start + " - " + end);
+        if ($('#planta').val() != "") {
+          //loadRondinReport();                             
+        } else {
+          alert('Seleccione la Unidad de Negocio / Cliente primero por favor.');
+        }
+      }
+    );    
+  
+  });
+  </script>
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

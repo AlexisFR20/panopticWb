@@ -1,0 +1,288 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+<title>Panoptic | Expertos en seguridad privada industrial, comercial y personal</title>
+<meta http-equiv="Content-Language" content="es-MX">
+<meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+<meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+<!-- Starts to include CSS list -->
+<style>
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        -webkit-box-sizing: inherit;
+    }
+
+    p {
+        margin: 0
+    }
+
+    .card2 {
+        border: 10px solid white;
+        padding: 27px;
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 14%);
+    }
+
+    .input-error {
+        font-size: 11px;
+        margin-bottom: 0;
+        color: red;
+    }
+
+    .buttonAddMinus {
+        background: none;
+        color: inherit;
+        padding: 0;
+        cursor: pointer;
+        outline: inherit;
+        border: none;
+    }
+
+    .label-ubicaciones {
+        font-size: 12px;
+    }
+
+    .sugerencias {
+        width: 200px;
+        position: relative;
+        top: 10px;
+    }
+
+    input[type=submit] {
+        background-color: DodgerBlue;
+        color: #fff;
+    }
+
+    .sugerencias-items {
+        position: absolute;
+        width: 75%;
+        overflow: hidden;
+        overflow-y: auto;
+        max-height: 250px;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-radius: 5px;
+        z-index: 99;
+        margin-top: 3px;
+        top: 100%;
+        left: 0;
+        right: 0;
+        box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .sugerencias-items div {
+        padding: 7px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+    }
+
+    .sugerencias-items div:hover {
+        background-color: #e9e9e9;
+    }
+
+    .sugerencias-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+    }
+</style>
+{% for css in css_list %}
+{% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->
+{% load static %}
+<style>
+    #barChart {
+        background-color: white;
+        border-radius: 6px;
+    }
+</style>
+<link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+
+<!-- This div is move to body when document is ready -->
+<div class="modal fade" id="mi-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirmar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Terminaste de modificar tu permiso?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="noModal" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-success" id="siModal" data-dismiss="modal">Si</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loader-body" style="display: none;">
+    <div class="spinner-border" style="width: 10rem; height: 10rem;" role="status">
+        <span class="sr-only">Loading. . .</span>
+    </div>
+</div>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-user-plus size128 soundblue" aria-hidden="true"></i>
+            </div>
+            <div>Permiso &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; CFDI
+                <div class="admin-page-title-subheading">
+                    Modificar Permiso
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a>Detalles CFDI</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Carta Porte</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Modificar Permiso
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Modificar Permiso
+                </div>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-11 mx-auto">
+                        <form action="" autocomplete="off" id="factura-form">
+                            <h4><b>DATOS PERMISO</b></h4>
+                            <div class="form-row border p-1 m-1">
+                                <div class="form-group col-md-6">
+                                    <label>Tipo</label>
+                                    <select id="tipoPermiso" class="form-control">
+                                        {% for a in permisos %}
+                                        {% if a.Clave == tipoPermiso %}
+                                        <option value={{a.Clave}} selected>{{a.Descripcion}}</option>
+                                        {% else %}
+                                        <option value={{a.Clave}}>{{a.Descripcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Permiso</label>
+                                    <input id="numPermiso" class="form-control" placeholder="Nombre" value="{{numPermiso}}">
+                                </div>
+                            </div>
+                            <div class="row pt-4">
+                                <button class="btn btn-primary btn-lg btn-block">
+                                    <h4 style="margin: 0px;">ACTUALIZAR</h4>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+{% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    window.setTimeout(function () {
+        $(window).scrollTop(0);
+    }, 0);
+
+    $(document).ready(function () {
+        $("#mi-modal").appendTo("body");
+        $(".loader-body").appendTo("body");
+
+        $("#siModal").click(function () {
+            statusForm = true;
+            $("<div>", {
+                class: "loader-back"
+            }).appendTo("body");
+            $(".loader-body").css("display", "");
+            updatePermiso();
+        })
+
+        $("#factura-form").submit(function (e) {
+            e.preventDefault();
+
+            // Solo activa el modal
+            $("#mi-modal").modal("show");
+        });
+
+        function updatePermiso() {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                data: JSON.stringify({
+                    "tipoPermiso": document.getElementById('tipoPermiso').value,
+                    "numPermiso": document.getElementById('numPermiso').value
+                }),
+                success: function (response){
+                    window.location.reload();
+                },
+                error: function (response){
+                    alert("Ocurrio un error");
+                }
+            });
+        }
+    });
+
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

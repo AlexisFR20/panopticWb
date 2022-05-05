@@ -1,0 +1,138 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Analytics</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+    <link id="bsdp-css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+
+{% endblock css %}
+
+{% block 'content' %}
+    <a href="{% url 'administrador:admin_vacante_list' %}" class="btn btn-primary">Volver</a>   
+    <h2>Registrar Vacantes</h2>
+    <main role="main">
+        <div class="container">
+            <div class="row mt-3">
+            <div class="col-md-9 mx-auto">
+                <div>
+                    <form action="" method="post">{% csrf_token %}
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <div class='input-group date' id='datetimepicker1'>
+                                <input type='date' autocomplete="off" name="fecha" class="form-control" value="{{vacante.fecha|date:'Y-m-d'}}" />
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Puesto:</label>
+                            <select required="" id="role_id" name="role_id" class="form-control mostrar selector clienteSel" style="min-width: 144px;">
+                                <option value="" >-- Puesto --</option>
+                                {% for role in roles.all %}
+                                <option value="{{ role.id }}">{{ role }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cliente</label>
+                            <select  required="" id="cliente" name="cliente_id" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+                                <option value="" >-- Cliente --</option>
+                                {% for cliente in clientes.all %}
+                                <option value="{{ cliente.id }}">{{ cliente }}</option>
+                                {% endfor %}
+                            </select>   
+                        </div>  
+                        
+                        <div class="form-group">
+                            <label>Planta</label>
+                            <select  required="" name="planta_id" id="planta" class="form-control mostrar selector" data-validation="required">
+                                <option value="">-- Unidad de Negocio --</option>
+                                {% for planta in plantas.all %}
+                                <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label># vacantes</label>
+                            <input type="text" name="n_vacantes" class="form-control" value="{{vacante.n_vacantes}}">
+                        </div>
+                        <div class="form-group">
+                            <label>observaciones</label>
+                            <input type="text" name="observaciones" class="form-control" value="{{vacante.observaciones}}">
+                        </div>
+                        <br>
+                        <input type="submit" class="btn btn-primary" value="Guardar baja" />
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div> 
+    </main>                
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        
+      
+      $('#datetimepicker1').datepicker({
+          format: 'yyyy-mm-dd',
+          defaultDate: new Date(),
+          autoclose: true,
+      });
+
+      jQuery("#cliente").on('change', function (e) {
+            updatePlantaSelector(this);
+      });
+
+      $('#cliente').val('{{ vacante.planta.cliente_id}}')
+      updatePlantaSelector(document.getElementById("cliente"));
+      $('#planta').val('{{ vacante.planta_id}}')
+
+      $('#role_id').val('{{ vacante.role_id}}')
+
+
+
+      function updatePlantaSelector(selector){
+            var optionSelected = $("option:selected", selector);
+            var valueSelected = selector.value;
+
+            console.log("Cliente seleccionado", valueSelected)
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").hide();
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").addClass('hidden');
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").removeClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").show();
+            $("#planta option[data-cliente-id=" + valueSelected + "]").addClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").removeClass('hidden');
+
+            //$("#planta option[value='']").show()
+            //$("#planta option[value='']").addClass('visible')
+            //$("#planta option[value='']").removeClass('hidden')
+
+            var val = $('#planta option.visible').first().attr("value");
+
+            $('#planta').val(val);
+
+      }
+
+    });
+</script>
+{% endblock js%}

@@ -1,0 +1,393 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Resultados de Análisis y Riesgo
+                <div class="admin-page-title-subheading">
+                   Porcentajes de Riesgo y Vulnerabilidad
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Análisis de Riesgo</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:admin_resultados_analisis_riesgo' %}"> Resultados de Análisis y Riesgo</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Porcentajes de Riesgo y Vulnerabilidad
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">            
+            <div class="card-body text-center">                                                                     
+                <img class="img-fluid" src="{% static 'core/assets/images/areas_analisis_riesgo.jpg' %}" alt="">                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+<div class="input-group">                
+              
+    <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+    {% for cliente in clientes.all %}                                                   
+        <option value="{{ cliente.id }}">{{ cliente }}</option>
+    {% endfor %}
+    </select>            
+    &emsp;
+    <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+        {% for planta in plantas %}
+            <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+        {% endfor %}
+    </select>
+    &emsp;
+    <button id="aplicar" class="btn btn-primary">APLICAR</button>                  
+    &emsp;            
+
+</div>
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    ENTORNO
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="row" id="cont-entorno">
+                        
+                </div>
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card"  style="background-color: #fbfbfb;">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    INFRAESTRUCTURA
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row" id="cont-infraestructura">
+                    
+                </div>              
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    OPERACIONES
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row" id="cont-seg-operativa">
+                                     
+                </div>
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card"  style="background-color: #fbfbfb;">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    SEGURIDAD ELECTRÓNICA
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row" id="cont-seg-electronica">
+                           
+                </div>
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    LOGÍSTICA 
+                </div>                                                        
+            </div>
+            <div class="card-body">                     
+                <div class="row" id="cont-logistica">
+                             
+                </div>
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+
+
+        jQuery("#cliente").on('change', function (e) {
+            updatePlantaSelector(this);
+        });
+
+        updatePlantaSelector(document.getElementById("cliente"));
+
+        function updatePlantaSelector(selector){
+            var optionSelected = $("option:selected", selector);
+            var valueSelected = selector.value;
+
+            console.log("Cliente seleccionado", valueSelected)
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").hide();
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").addClass('hidden');
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").removeClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").show();
+            $("#planta option[data-cliente-id=" + valueSelected + "]").addClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").removeClass('hidden');
+
+            $("#planta option[value='']").show()
+            $("#planta option[value='']").addClass('visible')
+            $("#planta option[value='']").removeClass('hidden')
+
+            var val = $('#planta option.visible').first().attr("value");
+
+            $('#planta').val(val);
+
+        }
+
+        $("#aplicar").on('click', function(){
+            cliente = document.getElementById("cliente").value;
+            planta = document.getElementById("planta").value;
+            console.log('aplicar', "cliente: "+cliente+", planta: "+planta)
+            loadAjax(cliente, planta)
+        })
+
+
+        var catEntornoAvg = new Array()
+        var catInfraAvg = new Array()
+        var catSegopAvg = new Array()
+        var catSegelecAvg = new Array()
+        var catLogisticaAvg = new Array()
+
+        function loadAjax(cliente, planta){
+
+            $.ajax({
+                url:  '{% url "administrador:ajax_analisis_de_riesgo_vulnerabilidadgral" %}',
+                data: { 'cliente_id': cliente, 'planta_id': planta},
+                datatype: 'json',
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: function (result) {
+                    console.log("result", result)
+                    //mArray = JSON.parse(result);
+                    var labelsVul = ["Entorno", "Infraestructura", "Seguridad Operativa", "Seguridad Electrónica", "Logistica"];
+                    var valVul = [result["v_entorno"], result["v_infraestructura"], result["v_seguridad_operativa"], result["v_seguridad_electronica"], result["v_logistica"]];
+                    console.log("valores Gral", valVul)
+
+                    var vulGral = (result["v_entorno"]+result["v_infraestructura"]+result["v_seguridad_operativa"]+result["v_seguridad_electronica"]+result["v_logistica"])/5;
+                    console.log("vulGral", vulGral)
+
+                    catEntornoAvg = result["cat_entorno_avg"]
+                    console.log("Entorno_avg", catEntornoAvg)
+                    catInfraAvg = result["cat_infraestructura_avg"]
+                    console.log("Infra_avg", catInfraAvg)
+                    catSegopAvg = result["cat_seg_operativa_avg"]
+                    console.log("Segop_avg", catSegopAvg)
+                    catSegelecAvg = result["cat_seg_electrica_avg"]
+                    console.log("Segelec_avg", catSegelecAvg)
+                    catLogisticaAvg = result["cat_logistica_avg"]
+                    console.log("Logistica_avg", catLogisticaAvg)
+
+
+                    graficarPromedios()
+                   
+                    
+                }
+
+            });  // Fin de Ajax
+
+        }
+
+        cliente = document.getElementById("cliente").value;
+        planta = document.getElementById("planta").value;
+        console.log('aplicar', "cliente: "+cliente+", planta: "+planta)
+        loadAjax(cliente, planta)
+        
+
+        function graficarPromedios(){
+
+            graficarSeccion($("#cont-entorno"), catEntornoAvg)
+            graficarSeccion($("#cont-infraestructura"), catInfraAvg)
+            graficarSeccion($("#cont-seg-operativa"), catSegopAvg)
+            graficarSeccion($("#cont-seg-electronica"), catSegelecAvg)
+            graficarSeccion($("#cont-logistica"), catLogisticaAvg)
+            /*
+            $("#cont-entorno").html("");
+            for (var i = 0; i<catEntornoAvg.length; i++){
+                var item = catEntornoAvg[i]
+
+                $("#cont-entorno").html($("#cont-entorno").html()+"<div id='"+item['nombre'].replace(/\s/g, "")+"'></div>");
+
+                var options = {
+                        title: {
+                          text: item['nombre'],
+                          align: 'left'
+                        },
+                        series: [{
+                            name: 'Porcentaje',
+                            data: [item["avgr"], item["avg"]],
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        colors: ['#8A63D8','#999'],
+                        labels: ["Riesgo", "vulnerabilidad"],
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                        
+                    }
+
+            
+                var chart = new ApexCharts(document.querySelector("#"+item['nombre'].replace(/\s/g, "")), options);
+                chart.render();
+
+            }
+            */
+
+        }
+
+
+        function graficarSeccion(container, catavg){
+            container.html("");
+            for (var i = 0; i<catavg.length; i++){
+                var item = catavg[i]
+
+               container.html(container.html()+"<div id='"+item['nombre'].replace(/\s/g, "")+"' class='col-md-6 col-xl-4'></div>");
+               console.log("itemavgr", item["avgr"])
+
+                var options = {
+                        title: {
+                          text: item['nombre'],
+                          align: 'left'
+                        },
+                        series: [{
+                            name: 'Porcentaje',
+                            data: [parseFloat(item["avgr"]).toFixed(2), parseFloat(item["avg"]).toFixed(2)],
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: 450
+                        },
+                        colors: ['#8A63D8','#999'],
+                        labels: ["Riesgo", "vulnerabilidad"],
+                        legend: {
+                            position: 'bottom'
+                        },
+                        plotOptions: {
+                            bar: {
+                              columnWidth: '65%',
+                              distributed: true
+                            },
+                        },
+                        
+                    }
+
+            
+                var chart = new ApexCharts(document.querySelector("#"+item['nombre'].replace(/\s/g, "")), options);
+                chart.render();
+
+            }
+        }
+
+
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

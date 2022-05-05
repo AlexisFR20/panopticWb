@@ -1,0 +1,307 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+        .status-cerrado{
+            background-color: green;
+            color: #fff; 
+        }
+        .status-vencido{
+            background-color: red;
+            color: #fff; 
+        }
+        .status-en_proceso{
+            background-color: yellow; 
+        }
+        .status-cancelado{
+            background-color: red;
+            color: #fff; 
+        }
+
+
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Analisis de Riesgo&nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Cuestionarios contestados
+                <div class="admin-page-title-subheading">
+                   Detalle
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Analisis de Riesgo</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'administrador:admin_papeletas' %}">Cuestionarios contestados</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Detalle
+                            </li>
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>        
+    </div>
+</div>                                
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Detalle de Cuestionario con sus Preguntas y Respuestas  &emsp;<span class="small"><b>ID: </b>{{papeleta.id}}</span>  <br>
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}         
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Acerca del Cuestionario</h3>                
+                        <b>Nombre: </b>{{papeleta.encuesta.nombre}}<br>
+                        <b>Categoría: </b>{{papeleta.encuesta.categoria.nombre}}<br>
+                        <b>Cliente: </b>{{papeleta.planta.cliente}}<br>
+                        <b>Planta: </b>{{papeleta.planta.nombre}}<br>
+                        <div class="card">
+                            <div class="card-header" style="background-color: #eee ">
+                                <h4 class="bgp-color-cafe-tenue">Riesgo</h4>
+                            </div>
+                            <div class="card-body" style="padding: 0px">
+                                <center><h3>{{papeleta.calcularRiesgo|stringformat:".2f"}}%</h3></center>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" style="background-color: #eee ">
+                                <h4 class="bgp-color-cafe-tenue">Vulnerabilidad</h4>
+                            </div>
+                            <div class="card-body" style="padding: 0px">
+                                <center><h3>{{papeleta.calcularVulnerabilidad|stringformat:".2f"}}%</h3></center>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div class="col-md-6">
+                        <div id="chart-compare"></div>
+                    </div>
+                </div>
+                <hr>
+                <h3 class="bgp-color-rojo">Recomendaciones <span class="badge badge-warning">{{papeleta.recomendacion_set.count}}</span></h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Pregunta</th>
+                            <th>Recomendacion</th>
+                            <th>Costo</th>
+                            <th>%</th>
+                            <th>Graficar</th>
+                            <th>Status</th>
+                            <th>Fecha compromiso</th>
+                            <th>Evidencia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for res in papeleta.respuestas.all %}
+                            {% for rec in res.recomendacion_set.all %}
+                            <tr>
+                                <td>{{forloop.parentloop.counter}}</td>
+                                <td class="truncate">{{rec.descripcion}}</td>
+                                <td>{{rec.costo|yesno:"Si,No"}}</td>
+                                <td>{{rec.ponderacion|stringformat:".2f"}}%</td>
+                                <td>{% if rec.status != "cerrado" %}<input type="checkbox" class="ponderacion_check" name="graficar[]" data-val={{rec.ponderacion}} >{% endif %}</td>
+                                <td class="status-{{rec.status}}">{{rec.status}}</td>
+                                <td>{{rec.fecha_compromiso}}</td>
+                                <td><a href="/media/{{rec.evidencia}}" target="evidencia"><img src="/media/{{rec.evidencia}}" height="22" width="auto" alt="{{rec.evidencia.name}}" /> </a></td>
+                                <td>
+                                    {% if request.user.getRolU == "administrador" or request.user.getRolU == "auditor" %}
+                                    <a href="{% url 'administrador:admin_papeleta_recomendacion_edit' rec.id %}" title="Editar" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-edit size16"></i></a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>   
+                <hr>
+                <h3 class="bgp-color-rojo">Preguntas y respuestas: </h3>
+
+                <table class="table table-striped">
+                    <thead>
+                        <th>Pregunta XD</th>
+                        <th>Valor</th>
+                        <th>Respuesta</th>
+                        <th style="text-align: center;">Requiere evidencia</th>
+                        <th>Cumple</th>
+                        <th>Ocurrencia</th>
+                        <th>Impacto</th>
+                        <th>Resultado</th>
+                        <th>Observacion</th>
+                        <th>Riesgo</th>
+                        <th>Evidencia</th>
+                        <th>Recomendaciones</th>
+                    </thead>
+                    <tbody>
+                        {% for res in papeleta.respuestas.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}: {{res.pregunta_text}}</td>
+                            <td class="text-center">{{res.valor}}</td>
+                            <td class="text-center">{{res.respuesta|yesno:"Si,No"}}</td>
+                            <td class="text-center">{{res.requiere_evidencia|yesno:"Si,No"}}</td>
+                            <td class="text-center">{{res.cumple|yesno:"Si,No"}}</td>
+                            <td class="text-center">{{res.ocurrencia}}</td>
+                            <td>{{res.impacto}}</td>
+                            <td class="text-center">{{res.resultado}}</td>
+                            <td>{{res.observacion}}</td>
+                            <td>{{res.calcularRiesgo|stringformat:".2f"}}%</td>
+                            <td>
+                                <a href="{% url 'administrador:admin_papeleta_subir_evidencia' res.papeleta_id res.pregunta_id %}" class="btn btn-primary">Subir evidencia</a><br> 
+                                {% if res.gallery != "" %} 
+                                    {% for e in res.gallery %}
+                                        <a href="/media/evidencia/papeletas/{{res.papeleta_id}}/{{res.pregunta_id}}/{{e}}?v=4" data-fancybox data-caption="Evidencia de pregunta" target="evidencia"><img src="/media/evidencia/papeletas/{{res.papeleta_id}}/{{res.pregunta_id}}/{{e}}?v=4" class="rounded" height="50px"></a>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>
+
+                                <b><span class="badge badge-warning">{{ res.recomendacion_set.count }}</span></b>  
+                                {% if request.user.getRolU == "administrador" or request.user.getRolU == "auditor" %}
+                                <a href="{% url 'administrador:admin_papeleta_recomendacion_crear' res.papeleta.id res.id %}" class="btn btn-primary">+ Agregar</a>
+                                {% endif %}
+                            </td> 
+
+                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>     
+                        
+                <hr>
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<!-- Ends to include JS list -->
+<script type="text/javascript">
+
+    jQuery(document).ready(function() {
+
+        
+
+        $(".ponderacion_check").on('change', function(){
+            grafica()
+        })
+
+        function grafica(){
+
+            $('#chart-compare').html('');
+
+            var riesgoRec = {{papeleta.calcularRiesgo}};
+            $(".ponderacion_check").each(function(){
+                if(this.checked){
+                    console.log(riesgoRec+" - "+$(this).attr('data-val'))
+                    riesgoRec = (riesgoRec - $(this).attr('data-val')).toFixed(2)
+                    console.log("resultado="+riesgoRec)
+                }
+                console.log("checkbox", $(this).attr('data-val'))
+            })
+        
+            var options = {
+                    title: {
+                      text: "{{papeleta.encuesta.nombre}}",
+                      align: 'left'
+                    },
+                    series: [{
+                        name: 'Porcentaje de riesgo',
+                        data: [{{papeleta.calcularRiesgo}}, riesgoRec],
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 450
+                    },
+                    labels: ["Sin Recomendaciones", "Con Recomendaciones"],
+                    legend: {
+                        position: 'bottom'
+                    },
+                    plotOptions: {
+                        bar: {
+                          columnWidth: '65%',
+                          distributed: true
+                        },
+                    },
+                    
+                }
+
+            
+            var chart = new ApexCharts(document.querySelector("#chart-compare"), options);
+            chart.render();
+
+            }
+
+            grafica();
+    
+        
+    });
+
+
+</script>
+
+
+{% endblock js %}

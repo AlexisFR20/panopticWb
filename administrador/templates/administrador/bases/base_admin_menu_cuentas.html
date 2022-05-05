@@ -1,0 +1,171 @@
+                        <ul class="vertical-nav-menu">                                                                                                    
+                            <li class="app-sidebar__heading diamante-bold septxt-2"><a class="size15 mayus" href="{% url 'entorno:zona0' %}">Administrador de Cuentas</a></li>   
+                            <li>
+                                <a href="{% url 'administrador:cuentas_principal' %}">                                
+                                    <i class="adminmenuitem fas fa-tachometer-alt" aria-hidden="true"></i>                                    
+                                        Inicio                                   
+                                </a>
+                            </li>
+                            <li>
+                                <a class="mayus" href="{% url 'ceo_global' %}">                                
+                                    <i class="adminmenuitem fas fa-tachometer-alt bgp-color-azul" aria-hidden="true"></i>                                    
+                                        Zona General
+                                </a>
+                            </li>
+                            {% if permisoBackstage %}
+                            <li>
+                                <a class="mayus" href="{% url 'administrador:admin_home' %}">                                
+                                    <i class="adminmenuitem fas fa-tachometer-alt bgp-color-verde"  aria-hidden="true"></i>                                    
+                                        Backstage
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a href="#">
+                                    <i class="adminmenuitem fas fa-briefcase" aria-hidden="true"></i>                                    
+                                    Administrar Cuentas
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a href="#">                                            
+                                            <i class="fa fa-user-circle bgp-color-naranja" aria-hidden="true"></i>
+                                            &nbsp;Global
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:admin_perfiles_global_index' %}">
+                                                    <i class="fa fa-list-alt bgp-color-naranja" aria-hidden="true"></i>
+                                                    </i>Listado de Usuarios
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:admin_perfiles_global_create' %}">
+                                                    <i class="fa fa-user-plus bgp-color-naranja" aria-hidden="true"></i>
+                                                    </i>Agregar Usuario
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">                                            
+                                            <i class="fa fa-user" aria-hidden="true"></i>
+                                            &nbsp;Clientes
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:cliente_list' %}"> 
+                                                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                                    </i>Listado de Clientes
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:cliente_create' %}">
+                                                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                    </i>Agregar Cliente
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fa fa-users" aria-hidden="true"></i>
+                                            Personal
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:admin_perfiles_personal_index' %}">
+                                                    <i class="fa fa-list-alt bgp-color-rojo" aria-hidden="true"></i>
+                                                    </i>Manejo de Personal
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:admin_perfiles_personal_create' %}">
+                                                    <i class="fa fa-user-plus bgp-color-rojo" aria-hidden="true"></i>
+                                                    </i>Agregar Empleado
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>  
+                                    <li>
+                                        <a href="#">                                            
+                                            <i class="fas fa-clipboard-check" aria-hidden="true"></i>    
+                                            &nbsp;Roles
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:role_list' %}">
+                                                    <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                                                    Lista de Roles
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:role_create' %}">
+                                                    <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                                                    Agregar
+                                                </a>
+                                            </li>                                            
+                                        </ul>
+                                    </li>                             
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="adminmenuitem fas fa-key" aria-hidden="true"></i>                                    
+                                    Permisos
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a href="{% url 'administrador:cuentas_permisos_tipo' %}">                                            
+                                            <i class="fas fa-key" aria-hidden="true"></i>
+                                            &nbsp;Ver Permisos                                            
+                                        </a>                                        
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'administrador:permisos_create' %}">                                            
+                                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                                            &nbsp;Crear Permiso
+                                        </a>                                        
+                                    </li>
+                                    <li>
+                                        <a href="#">                                            
+                                            <i class="fas fa-th-large" aria-hidden="true"></i>
+                                            &nbsp; Áreas de Permisos  
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>                                         
+                                        </a> 
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:areas_permisos_list' %}">
+                                                    <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                                                    Áreas de Permisos 
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:areas_permisos_create' %}">
+                                                    <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                                                    Agregar Área de Permiso
+                                                </a>
+                                            </li>                                            
+                                        </ul>                                       
+                                    </li>
+                                    
+                                </ul>
+                            </li>                            
+                        </ul>
+                        {% endif %}
+                        <br>
+                        <!-- Segmento para apunte de tareas activas en el desarrollo -->
+                        <div class="quote-container escondido">
+                            <i class="pin"></i>
+                            <blockquote class="note yellow">
+                            Generar gráfica de rondines dinámica
+                                <br><a href="{% url 'administrador:admin_rondines_reportes' %}" target="_blank">Ver enlace 1</a>
+                                <!-- <br><a href="{% url 'administrador:admin_estados_fuerza' %}" target="_blank">Ver enlace 2</a> -->
+                                <cite class="author">Dev. Team</cite>
+                            </blockquote>
+                        </div>

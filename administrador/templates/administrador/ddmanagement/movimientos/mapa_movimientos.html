@@ -1,0 +1,183 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>   
+        #mapa, #mapa2  {
+            width: 100%;
+            height: 480px;
+            border: 1px solid #e9e9e9;;
+        }
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-truck size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ren de Movimientos &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Movimientos
+                <div class="admin-page-title-subheading">
+                    ren 
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> D & D Management</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Movimientos</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                ren de Movimientos
+                            </li>
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>        
+    </div>
+</div>                                
+
+<div class="tabs-animation">   
+
+    <div class="row" >        
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">                                            
+                        <i class="cardhead fas fa-chart-bar" aria-hidden="true"></i>
+                        Guardar Movimiento
+                    </div>                                                        
+                </div>
+                <div class="card-body">                                  
+                    <div class="row">
+                        <div class="col-md-12">
+                          <h3>Guardar Movimiento</h3>
+                          <div id="mapa"></div>
+                        </div>
+                        <div class="col-md-12"><br/>
+                          <button onclick="getdata = save_waypoints()" class="mb-2 mr-2 btn-transition btn btn-outline-primary negrita size16">Guardar Movimiento</button>
+                        </div>
+                    </div>  
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <h3>Cargar Movimiento</h3>
+                        <div id="mapa2"></div>
+                      </div>
+                      <div class="col-md-12"><br/>
+                        <button onclick="retrieve_waypoints()" class="mb-2 mr-2 btn-transition btn btn-outline-primary negrita size16">Cargar Movimiento</button>
+                      </div>
+                  </div>  
+
+                    
+                </div>  
+            </div>
+        </div> 
+    </div> 
+
+</div>                    
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=places">
+</script>
+
+<script>  
+  var data = {}; 
+  var getdata ;
+  var ren;
+  var origen_lat = 31.7383915;
+  var origen_lng = -106.4541093;
+  
+  var destino_lat = 31.7302655;
+  var destino_lng = -106.4459983;
+  
+  map = new google.maps.Map( document.getElementById('mapa'), {'zoom':12, 'mapTypeId': google.maps.MapTypeId.ROADMAP, 'center': new google.maps.LatLng(origen_lat, origen_lng) })
+ 
+  ren = new google.maps.DirectionsRenderer( {'draggable':true} );
+  ren.setMap(map);
+  ser = new google.maps.DirectionsService();
+  
+  ser.route({ 'origin': new google.maps.LatLng(origen_lat, origen_lng), 'destination':  new google.maps.LatLng(destino_lat, destino_lng), 'travelMode': google.maps.DirectionsTravelMode.DRIVING},function(res,sts) {
+      if(sts=='OK')ren.setDirections(res);
+  })    
+
+  function save_waypoints() {
+    var w=[],wp;
+    var rleg = ren.directions.routes[0].legs[0];
+    var rleg2 = ren.directions;
+    console.log('rleg2');
+    console.log(rleg2);
+    data.start = {'lat': rleg.start_location.lat(), 'lng':rleg.start_location.lng()};
+    data.end = {'lat': rleg.end_location.lat(), 'lng':rleg.end_location.lng()};
+    var wp = rleg.via_waypoints; 
+    console.log(wp.length);
+    for(var i=0;i<wp.length;i++)w[i] = [wp[i].lat(),wp[i].lng()] ;
+    data.waypoints = w;
+     
+    var str = JSON.stringify(data);
+    return data;
+  // Guardado con éxito
+}
+
+function retrieve_waypoints() {
+    console.log(getdata.start );  
+    console.log(getdata.end );  
+    console.log(getdata.waypoints);  
+
+    map2 = new google.maps.Map( document.getElementById('mapa2'), {'zoom':12, 'mapTypeId': google.maps.MapTypeId.ROADMAP, 'center': new google.maps.LatLng(origen_lat, origen_lng) });
+
+    ren2 = new google.maps.DirectionsRenderer( {'draggable':true} );
+    ren2.setMap(map2);
+    ser2 = new google.maps.DirectionsService();
+
+
+
+    var wp = [];
+    for(var i=0;i<getdata.waypoints.length;i++)
+        wp[i] = {'location': new google.maps.LatLng(getdata.waypoints[i][0], getdata.waypoints[i][1]),'stopover':false }
+         
+    ser2.route({'origin':new google.maps.LatLng(getdata.start.lat,getdata.start.lng),
+    'destination':new google.maps.LatLng(getdata.end.lat,getdata.end.lng),
+    'waypoints': wp,
+    'travelMode': google.maps.DirectionsTravelMode.DRIVING},function(res,sts) {
+        if(sts=='OK')ren2.setDirections(res);
+    })  
+}
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

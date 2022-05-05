@@ -1,0 +1,129 @@
+{% extends 'core/bases/base_pages_roles.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Gráficas Plotly</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+
+{% block 'content' %}
+
+    {% load static %}
+    <p class="text-center" style="color: red; font-size:28px"><b>Analisis de riesgo</b></p>
+    <hr>
+    <div class="d-flex justify-content-between">
+        <div class="text-center">
+            <img src="{% static 'core/assets/images/infraestructura.png' %}">
+            <p><b>Infraestructura</b></p>
+        </div>
+        <div class="text-center">
+            <img src="{% static 'core/assets/images/seguridad_operativa.png' %}">
+            <p><b>Seguridad operativa</b></p>
+        </div>
+        <div class="text-center">
+            <img src="{% static 'core/assets/images/seguridad_electronica.png' %}">
+            <p><b>Seguridad Electronica</b></p>
+        </div>
+        <div class="text-center">
+            <img src="{% static 'core/assets/images/logistica.png' %}">
+            <p><b>Logistica</b></p>
+        </div>
+        <div class="text-center">
+            <img src="{% static 'core/assets/images/entorno.png' %}">
+            <p><b>Entorno</b></p>
+        </div>
+    </div>
+    <hr>
+    <!--dashboard-->
+    {% load plotly_dash %}
+    <div class="{% plotly_class name='dash_arnes' %} embed-responsive " style="height: auto; width: 100%">
+    {% plotly_app name='dash_arnes' ratio=1.5 %}
+    </div>
+
+
+    <div class="row">
+        <table class="table mb-32">
+            <tr>
+                <th>Recomendaciones</th>
+                <th>Costo</th>
+                <th>Sin Costo</th>
+                <th>Fecha Limite</th>
+                <th>%</th>
+                <th>Registro</th>
+                <th>Evidencia</th>
+            </tr>
+            <tr>
+                <td>Solicitar y contratar minosristas</td>
+                <td>X</td>
+                <td></td>
+                <td>10 Enero 2020</td>
+                <td>5%</td>
+                <td style="background-color: yellow;">En Proceso</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Solicitar a un esterno un estudio de seguridad de puntos vulnerables del sistema de CCTV</td>
+                <td>X</td>
+                <td></td>
+                <td>010 Enero 2020</td>
+                <td>10%</td>
+                <td style="background-color: #f55; color: #fff">Pendiente</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Llegar a un acuerdo con el departamento de sistemas para crear el programa de mantenimiento preventivo para el CCTV</td>
+                <td>X</td>
+                <td></td>
+                <td>10 Enero 2020</td>
+                <td>10%</td>
+                <td style="background-color: #f55; color: #fff">Pendiente</td>
+                <td></td>
+            </tr>
+            <!--tr>
+                <td>Instalar una alarma perimetral a travez de un lazer programado que envie una señal al panel general de alarmas</td>
+                <td></td>
+                <td>X</td>
+                <td>03 Noviembre 2019</td>
+                <td>10%</td>
+                <td style="background-color: #f55; color: #fff">Pendiente</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Arreglar puerta motorizada de estacionamiento principal</td>
+                <td>X</td>
+                <td></td>
+                <td>05 Noviembre 2019</td>
+                <td>10%</td>
+                <td style="background-color: yellow;">En Proceso</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Cambiar de turno a guardia nocturno</td>
+                <td></td>
+                <td>X</td>
+                <td>01 Diciembre 2019</td>
+                <td>5%</td>
+                <td style="background-color: #f55; color: #fff">Pendiente</td>
+                <td></td>
+            </tr-->
+        <table>
+    </div>
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %} 
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

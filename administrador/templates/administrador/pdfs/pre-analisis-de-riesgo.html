@@ -1,0 +1,162 @@
+{% load qr_tags %}  
+{% load administrador_extras %}   
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>REPORTE DE ANÁLISIS DE RIESGO POR UNIDAD DE NEGOCIO</title>
+        <style type="text/css">
+            body {
+                font-weight: 200;
+                font-size: 14px;
+                margin: 0; padding:0 20%;
+                height: 100%;
+            }            
+            html { height: 100%; }
+            .txt-uppercase {}
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                color: #007cae;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               text-transform: uppercase;
+               /*padding: 10px 20px 0px 20px;  */
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+            .bg-gris-bajo {background: #c2c2c2;}
+            .bg-gris-fuerte {background: #f2f2f2;}
+        </style>        
+    </head>
+    <body>        
+        <div style="border: 1px solid #cccccc; display: block; height: 100%;"> <!-- Princial -->
+            <div style="display: block; width: 50px; height: 50px; background-color: red;"></div>
+
+
+
+
+
+            <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="960">
+                <tbody>
+                    <tr>
+                        <td style="width: 360">
+                            <img class="img-fluid" src="http://panoptic.iottechnologies.mx/static/core/assets/images/logo-reporte-panoptic.png" width=250 height=auto alt="Grupo Águilas">
+                        </td>
+                        <td style="width: 600" class="title">
+                            <h1>ANÁLISIS DE RIESGO</h1>
+                            <h2>Reporte General</h2>
+                        </td>
+                    </tr>
+                </tbody>
+                
+            </table>
+             <table style="font-family: Helvetica, Arial, Verdana, sans-serif;">
+                <thead>
+                    <tr>
+                        <th>Tema</th>
+                        <th>Sub Tema</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px;">
+                            <div style="margin: 5px;background-color: #eeeeee;text-align: center;padding: 10px;border-radius:  5px 5px 5px 5px;">
+                                <h3>
+                                    <i style="color: #4f4f4f;">&#9724;&nbsp;</i>Estado General de Vulnerabilidad
+                                </h3>                                                             
+                                <img width=300 height=300 src="/media/avatars/image.png">                            
+                            </div>  
+                            
+                            <div style="margin: 5px;background-color: #eeeeee;text-align: center;padding: 10px;border-radius:  5px 5px 5px 5px;">
+                                <h3>
+                                    <i style="color: #4f4f4f;">&#9724;&nbsp;</i>Especificacione de Riesgo ***
+                                </h3>
+                            </div>  
+                            <div style="height: 10px;display: block;">
+                                <img width=300 height=300 src="/media/avatars/image2.png">                            
+                            </div> 
+                                                  
+                        </td>
+                        <td style="padding: 10px;">
+                            <div style="margin: 5px;background-color: #eeeeee;text-align: center;padding: 10px;border-radius:  5px 5px 5px 5px;">
+                                <h3>
+                                    <i style="color: #4f4f4f;">&#9724;&nbsp;</i>Seguridad Electrónica 
+                                </h3>
+                            </div> 
+                            <div style="height: 10px;display: block;"></div>
+                            <div style="margin: 5px;background-color: #eeeeee;text-align: center;padding: 10px;border-radius:  5px 5px 5px 5px;">
+                                <h3>
+                                    <i style="color: #4f4f4f;">&#9724;&nbsp;</i>Alarmas
+                                </h3>
+                            </div> 
+                            <div style="height: 10px;display: block;"></div>
+                            <div style="margin: 5px;background-color: #eeeeee;text-align: center;padding: 10px;border-radius:  5px 5px 5px 5px;">
+                                <h3>
+                                    <i style="color: #4f4f4f;">&#9724;&nbsp;</i>Recomendaciones
+                                </h3>
+                            </div>  
+                        </td>
+                    </tr>               
+                </tbody>
+                <tfoot>
+                    <tr>   
+                        <th>Tema</th>
+                        <th>Sub Tema</th>                    
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        
+        <!--div class='wrapper'>
+            <div class='header'>
+
+                <p class='title'>"papeletas": {{ papeletas }}</p>
+                <p class='title'>"v_infraestructura": {{ v_infraestructura }}</p>
+                <p class='title'>"r_infraestructura": {{ r_infraestructura }}</p>
+                <p class='title'>"v_seguridad_operativa": {{ v_seguridad_operativa }}</p>
+                <p class='title'>"r_seguridad_operativa": {{ r_seguridad_operativa }}</p>
+                <p class='title'>"v_seguridad_electronica": {{ v_seguridad_electronica }}</p>
+                <p class='title'>"r_seguridad_electronica": {{ r_seguridad_electronica }}</p>
+                <p class='title'>"v_logistica": {{ v_logistica }}</p>
+                <p class='title'>"r_logistica": {{ r_logistica }}</p>
+                <p class='title'>"v_entorno": {{ v_entorno }}</p>
+                <p class='title'>"r_entorno": {{ r_entorno }}</p>
+                <p class='title'>"cat_infraestructura": {{ cat_infraestructura }}</p>
+                <p class='title'>"cat_infraestructura_avg": {{ cat_infraestructura_avg }}</p>
+                <p class='title'>"cat_seg_operativa": {{ cat_seg_operativa }}</p>
+                <p class='title'>"cat_seg_operativa_avg": {{ cat_seg_operativa_avg }}</p>
+                <p class='title'>"cat_seg_electrica": {{ cat_seg_electrica }}</p>
+                <p class='title'>"cat_seg_electrica_avg": {{ cat_seg_electrica_avg }}</p>
+                <p class='title'>"cat_logistica": {{ cat_logistica }}</p>
+                <p class='title'>"cat_logistica_avg": {{ cat_logistica_avg }}</p>
+                <p class='title'>"cat_entorno": {{ cat_entorno }}</p>
+                <p class='title'>"cat_entorno_avg": {{ cat_entorno_avg }}</p>
+                <hr>
+                <p  class='title'>"clientes": {{ clientes }}</p>
+                <p  class='title'>"plantas": {{ plantas }}</p>
+                <p  class='title'>"papeletas": {{ papeletas }}</p>
+                    
+            </div>
+        <div-->
+        
+    
+    </body>
+</html>

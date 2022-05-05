@@ -1,0 +1,141 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-truck-loading size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>D & D Management &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Cajas
+                <div class="admin-page-title-subheading">
+                   Ver Registro de Caja
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> D & D Management</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:caja_list' %}">Registro de Cajas</a> 
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Ver Registro de Caja
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Ver Recibo de Caja
+                </div>                                                        
+            </div>
+            <div class="card-body">       
+                <hr>
+                <a href="{%  url 'administrador:caja_list' %}" class="btn btn-primary size16">Volver a Historial de Cajas</a>
+                <a href="{%  url 'administrador:caja_create' %}" class="btn btn-success size16">Agregar Registro de Caja</a>
+                <hr>
+                <br>         
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form id="paqueteria_detail_form">
+                            <div class="position-relative form-group">
+                                <label for="identificador" class="">Identificador</label>
+                                <input name="identificador" id="identificador" type="text" class="form-control" readonly value="{{ object.identificador }}">
+                            </div>
+
+                            <div class="position-relative form-group">
+                                <label for="capacidad" class="">Capacidad</label>
+                                <input name="capacidad" id="capacidad" type="text" class="form-control" readonly value="{{ object.capacidad }}">
+                            </div>
+
+                            <div class="position-relative form-group">
+                                <label for="tipo" class="">Tipo</label>
+                                <input name="tipo" id="tipo" type="text" class="form-control" readonly value="{{ object.tipo }}">
+                            </div>                            
+
+                            <div class="position-relative form-group">
+                                <label for="caja_no" class="">Número de caja</label>
+                                <input name="caja_no" id="caja_no" type="text" class="form-control" readonly value="{{ object.caja_no|default_if_none:'SIN ASIGNAR' }}">
+                            </div>                            
+
+                            <div class="position-relative form-group">
+                                <label for="caja_placas" class="">No. de placas de caja</label>
+                                <input name="caja_placas" id="caja_placas" type="text" class="form-control" readonly value="{{ object.caja_placas|default_if_none:'SIN ASIGNAR' }}">
+                            </div>                            
+
+                            <div class="position-relative form-group">
+                                <label for="cajaeco" class="">No. Económico de caja</label>
+                                <input name="cajaeco" id="cajaeco" type="text" class="form-control" readonly value="{{ object.cajaeco|default_if_none:'SIN ASIGNAR' }}">
+                            </div>                            
+
+                            <div class="position-relative form-group">
+                                <label for="sellocaja" class="">Sello extra/interior en caja</label>
+                                <input name="sellocaja" id="sellocaja" type="text" class="form-control" readonly value="{{ object.sellocaja|default_if_none:'SIN ASIGNAR' }}">
+                            </div>                            
+
+                        </form>   
+                    </div>
+                </div>                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+        // No hay nada que ejecutar
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

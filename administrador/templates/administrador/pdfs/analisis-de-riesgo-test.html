@@ -1,0 +1,651 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>Reporte de Análisis de Riesgo</title>
+    <style type="text/css">
+        body {
+            font-weight: 200;
+            font-size: 14px;
+        }
+
+        div#pdf-header {
+            display: block;
+        }
+
+        @page {
+            margin: 1cm;
+            margin-bottom: 2.5cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 2cm;
+                margin-left: 1cm;
+                margin-right: 1cm;
+                height: 1cm;
+            }
+        }
+
+        h1 {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            line-height: 25px;
+            font-size: 25px;
+            text-transform: uppercase;
+            ;
+        }
+
+        h1.izquierda {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            line-height: 25px;
+            font-size: 25px;
+            text-transform: uppercase;
+            ;
+        }
+
+        h2 {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            line-height: 18px;
+            font-size: 18px;
+            text-transform: uppercase;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2.izquierda {
+            display: block;
+            text-align: left;
+            font-weight: bold;
+            line-height: 18px;
+            font-size: 18px;
+            text-transform: uppercase;
+            margin: 0;
+            padding: 0;
+        }
+
+        div.repsmall {
+            display: block;
+            text-align: center;
+            font-weight: normal;
+            line-height: 14px;
+            font-size: 14px;
+            margin: 0;
+            padding: 0;
+            color: #777;
+        }
+
+        hr {
+            margin: 0;
+            padding: 0;
+        }
+
+        .txt-uppercase {}
+
+        .header {
+            font-size: 20px;
+            font-weight: 100;
+            text-align: center;
+            color: #007cae;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 100;
+            /* text-align: right;*/
+            text-transform: uppercase;
+            /*padding: 10px 20px 0px 20px;  */
+        }
+
+        .title span {
+            color: #007cae;
+        }
+
+        .details {
+            padding: 10px 20px 0px 20px;
+            text-align: left !important;
+            /*margin-left: 40%;*/
+        }
+
+        .hrItem {
+            border: none;
+            height: 1px;
+            /* Set the hr color */
+            color: #333;
+            /* old IE */
+            background-color: #fff;
+            /* Modern Browsers */
+        }
+
+        .bg-gris-bajo {
+            background: #c2c2c2;
+        }
+
+        .bg-gris-fuerte {
+            background: #f2f2f2;
+        }
+
+        #table-recomendaciones {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        #table-recomendaciones td,
+        #table-recomendaciones th {
+            text-align: center;
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+
+        #table-recomendaciones tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #table-recomendaciones tr:hover {
+            background-color: #ddd;
+        }
+
+        #table-recomendaciones th {
+            background-color: #ff2c2c;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <table style="font-family: Helvetica, Arial, Verdana, sans-serif; margin-top: 20px;" width="1000">
+        <tbody>
+            <tr>
+                <td style="width: 200px;">
+                    <img src="https://panoptic.com.mx/static/core/assets/images/mini-logo-panoptic.png"
+                        alt="Logo de Panoptic">
+                </td>
+                <td style="width: 950px"> &nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+        <tbody>
+            <tr>
+                <td>
+                    <h2 style="text-align: center;">REPORTE DE ANÁLISIS DE RIESGOS</h1>
+                    <h3 style="text-align: center;">FO-GA-MPO-06/03</h2>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+        <thead>
+            <tr>
+                <th>FECHA</th>
+                <th>ANALISIS N.</th>
+                <th>FECHA DE LEVANTAMIENTO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td align='center'>{{fecha}}</td>
+                <td></td>
+                <!--<td align="center">{{fechalevantamiento}}</td>-->
+            </tr>
+        </tbody>
+    </table>
+    
+    <div id="pdf-header">
+        <div style="text-align: center;">
+            <div style="display: block; text-align: center; margin: 10px 0; ">
+                {% if planta != "none" %}
+                <div style="border-top: 1px solid black;border-left: 1px solid black;border-right: 1px solid black; border-bottom: 0px;">
+                    <h2>UNIDAD DE NEGOCIO: {{planta}}</h2>
+                    <div style="border-bottom: 1px solid black;border-left: 1px solid black;border-right: 1px solid black; border-top: 0px; margin-top: 0px;" class="">CLIENTE: {{cliente}}</div>
+                </div>
+                {% else %}
+                <h2>CLIENTE: {{cliente}}</h2>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+        <tbody>
+            <tr>
+                <td
+                    style="width: 500px; padding: 20px 0 10px 0px; text-align: center;">
+                    <h3 style="color:gray; font-size: 18px;">Vulnerabilidad General</h3>
+                    <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;"
+                        width=300 height=300 src="{{img1}}">
+                </td>
+                <td
+                    style="width: 500px; padding: 20px 0 10px 0px; text-align: center; border-radius: 10px;">
+                    <h3 style="color:gray; font-size: 18px;">Porcentaje por Área</h3>
+                    <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;"
+                        width=300 height=300 src="{{img2}}">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <pdf:nextpage />
+    </div>
+
+    <div id="pdf-header">
+        <div style="width: 100%; text-align: center;">
+            <div style="display: block; text-align: center; margin: 10px 0px;">
+                <h2> CATEGORÍAS DE ANÁLISIS DE RIESGO</h2>
+            </div>
+        </div>
+    </div>
+
+    <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+        <tbody>
+            <tr>
+                <td
+                    style="width: 500px; padding: 20px 0 10px 0px; text-align: center;">
+                    <h3 style="color:gray; font-size: 18px;">ENTORNO</h3>
+                    <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;"
+                        width=300 height=300 src="{{img3}}">
+                </td>
+                <td
+                    style="width: 500px; padding: 20px 0 10px 0px; text-align: center; border-radius: 10px;">
+                    <h3 style="color:gray; font-size: 18px;">INFRAESTRUCTURA</h3>
+                    <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;"
+                        width=300 height=300 src="{{img4}}">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+        <tbody>
+            <tr>
+                <td
+                    style="width: 500px; padding: 20px 0 10px 0px; text-align: center;">
+                    <h3 style="color:gray; font-size: 18px;">OPERACIONES</h3>
+                    <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;"
+                        width=300 height=300 src="{{img5}}">
+                </td>
+                <td
+                    style="width: 500px; padding: 20px 0 10px 0px; text-align: center; border-radius: 10px;">
+                    <h3 style="color:gray; font-size: 18px;">SEGURIDAD ELECTRONICA</h3>
+                    <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;"
+                        width=300 height=300 src="{{img6}}">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="footerContent">
+        Página No. <pdf:pagenumber>
+    </div>
+    <div>
+        <pdf:nextpage />
+    </div>
+
+    <div id="pdf-header">
+        <div style="width: 100%; text-align: center;">
+            <div style="display: block; text-align: center; margin: 10px 0;">
+                <h2> CATEGORÍAS DE ANÁLISIS DE RIESGO (2)</h2>
+            </div>
+        </div>
+    </div>
+
+    <table style="font-family: Helvetica, Arial, Verdana, sans-serif;" width="1000">
+        <tbody>
+            <tr>
+                <td
+                    style="width: 900px; padding: 20px 0 10px 0px; text-align: center;">
+                    <h3 style="color:gray; font-size: 18px;">LOGISTICA</h3>
+                    <img style="display: block;  margin-left: auto;  margin-right: auto; padding: 0 10px; width: 300px; height: 300px;"
+                        width=300 height=300 src="{{img7}}">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+	<div>
+		<pdf:nextpage />
+	</div>
+    <h2><b>RECOMENDACIONES</b></h2>
+    {% if planta != "none" %}
+    <h4>UNIDAD DE NEGOCIO: {{planta}}</h4>
+    {% endif %}
+
+	{% if controlAccesos.count != 0 %}
+    <h5>AREA: CONTROL DE ACCESOS</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in controlAccesos %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	{% endif %}
+
+	{% if interiorEdificio.count != 0 %}
+    <h5>AREA: INTERIOR DEL EDIFICIO</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in interiorEdificio %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	 <div>
+         <pdf:nextpage />
+     </div>
+	{% endif %}
+
+	{% if logistica.count != 0 %}
+    <h5>AREA: LOGISTICA</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in logistica %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	{% endif %}
+
+	{% if alarma.count != 0 %}
+    <h5>AREA: ALARMAS</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in alarma %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	<div>
+		<pdf:nextpage />
+	</div>
+	{% endif %}
+
+	{% if cctv.count != 0 %}
+    <h5>AREA: CCTV</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in cctv %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	{% endif %}
+
+	{% if murosPerimetrales.count != 0 %}
+    <h5>AREA: MUROS PERIMETRALES</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in murosPerimetrales %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	<div>
+		<pdf:nextpage />
+	</div>
+	{% endif %}
+
+	{% if entorno.count != 0 %}
+    <h5>AREA: ENTORNO</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in entorno %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	{% endif %}
+
+	{% if embarqueInterior.count != 0 %}
+    <h5>AREA: EMBARQUE INTERIOR</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in embarqueInterior %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	<div>
+		<pdf:nextpage />
+	</div>
+	{% endif %}
+
+	{% if embarqueExterior.count != 0 %}
+    <h5>AREA: EMBARQUE EXTERIOR</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in embarqueExterior %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	{% endif %}
+
+	{% if procedimientos.count != 0 %}
+    <h5>AREA: PROCEDIMIENTOS</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in procedimientos %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	<div>
+		<pdf:nextpage />
+	</div>
+	{% endif %}
+
+	{% if recursosHumanos.count != 0 %}
+    <h5>AREA: RECURSOS HUMANOS</h5>
+    <table border="1px" id="table-recomendaciones" class="table table-striped">
+        <thead>
+            <tr>
+                <!--<th>CUESTIONARIO</th>-->
+                <!--<th>Unidad de negocio</th>-->
+                <th>PREGUNTA</th>
+                <th>RECOMENDACION</th>
+                <th>FECHA COMPROMISO</th>
+                <th>ESTATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in recursosHumanos %}
+            <tr>
+                <!--<td>{{rec.papeleta.encuesta.nombre}}</td>-->
+                <!--<td>{{rec.papeleta.planta.nombre}}</td>-->
+                <td>{{rec.respuesta.pregunta_text}}</td>
+                <td>{{rec.descripcion}}</td>
+                <td>{{rec.fecha_compromiso}}</td>
+                <td>{{rec.status}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	{% endif %}
+
+    <div id="footerContent">
+        Página No. <pdf:pagenumber>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,266 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-users-cog size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Predictive Analytics &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Estados de Fuerza
+                <div class="admin-page-title-subheading">
+                   Asignación de Cobertura Objetiva
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions" style="min-width: 580px;">
+
+            <div class="input-group">                
+              
+              <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+              <option value="" >-- Cliente --</option>
+              {% for cliente in clientes.all %}                                                   
+                      <option value="{{ cliente.id }}">{{ cliente }}</option>
+              {% endfor %}
+              </select>            
+              &emsp;
+              <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+                <option value="">-- Unidad de Negocio --</option>
+                {% for planta in plantas.all %}
+                    <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                {% endfor %}
+              </select>
+              &emsp;
+              <input name="dates" required="required" class="form-control" style="width: 58px;">                      
+              &emsp;            
+  
+            </div>   
+        </div>    
+    </div>
+</div>   
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Edición de Cobertura Objetiva
+                </div>                                                        
+            </div>
+            <div class="card-body">  
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+                        <option value="" >-- Cliente --</option>
+                        {% for cliente in clientes.all %}                                                   
+                        <option value="{{ cliente.id }}">{{ cliente }}</option>
+                        {% endfor %}
+                    </select>   
+                </div>  
+                
+                <div class="form-group">
+                    <label>Planta</label>
+                    <select name="planta" id="planta" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Unidad de Negocio --</option>
+                        {% for planta in plantas.all %}
+                        <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                        {% endfor %}
+                    </select>
+                </div>  
+                <div class="form-group">
+                    <label>Turno</label>
+                    <select name="turno" id="turno" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Seleccione Turno --</option>                        
+                        <option value="0">Primero</option>
+                        <option value="1">Segundo</option>
+                    </select>
+                </div>  
+                <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-confirmar" type="text" title="Guarde los cambios realizados"><i class="fas fa-save btn-icon-wrapper"></i> <span>Agregar cobertura objetiva</span></button>
+            </div>  
+        </div>  
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-8 col-lg-4 col-xl-4">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Horario y Personal
+                </div>                                                        
+            </div>
+            <div class="card-body">  
+                <div class="position-relative form-group">
+                    <div>
+                        <div class="custom-checkbox custom-control custom-control-inline">
+                            <input type="checkbox" id="exampleCustomInline" class="custom-control-input">
+                            <label class="custom-control-label" for="exampleCustomInline">Lunes</label>
+                        </div>
+                        <div class="custom-checkbox custom-control custom-control-inline">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="checkbox" id="exampleCustomInline2" class="custom-control-input">
+                            <label class="custom-control-label" for="exampleCustomInline2">Jueves</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-relative form-group">
+                    <div>
+                        <div class="custom-checkbox custom-control custom-control-inline">
+                            <input type="checkbox" id="exampleCustomInline" class="custom-control-input">
+                            <label class="custom-control-label" for="exampleCustomInline">Martes</label>
+                        </div>
+                        <div class="custom-checkbox custom-control custom-control-inline">
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="checkbox" id="exampleCustomInline2" class="custom-control-input">
+                            <label class="custom-control-label" for="exampleCustomInline2">Viernes</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-relative form-group">
+                    <div>
+                        <div class="custom-checkbox custom-control custom-control-inline">
+                            <input type="checkbox" id="exampleCustomInline" class="custom-control-input">
+                            <label class="custom-control-label" for="exampleCustomInline">Mércoles</label>
+                        </div>
+                        <div class="custom-checkbox custom-control custom-control-inline">
+                            <input type="checkbox" id="exampleCustomInline2" class="custom-control-input">
+                            <label class="custom-control-label" for="exampleCustomInline2">Sábado</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-relative form-group">
+                    <div>
+                        <div class="custom-checkbox custom-control custom-control-inline">
+                            <input type="checkbox" id="exampleCustomInline" class="custom-control-input">
+                            <label class="custom-control-label" for="exampleCustomInline">Domingo</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <select name="user" id="user" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Seleccione Usuario --</option>
+                        {% for usuario in usuarios.all %}
+                        <option value="{{ usuario.id }}">{{ usuario.first_name }} {{ usuario.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>  
+                <div class="form-group">
+                    <label>Notas</label>
+                    <input type="text" id="notas" name="notas" class="form-control mostrar">
+                </div>  
+            </div>  
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    jQuery(document).ready(function() {
+        jQuery('#tbl-estados-fuerza').DataTable({       
+            "order": [[ 1, "desc" ]],
+            "pageLength":  10,    
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           }
+        });
+    });
+</script>
+
+<script>
+    
+    $(document).ready(function() {
+  
+      
+      $('input[name="dates"]').daterangepicker(
+        {
+          "timePicker": true,
+          startDate: moment().subtract(2, 'months').format("MM-DD-YYYY"),
+          endDate: moment().add('1', 'day').format("MM-DD-YYYY"),
+          ranges: {
+            'Hoy': [moment(), moment()],
+            'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+            'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+            'Este mes': [moment().startOf('month'), moment().endOf('month')],
+            'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          },
+          "locale": {            
+              "applyLabel": "Aplicar",
+              "cancelLabel": "Cancelar",
+              "fromLabel": "Desde",
+              "toLabel": "Hasta",
+              "customRangeLabel": "Personalizar",
+              "daysOfWeek": [
+                  "Do",
+                  "Lu",
+                  "Ma",
+                  "Mi",
+                  "Ju",
+                  "Vi",
+                  "Sa"
+              ],
+              "monthNames": [
+                  "Enero",
+                  "Febrero",
+                  "Marzo",
+                  "Abril",
+                  "Mayo",
+                  "Junio",
+                  "Julio",
+                  "Agosto",
+                  "Setiembre",
+                  "Octubre",
+                  "Noviembre",
+                  "Diciembre"
+              ]
+           
+          }
+        },
+        function(start, end) {    
+          //console.log(start + " - " + end);
+          if ($('#planta').val() != "") {
+            //loadRondinReport();                             
+          } else {
+            alert('Seleccione la Unidad de Negocio / Cliente primero por favor.');
+          }
+        }
+      );    
+    
+    });
+    </script>
+  </script>
+<!-- Ends to include JS list -->
+{% endblock js %}

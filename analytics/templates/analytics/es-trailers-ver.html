@@ -1,0 +1,396 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+
+        .modal-dialog {
+            min-height: calc(100vh - 100%);
+                display: flex;
+                flex-direction: column;
+                justify-content:center;
+                overflow: auto;
+        }
+
+        @media (min-width:576px){
+            .modal-dialog {
+                min-height: calc(100vh - 100%);
+            }
+        }
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title escondido">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-file-alt size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; E/S Trailers
+                <div class="admin-page-title-subheading">
+                   Ver
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Predictive Analytics</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> E/S Trailers</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Ver
+                            </li>
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>        
+    </div>
+</div>                                
+
+<div class="tabs-animation">   
+
+    <div class="row" >        
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-11 col-xl-11">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">                                            
+                        <i class="cardhead fas fa-file-alt" aria-hidden="true"></i>
+                        Registro de E/S Trailer {{ estrailer.planta.nombre }}   
+                    </div>                                                        
+                </div>
+                <div class="card-body">     
+                    {% if  messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}                                               
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Planta
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.planta.nombre }}
+                                </div>  
+                            </div>                                                        
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Entrada
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.entrada }}
+                                </div>  
+                            </div>                           
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Salida
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.salida }}
+                                </div>  
+                            </div>  
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Origen
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.origen }}
+                                </div>  
+                            </div>                                                        
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Destino
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.destino }}
+                                </div>  
+                            </div>  
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Nombre de Chofer
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.nombre_chofer }} 
+                                </div>  
+                            </div>                                                          
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Transportista
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.transportista }}  
+                                </div>  
+                            </div> 
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Factura Remision IP
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.factura_remision_ip }}
+                                </div>  
+                            </div> 
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        No. Sello
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.n_sello }}  
+                                </div>  
+                            </div>                                                       
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Contenido de la Caja
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.contenido_caja }} 
+                                </div>  
+                            </div>                                                          
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Autoriza
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.autoriza }}
+                                </div>  
+                            </div>                                                      
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Firma de Chofer
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body text-center">
+                                    {% if estrailer.firma_chofer %}
+                                        <img src="{{ estrailer.firma_chofer.url }}" style="max-width: 60%" class="">      
+                                    {% else %}
+                                        <img src="{% static 'core/assets/images/general-avatar.png' %}" style="max-width: 60%" class="">      
+                                    {% endif %}
+                                </div>  
+                            </div>                           
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        No. de Licencia
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.n_licencia }}  
+                                </div>  
+                            </div>                                                          
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Firma Oficial de Seguridad
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body text-center">
+                                    {% if estrailer.firma_oficial_seguridad %}
+                                        <img src="{{ estrailer.firma_oficial_seguridad.url }}" style="max-width: 60%" class="">      
+                                    {% else %}
+                                        <img src="{% static 'core/assets/images/general-avatar.png' %}" style="max-width: 60%" class="">      
+                                    {% endif %} 
+                                </div>  
+                            </div>  
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Notas
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body">
+                                    {{ estrailer.notas }} 
+                                </div>  
+                            </div>                                                     
+                        </div>
+                    </div>
+                    <div class="row">
+                         <div class="col-md-3">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Pedimento
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body text-center">
+                                    {% if estrailer.pedimento_caja %}
+                                         <a href="{{ estrailer.pedimento_caja.url }}" data-fancybox="images" data-width="750" data-height="1000" data-caption="Pedimento de la caja" target=""><img src="{{ estrailer.pedimento_caja.url }}" class="rounded" style="max-width: 60%"></a> 
+                                    {% else %}
+                                        <img src="{% static 'core/assets/images/general-avatar.png' %}" style="max-width: 60%" class="">      
+                                    {% endif %} 
+                                </div>  
+                            </div>  
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Bill
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body text-center">
+                                    {% if estrailer.bill_caja %}
+                                         <a href="{{ estrailer.bill_caja.url }}" data-fancybox="images" data-width="750" data-height="1000" data-caption="Bill de la caja" target=""><img src="{{ estrailer.bill_caja.url }}" class="rounded" style="max-width: 60%"></a>      
+                                    {% else %}
+                                        <img src="{% static 'core/assets/images/general-avatar.png' %}" style="max-width: 60%" class="">      
+                                    {% endif %} 
+                                </div>  
+                            </div>  
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        Factura
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body text-center">
+                                    {% if estrailer.factura_caja %}
+                                         <a href="{{ estrailer.factura_caja.url }}" data-fancybox="images" data-width="750" data-height="1000" data-caption="Factura de la caja" target=""><img src="{{ estrailer.factura_caja.url }}" class="rounded" style="max-width: 60%"></a>
+                                    {% else %}
+                                        <img src="{% static 'core/assets/images/general-avatar.png' %}" style="max-width: 60%" class="">      
+                                    {% endif %} 
+                                </div>  
+                            </div>  
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 card">
+                                <div class="card-header-tab card-header-tab-animation card-header">
+                                    <div class="card-header-title">                                            
+                                        INE
+                                    </div>                                                        
+                                </div>
+                                <div class="card-body text-center">
+                                    {% if estrailer.ine_chofer %}
+                                    <a href="{{ estrailer.ine_chofer.url }}?v=2" data-fancybox="images" data-width="750" data-height="1000" data-caption="INE del chofer" target=""><img src="{{ estrailer.ine_chofer.url }}?v=2" class="rounded" style="max-width: 60%;"></a>
+                                    {% else %}
+                                        <img src="{% static 'core/assets/images/general-avatar.png' %}" style="max-width: 60%" class="">      
+                                    {% endif %} 
+                                </div>  
+                            </div>  
+                        </div>
+                    </div>
+                </div>  
+            </div>
+        </div> 
+    </div> 
+</div>     
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    jQuery(document).ready(function() {
+        jQuery('#tbl-reportes').DataTable({       
+            "order": [[ 1, "desc" ]],
+            "pageLength":  10,    
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            }    
+        });
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

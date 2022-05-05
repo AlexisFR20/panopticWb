@@ -1,0 +1,378 @@
+{% load static %}
+<!-- JS for Maps Master Modulo General -->
+<script>    
+
+    var map, heatmap, infowindow;
+    var markers = [];
+
+    var routes = [];
+    var colors = ["blue", "blue", "blue", "blue", "blue", "blue", "blue"];
+    var mapss, directionsService;      
+
+    function displayRoute(color) {
+        return function(response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay = new google.maps.DirectionsRenderer({
+                    polylineOptions: {
+                        strokeColor: color
+                    },
+                    suppressMarkers: false,
+                    suppressInfoWindows: true
+                });
+                directionsDisplay.setMap(mapss);
+                directionsDisplay.setDirections(response);
+            }
+        }
+    }
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map1'), {
+            zoom: 2,
+            center: {lat: 22.050391, lng: -34.001717},
+            mapTypeId: 'satellite'
+        });
+        console.log("primero");
+
+        infoWindow = new google.maps.InfoWindow;
+        
+        var markers = setMarkers(map);
+
+        heatmap = new google.maps.visualization.HeatmapLayer({
+            data: getPoints(),
+            map: map
+        });     
+
+        /*D & D*/
+        routes.push({
+            origin: new google.maps.LatLng(31.6540214,-106.5189754),
+            destination: new google.maps.LatLng(28.6710638,-106.1346581),
+            travelMode: google.maps.DirectionsTravelMode.DRIVING,
+            waypoints: []
+        });
+
+        routes.push({
+            origin: new google.maps.LatLng(29.0823825,-111.1290749),
+            destination: new google.maps.LatLng(19.3911668,-99.4238176),
+            travelMode: google.maps.DirectionsTravelMode.DRIVING,
+            waypoints: []
+        });
+
+        routes.push({
+            origin: new google.maps.LatLng(25.6490376,-100.4431846),
+            destination: new google.maps.LatLng(20.6739383,-103.4054543),
+            travelMode: google.maps.DirectionsTravelMode.DRIVING,
+            waypoints: []
+        });
+
+        var mapOptions = {
+            center: new google.maps.LatLng(23.3142857, -111.6402526),
+            zoom: 3,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        mapss = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+        directionsService = new google.maps.DirectionsService();
+        console.log("segundo");
+        for (var i = 0; i < routes.length; i++) {
+            directionsService.route(routes[i], displayRoute(colors[i]));
+        } 
+        // Fin de D&D Management
+    }    
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                                'Error: The Geolocation service failed.' :
+                                'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+    }
+
+    function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+    }     
+
+    function changeRadius() {
+        heatmap.set('radius', heatmap.get('radius') ? null : 20);        
+    }
+
+    function changeOpacity() {
+        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+    }
+
+    function changeMarkers() {        
+        toggleMarkers(markers);
+    }
+
+    function toggleMarkers(markers) {
+        // Loop through all markers and hide each of them
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            marker.visible ? marker.setVisible(false) : marker.setVisible(true);
+            //marker.setVisible(false);
+        }        
+    }   
+
+      // Heatmap data: 500 Points
+    function getPoints() {
+        return [
+            {% for o in incidentes %}
+            new google.maps.LatLng({{ o.lat}}, {{ o.lng }}),                
+            {% endfor %}                    
+        ];
+    }
+
+    function smoothZoom (map, level, cnt, mode) {
+		//alert('Count: ' + cnt + 'and Max: ' + level);
+
+		// If mode is zoom in
+		if(mode == true) {
+
+			if (cnt >= level) {
+				return;
+			}
+			else {
+				var z = google.maps.event.addListener(map, 'zoom_changed', function(event){
+					google.maps.event.removeListener(z);
+					smoothZoom(map, level, cnt + 1, true);
+				});
+				setTimeout(function(){map.setZoom(cnt)}, 50);
+			}
+		} else {
+			if (cnt <= level) {
+				return;
+			}
+			else {
+				var z = google.maps.event.addListener(map, 'zoom_changed', function(event) {
+					google.maps.event.removeListener(z);
+					smoothZoom(map, level, cnt - 1, false);
+				});
+				setTimeout(function(){map.setZoom(cnt)}, 50);
+			}
+		}
+    }
+
+    function goUbicacion(lugar) {
+        var vLugar = 'Ubicación seleccionada';
+        var vzoom = 0;
+        var latitude  = 0;
+        var longitude = 0;
+        var whereMarker = null;
+
+        if (lugar == 'usa_east') {
+            latitude  =  36.5522;
+            longitude =  -83.9171817;
+            vLugar = 'Estados Unidos Este';
+            vzoom = 6;            
+        }  else if (lugar == 'global') {
+            latitude  =  24.6110255;
+            longitude = -42.8441299;
+            vLugar = 'Vista Global';
+            vzoom = 2.75;
+        } else if (lugar == 'la') {
+            latitude  =  15.2985681;
+            longitude =  -78.6551153;
+            vLugar = 'América Latina';
+            vzoom = 4;
+        } else if (lugar == 'juarez') {
+            latitude  =  31.6874405;
+            longitude =  -106.4300477;
+            vLugar = 'Ciudad Juárez';
+            vzoom = 12;
+        } else if (lugar == 'benitojuarez') {
+            latitude  = 30.1523153;
+            longitude = -106.8905766;
+            vLugar = 'Benito Juárez';
+            vzoom = 12;
+        } else if (lugar == 'europa') {
+            latitude  =   52.0930382;
+            longitude =  11.3800946;
+            vLugar = 'Europa';
+            vzoom = 5;
+        } else if (lugar == 'asia') {
+            latitude  =  33.2888155;
+            longitude =  113.5219767;
+            vLugar = 'Asia';
+            vzoom = 4;
+        } else if (lugar == 'oceania') {
+            latitude  =  -30.7058591;
+            longitude =  143.8021268;
+            vLugar = 'Oceanía';
+            vzoom = 5;
+        }         
+
+        whereMarker = new google.maps.Marker({
+            zoom: vzoom,
+            position: new google.maps.LatLng(latitude, longitude),
+            title: vLugar,
+            icon: "{% static 'core/assets/images/where-ico-marker.png' %}",
+            map: map,
+        });
+        map.panTo(whereMarker.getPosition());
+        //smoothZoom(map, vzoom, map.getZoom(), true);
+        map.setZoom(vzoom);
+    }
+
+    function coberturaModoAleatorioOptima(bottom, top) {
+        return Math.floor( Math.random() * ( 1 + top - bottom ) ) + bottom;
+    }
+
+    function setMarkers(map) {
+        // Adds markers to the map.
+        
+        // Shapes define the clickable region of the icon. The type defines an HTML
+        // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+        // The final coordinate closes the poly by connecting to the first coordinate.
+        var shape = {
+            coords: [1, 1, 1, 47, 30, 47, 30, 1],
+            type: 'poly'
+        };
+    
+        /*var iconos = { 
+            'homicidio'         : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/homicidio.png' %}" },
+            'carjacking'        : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/carjacking.png' %}" },
+            'asalto_transeuntes': { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/transeuntes.png' %}" },
+            'casa_habitacion'   : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/casa-habitacion.png' %}" },
+            'hotel'             : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/hotel.png' %}" },
+            'aeropuerto'        : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/aeropuerto.png' %}" },
+            'autopartes'        : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/auto-partes.png' %}" },
+            'secuestro'         : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/secuestro.png' %}" },            
+            'lesiones'          : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/lesiones.png' %}" },            
+            'robo_vehiculo'     : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/carjacking.png' %}" },            
+            'narcomenudeo'      : { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/narcomenudeo.png' %}" },            
+            'violencia_familiar': { 'img': "{% static 'core/assets/images/icons/delincuenciales-color/secuestro.png' %}" },            
+        };  */
+
+        var iconoss = { 
+        {% for tipo in tipo_incidentes %}  
+        '{{ tipo.alias }}': { 'nombre': "{{ tipo.nombre }}", 'img': "/media/{{ tipo.icono }}" }, 
+        {% endfor %}   
+        };             
+        
+        //console.log("iconos");
+        //console.log(iconos);
+        var czindex = 500;           
+    
+        {% for p in incidentes %}
+    
+            var title = '{{ p.tipo }}';            
+            
+            if (title == 'asalto_transeuntes') {
+                title = 'Asalto a Transeuntes';
+            } else if (title == 'robo_vehiculo') {
+                title = 'Robo de Vehículo';
+            }
+
+            //
+            var tipo_inci = "{{ p.tipo|stringformat:"s" }}";
+            console.log(iconoss[tipo_inci].img);
+            if (title != 'robo-vehiculo' && title != 'asalto-a-negocios' && title != 'violacion' && title != 'feminicidio' && title != 'auto-partes' && title != 'transeuntes' && title != 'extorsion' && title != 'robo-casa' && title != 'violencia-familiar')  {
+                var marker = new google.maps.Marker({
+                    position: {lat: {{ p.lat}}, lng: {{ p.lng }} },
+                    map: map,
+                    icon: iconoss[tipo_inci].img,
+                    shape: shape, 
+                    title: title.toUpperCase(),
+                    zIndex: czindex
+                });    
+            }
+    
+            marker.infowindow = new google.maps.InfoWindow({
+                content: '<h3 class="infoh3"><b>' + '{{ p.desc }}</h3><hr/><h6><span class="infoh6">' + title.toUpperCase() + ':</span><br/><p class="infop">{{ p.direccion }}, {{ p.ciudad }}, {{ p.estado }}, {{ p.pais }} | Fecha: {{ p.fecha }} | Fuente: Diario MX</p><hr/></h6><a href="#" data-id="{{ p.id }}" class="hoverme mb-2 mr-2 btn btn-light">Ver Incidente Relacionado</a>'
+            });
+
+            marker.addListener('click', function() {
+                this.infowindow.open(map, this);
+            });           
+    
+            markers.push(marker);  
+            ++czindex;
+            //console.log (title);
+        {% endfor %}  
+    
+        var ico_plantas = {             
+            'optimo': { 'img': "{% static 'core/assets/images/yazaki/yazaki-marker.png' %}" },
+            'relevante': { 'img': "{% static 'core/assets/images/alert-icon-plant.gif' %}" },
+        }; 
+    
+        // Visualización de plantas de cliente
+    
+        var czindex = 900, vplantStatus;   
+    
+        {% for planta in plantas %}      
+            var pnombre = '{{ planta.nombre }}';           
+            
+            vplantStatus = '{{ planta.status }}';
+    
+            //console.log(vplantStatus);
+    
+            var marker = new google.maps.Marker({
+                position: {lat: {{ planta.lat}}, lng: {{ planta.lng }} },
+                map: map,
+                icon: ico_plantas.{{ planta.status }}.img,
+                shape: shape,
+                title: pnombre.toUpperCase(),
+                zIndex: czindex
+            });
+    
+            var estado_planta = '<span class="bgp-color-verde">Óptimo</span>';
+    
+            var plantaAlias = "{{planta.alias}}";
+            var plantaSlug  = "{{planta.slug}}";            
+    
+            if ( plantaSlug == '' ) {
+                plantaSlug = '#'
+            } else {
+                plantaSlug = "";
+            }           
+    
+            var nivelCobertura = {{planta.pcobertura}}
+    
+            if (nivelCobertura == 0) {                
+                nivelCobertura = coberturaModoAleatorioOptima( 75, 99);                
+            }            
+    
+            if (nivelCobertura < 80 ) {
+                estado_planta = '<span class="bgp-color-rojo">Relevante</span>';                
+    
+                
+                if (plantaAlias == 'benitojuarez') {
+                    jQuery('#addCritical').append('<li class="nav-item"><a class="nav-link" onclick="goUbicacion(\'' + plantaAlias.toLowerCase() + '\')"><i class="nav-link-icon lnr-inbox"></i><span class="nombrePlantaCritica"> {{ planta.nombre }}</span></a></li>');
+                }
+                
+    
+                marker.infowindow = new google.maps.InfoWindow({
+                    content: '<div class="popupCustom"><div class="buHeader"></div><div class="infoUBH5_Wrapper" data-click="ceo_global{{ plantaSlug }}" onclick="location.href=\'' + plantaSlug + '\'"><img src="{% static "core/assets/images/yazaki/yazaki-marker.png" %}"/><h5 class="infoUBH5">' + pnombre.toUpperCase() + '</h5><span class="small">{{ planta.direccion }}, {{ planta.ciudad }}, {{ planta.estado }}, {{ planta.pais }} </span></div> <br> <div class="row infoContent"><div class="col-md-6"><p><b>Nivel de Seguridad:</b>' + estado_planta + '</p><p><b>Incidentes logísticos</b></p><hr/><p><b style="color: black;">PREDICTIVE ANALYTICS - COBERTURA</b><br/><img src="{% static "core/assets/images/red-gauge.png" %}"/><span class="txtCobertura">' + nivelCobertura + '% </span></p></div><div class="col-md-6"><div class="scroll_wrapper"><div class="scroll_content"> <p><b>Seguridad Electrónica</b>: 84.17%</p><p>Falla eléctrica total en planta G3783-Yak5 por explosión de estación de gasolina.</p><p>La planta {{ planta.nombre }} quedó en un 75% afectada por razones de tormentas eléctricas y vientos fuertes en la ciudad, debido a que se dio una alerta roja desde el gobierno mexicano.<br/>Se tiene un estimado de varias horas antes de que la tormenta y los vientos fuertes se retiren.</p></div></div></div></div></div>',
+                    maxWidth: 550
+                });   
+    
+            }  else if (nivelCobertura >= 80 ) {
+                marker.infowindow = new google.maps.InfoWindow({
+                    content: '<div class="popupCustom"><div class="buHeader"></div><div class="infoUBH5_Wrapper" data-click="ceo_global{{ plantaSlug }}" onclick="location.href=\'' + plantaSlug + '\'"><img src="{% static "core/assets/images/yazaki/yazaki-marker.png" %}"/><h5 class="infoUBH5">' + pnombre.toUpperCase() + '</h5><span class="small">{{ planta.direccion }}, {{ planta.ciudad }}, {{ planta.estado }}, {{ planta.pais }} </span></div> <br> <div class="row infoContent"><div class="col-md-6"><p><b>Nivel de Seguridad:</b>' + estado_planta + '</p><p><b>Incidentes logísticos</b></p><hr/><p><b style="color: black;">PREDICTIVE ANALYTICS - COBERTURA</b><br/><img src="{% static "core/assets/images/green-gauge.png" %}"/><span class="txtCoberturaOptima">' + nivelCobertura + '% </span></p></div><div class="col-md-6"><div class="scroll_wrapper"><div class="scroll_content"> <p><b>Seguridad Electrónica</b>: 84.17%</p><p>Falla eléctrica total en planta G3783-Yak5 por explosión de estación de gasolina.</p><p>La planta {{ planta.nombre }} quedó en un 75% afectada por razones de tormentas eléctricas y vientos fuertes en la ciudad, debido a que se dio una alerta roja desde el gobierno mexicano.<br/>Se tiene un estimado de varias horas antes de que la tormenta y los vientos fuertes se retiren.</p></div></div></div></div></div>',
+                    maxWidth: 550
+                });    
+            }                    
+            
+            marker.addListener('click', function() {
+                this.infowindow.open(map, this);
+            });                
+            
+        {% endfor %}  
+        
+        return markers;
+    }   
+
+    jQuery( document ).ready(function() {
+        jQuery('.hoverme').mouseenter(function(){
+            jQuery('#lista_incidentes').hide();
+        }); 
+        jQuery('.hoverme').mouseleave(function(){
+            jQuery('#lista_incidentes').show();
+        });       
+    });
+    
+</script>  
+
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=visualization&callback=initMap">
+</script>
+

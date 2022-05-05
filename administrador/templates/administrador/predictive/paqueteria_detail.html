@@ -1,0 +1,167 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Paquetería
+                <div class="admin-page-title-subheading">
+                   Ver Registro de Paquetería
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Predictive Analytics</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:paqueteria_list' %}">Registro de Paquetería</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Ver Registro de Paquetería
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Ver Recibo de Paquetería
+                </div>                                                        
+            </div>
+            <div class="card-body">       
+                <hr>
+                <a href="{%  url 'administrador:paqueteria_list' %}" class="btn btn-primary size16">Volver a Historial de Paquetería</a>
+                <a href="{%  url 'administrador:paqueteria_create' %}" class="btn btn-success size16">Agregar Registro de Paquetería</a>
+                <hr>
+                <br>         
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form id="paqueteria_detail_form">
+                            <div class="position-relative form-group">
+                                <label for="fecha" class="">Hora de Entrada</label>
+                                <input name="fecha" id="fecha" type="text" class="form-control" readonly value="{{ object.fecha|date:'SHORT_DATE_FORMAT' }} {{ object.fecha|time:'H:i' }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="guia" class="">¿Quién entregó el paquete?</label>
+                                <input name="guia" id="guia" type="text" class="form-control" readonly value="{{ object.guia }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="nombre" class="">No. Guía</label>
+                                <input name="nombre" id="nombre" type="text" class="form-control" readonly value="{{ object.nombre }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="empresa" class="">Compañía</label>
+                                <input name="empresa" id="empresa" type="text" class="form-control" readonly value="{{ object.empresa }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="nombre" class="">Remitente</label>
+                                <input name="nombre" id="nombre" type="text" class="form-control" readonly value="{{ object.nombre }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="destinatario" class="">Destinatario</label>
+                                <input name="destinatario" id="destinatario" type="text" class="form-control" readonly value="{{ object.destinatario }}">
+                            </div>
+                            <div class="position-relative form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" name="bolfaltainfo" id="bolfaltainfo" class="form-check-input freeze" {% if object.bolfaltainfo == True %} checked {% endif %}> Falta de Información / Títulos mal puestos
+                                </label>
+                            </div>
+                            <div class="position-relative form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" name="bolcables" id="bolcables" class="form-check-input freeze" {% if object.bolcables == True %} checked {% endif %}> Salen cables al paquete / bulto
+                                </label>
+                            </div>
+                            <div class="position-relative form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" name="bolpolvo" id="bolpolvo" class="form-check-input freeze" {% if object.bolpolvo == True %} checked {% endif %}> Muestra evidencia de polvo
+                                </label>
+                            </div>
+                            <div class="position-relative form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" name="bololor" id="bololor" class="form-check-input freeze" {% if object.bololor == True %} checked {% endif %}> Olor extraño en el paquete
+                                </label>
+                            </div>
+                            <div class="position-relative form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" name="bolfuerahorario" id="bolfuerahorario" class="form-check-input freeze" {% if object.bolfuerahorario == True %} checked {% endif %}>Se entrega fuera de horario
+                                </label>
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="nota" class="">Observaciones</label>
+                                <textarea rows=3 name="nota" id="nota" class="form-control" readonly>{{ object.nota }}</textarea>
+                            </div>                            
+                            <div class="position-relative form-group">
+                                <label for="user_aguilas" class="">Guardia</label>
+                                <input name="user_aguilas" id="user_aguilas" type="text" class="form-control" readonly value="{{ object.user_aguilas.first_name }} {{ object.user_aguilas.last_name }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="un" class="">Unidad de Negocio / Planta</label>
+                                <input name="un" id="un" type="text" class="form-control" readonly value="{{ object.un }}">
+                            </div>
+                        </form>   
+                    </div>
+                </div>                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+        $(".freeze").bind("click", false);
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

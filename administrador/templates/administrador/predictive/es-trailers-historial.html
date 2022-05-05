@@ -1,0 +1,228 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-list-alt size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Control de Entrada y Salida de Trailers
+                <div class="admin-page-title-subheading">
+                   Registros
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Predictive Analytics</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> E/S Trailers</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Historial
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Registros de las Entradas y Salidas de Trailers
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}                                               
+                
+                <p class="text-left">
+                    <b>Nota:</b> Utilice la caja de búsqueda para buscar registros por <span class="bgp-color-naranja">Contenido Caja, Autoriza, Firma de Chofer, Firma de Oficial de Seguridad o Notas.</span>
+                </p>
+                <!--  Data Table Start -->
+                <table id="tbl-historial" class="table table-striped table-bordered dt-responsive "  style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>Unidad de Negocio</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Chofer</th>
+                            <th>Transportista</th>
+                            <th>Placas</th>
+                            <th>Caja</th>
+                            <th>Factura</th>
+                            <th>No. Sello</th>
+                            <th>Contenido Caja</th>
+                            <th>Autoriza</th>
+                            <th>Firma de Chofer</th>
+                            <th>No. Licencia</th>
+                            <th>Oficial de Seguridad</th>
+                            <th>Notas</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for estrailer in estrailers %}
+                        <tr>
+                            <td>{{ estrailer.planta |default_if_none:"Sin registrar" }}</td>
+                            <th>{{ estrailer.entrada|date:"SHORT_DATE_FORMAT"|default_if_none:"Sin registrar" }} {{ estrailer.entrada|time:"H:i"|default_if_none:"" }}</th>
+                            <th>{{ estrailer.salida|date:"SHORT_DATE_FORMAT"|default_if_none:"Sin registrar" }} {{ estrailer.salida|time:"H:i"|default_if_none:"" }}</th>                            
+                            <th>{{ estrailer.origen }}</th>
+                            <th>{{ estrailer.destino }}</th>
+                            <th>{{ estrailer.nombre_chofer }}</th>
+                            <th>{{ estrailer.transportista }}</th>
+                            <th>{{ estrailer.placas }}</th>
+                            <th>{{ estrailer.caja }}</th>
+                            <th>{{ estrailer.factura_remision_ip }}</th>
+                            <th>{{ estrailer.n_sello }}</th>
+                            <th>{{ estrailer.contenido_caja }}</th>
+                            <th>{{ estrailer.autoriza }}</th>
+                            <th>{{ estrailer.firma_chofer }}</th>
+                            <th>{{ estrailer.n_licencia }}</th>
+                            <th>{{ estrailer.firma_oficial_seguridad }}</th>
+                            <th>{{ estrailer.notas }}</th>
+                            <td> 
+                                <a href="{% url 'analytics:es_trailers_detail' estrailer.id %}" title="Ver registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-eye size16"></i></a>                                
+                            </td>
+                        </tr> 
+                        {% endfor %}     
+                    </tbody>                          
+                    <tfoot>
+                        <tr>   
+                            <th>Unidad de Negocio</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Chofer</th>
+                            <th>Transportista</th>
+                            <th>Placas</th>
+                            <th>Caja</th>
+                            <th>Factura</th>
+                            <th>No. Sello</th>
+                            <th>Contenido Caja</th>
+                            <th>Autoriza</th>
+                            <th>Firma de Chofer</th>
+                            <th>No. Licencia</th>
+                            <th>Oficial de Segurida</th>
+                            <th>Notas</th>
+                            <th>Acción</th>
+                        </tr>
+                    </tfoot>
+                </table>           
+                <!-- Data Table End -->
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.flash.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.html5.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.print.min.js"></script>
+<script>
+    $(document).ready(function() {       
+
+        $('#tbl-historial').DataTable({
+           "columnDefs": [
+                {
+                    "targets": [ 11, 12, 13, 15, 16 ],
+                    "visible": false,
+                    "searchable": true
+                }/*,
+                {
+                    "targets": [ 3 ],
+                    "visible": false
+                }*/
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Tabla de E/S Trailers'
+            },
+            {
+                extend: 'pdfHtml5',
+                orientation: 'landscape',
+                //download: 'open',
+                messageTop: 'Reporte de E/S Trailers',
+
+                /*customize: function ( doc ) {
+                    doc.content.splice( 1, 0, {
+                        margin: [ 0, 0, 0, 12 ],
+                        alignment: 'center',
+                        image: 'http://panoptic.iottechnologies.mx/static/core/assets/images/logo-panoptic-black.png'
+                    } );
+                }*/
+            }], 
+            "order": [[ 1, "desc" ]],
+            "pageLength":  10,    
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            }
+        });
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

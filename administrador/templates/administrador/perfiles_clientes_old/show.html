@@ -1,0 +1,406 @@
+{% extends 'administrador/bases/base_admin.html' %}
+{% block 'seo_header' %}
+<title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+<meta http-equiv="Content-Language" content="es-MX">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+<meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+{% block css %}
+<!-- Starts to include CSS list -->
+{% for css in css_list %}
+{% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->    
+{% load static %}
+<style>
+   /* Always set the map height explicitly to define the size of the div
+   * element that contains the map. */
+   #map {
+   height: 100%;
+   }        
+</style>
+<link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+{% block 'content' %}
+{% load static %}
+<div class="app-page-title">
+   <div class="page-title-wrapper">
+      <div class="page-title-heading">
+         <div class="mini-logo-panoptic">                
+            <i class="fa fa-user-circle size128 soundblue" aria-hidden="true"></i>                                   
+         </div>
+         <div>
+            Perfiles de Clientes &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Global
+            <div class="admin-page-title-subheading">
+               Ver Cliente  <small>ID: {{ userToShow.id }} </small>    
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-6">
+            </div>
+            <div class="col-lg-6">
+               <nav class="" aria-label="admin breadcrumb">
+                  <ol class="admin breadcrumb pull-right">
+                     <li class="breadcrumb-item">
+                        <a>
+                        <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a> Perfiles de Clientes </a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:admin_perfiles_global_index' %}"> Global</a>
+                     </li>
+                     <li class="active breadcrumb-item" aria-current="page">
+                        Ver Cliente
+                     </li>
+                  </ol>
+               </nav>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="tabs-animation">
+   <div class="row" >
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+         <div class="mb-3 card">
+            <div class="card-body">
+               <div class="row">
+                  <div class="col-sm-12 col-md-2 col-lg-2 text-center">
+                     <a href="#">
+                        {% if userToShow.imagen %}
+                            <img src="{{ userToShow.imagen.url }}" class="rounded-circle" height="128" width="128" alt="avatar">      
+                        {% else %}
+                            <img src="{% static 'core/assets/images/general-avatar.png' %}" class="rounded-circle" height="128" width="128" alt="Usuario sin Avatar">      
+                        {% endif %}                              
+                     </a>
+                     <p class="avatar-list-name">{{ userToShow.first_name }} {{ userToShow.last_name }}</p>
+                     <div class="separador">
+                        <hr>
+                     </div>
+                  </div>
+                  <div class="col-sm-12 col-md-10 col-lg-10">
+                     <div class="lista-usuarios-card">
+                        <div class="container">
+                           <div class="form-heading">Registro del Cliente</div>                           
+                           <!-- form start -->
+                           <form  id="frm-ver" role="form" method="POST" enctype="multipart/form-data">
+                              {% csrf_token %}
+                              <div class="container">
+                                 <div class="row">
+                                       <div class="col-xs-12 col-md-12 col-lg-6">
+                                           
+                                           {% if  messages %}
+                                                {% for message in messages %}
+                                                   <div class="alert alert-{{ message.tags }}" role="alert">
+                                                      {{ message }}
+                                                   </div>
+                                                {% endfor %}
+                                          {% endif %}      
+                                          
+                                          <div class="form-group">
+                                             <label>Usuario</label>
+                                             <input data-validation="length custom" data-validation-regexp="^([a-z][a-z0-9_.]+)$" data-validation-length="min4" type="text" id="username" name="username" class="form-control mostrar" placeholder="Nombre de usuario" value="{{ userToShow.username }}"  data-validation-help="Mínúsculas, primer caracter debe ser letra, mínimo 4 letras" disabled>
+                                          </div>
+
+                                          <div class="form-group">
+                                             <label>Nombre</label>
+                                             <input data-validation="length" data-validation-length="3-30" type="text" id="first_name" name="first_name" class="form-control mostrar" placeholder="Introduzca su nombre ..." value="{{ userToShow.first_name }}" disabled>
+                                          </div>
+
+                                          <div class="form-group">
+                                             <label>Apellido</label>
+                                             <input data-validation="length" data-validation-length="3-100" type="text" id="last_name" name="last_name" class="form-control mostrar" placeholder="Introduzca su apellido ..." value="{{ userToShow.last_name }}" disabled>
+                                          </div>
+
+                                          <div class="form-group">
+                                             <label for="email">Correo Electrónico</label>
+                                             <input data-validation="email" data-validation-optional="true" type="email" class="form-control mostrar" id="email" name="email" placeholder="Introduzca un correo válido" value="{{ userToShow.email }}" disabled>
+                                          </div>
+
+                                          <!-- ¿ Es staff ? -->
+                                          <div class="form-group">                                             
+                                            <div class="checkbox"> 
+                                                <label for="is_staff">¿ Es miembro del Staff Super Administrador ?</label>
+                                                <input class="" type="checkbox" {{ userToShow.is_staff|yesno:"checked," }} disabled> 
+                                            </div>
+                                          </div>
+
+                                          <!-- ¿ Es usuario activo ? -->
+                                          <div class="form-group">
+                                            <div class="checkbox"> 
+                                                <label for="is_active">¿ Se encuentra el usuario <strong>activo</strong> ?</label>
+                                                <input class="" type="checkbox" {{ userToShow.is_active|yesno:"checked," }} disabled> 
+                                            </div>
+                                          </div>   
+                                        
+                                       </div> <!-- Fin de panel izquierdo -->
+
+                                       <div class="col-xs-12 col-md-12 col-lg-6">
+
+                                          <!-- Elección del grupo al que pertenecerá el cusuario-->
+                                          <div class="form-group">
+                                             <label>Grupo al que pertenece el usuario </label>
+                                             <select multiple="" name="grupos" id="grupos" class="form-control mostrar selector" disabled>
+                                                {% for gps  in groups.all %}
+
+                                                      {% if gps in userToShow.groups.all %}
+                                                         <option value="{{  gps.name }}"  data-grupo-id="{{ gps.id}}" selected >{{ gps | upper }}</option>   
+                                                      {% else %}
+                                                         <option value="{{  gps.name }}" data-grupo-id="{{ gps.id}}">{{ gps | upper }}</option>                                                           
+                                                      {% endif %}   
+
+                                                {% endfor %}             
+                                             </select>                                                                                          
+                                          </div>
+
+                                          <!-- Selección de cliente para el usuario -->                                          
+                                          <div class="position-relative form-group"><label for="cliente" class="">Seleccione el cliente asociado</label>
+                                             <select id="cliente" name="cliente" class="form-control mostrar selector" disabled>
+                                                <option value="0" >-- Seleccione el cliente -- </option>
+                                                {% for cliente in clientes.all %}
+                                                   {% if userToShow.getClient == cliente %}
+                                                      <option value="{{ cliente.id }}" selected>{{ cliente }}</option>
+                                                   {% else %}
+                                                      <option value="{{ cliente.id }}">{{ cliente }}</option>
+                                                   {% endif %}
+                                                {% endfor %}
+                                             </select>
+                                          </div>
+
+                                          <!-- Selección de Unidad de Negocio por cliente para el usuario -->                                          
+                                          <div class="position-relative form-group"><label for="planta" class="">Seleccione la Unidad de Negocio asociada</label>
+                                             <select name="planta" id="planta" class="form-control mostrar selector" disabled>
+                                                <option value="0" >-- Seleccione Unidad de Negocio -- </option>
+                                                {% for planta in plantas.all %}
+                                                   {% if userToShow.getPlanta == planta %}
+                                                      <option value="{{ planta.id }}"  data-cliente-id="{{ planta.cliente_id }}" selected>{{ planta }}</option>
+                                                   {% else %}
+                                                      <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                                                   {% endif %}
+                                                {% endfor %}
+                                             </select>
+                                          </div>
+
+                                          <!-- Selección de Rol para el usuario -->                                          
+                                          <div class="position-relative form-group"><label for="rol" class="">Seleccione el rol del usuario </label>
+                                             <select name="role" id="role" data-init-role = "{{ userToShow.getRolAlias }}" class="form-control mostrar selector" disabled required>
+                                                <option value="0" >-- Seleccione Rol / Cargo -- </option>
+                                                {% for rol in roles.all %}
+                                                   {% if userToShow.role_id == rol.id %}
+                                                      <option data-role-cliente-id={{ rol.grupo_id }} value="{{ rol.id }}"  selected>{{ rol }}</option>
+                                                   {% else %}
+                                                      <option data-role-cliente-id={{ rol.grupo_id }} value="{{ rol.id }}" >{{ rol }}</option>
+                                                   {% endif %}
+                                                {% endfor %}
+                                             </select>
+                                          </div>
+                                          
+                                          <!-- Aplica o no si es el usuario de tipo administrativo para manejo de la app Web-->
+                                          <!--
+                                          <div class="checkbox"> 
+                                             <label> ¿El usuario es de tipo administrativo?
+                                             </label>
+                                                   <input class="" type="checkbox" {{ userToShow.is_staff|yesno:"checked," }}> 
+                                          </div>
+                                          -->
+
+                                          <!-- Último Acceso Solo lectura-->
+                                          <div class="form-group">
+                                             <label>Último acceso del usuario al sistema</label>
+                                             <input id="last_login" name="last_login" class="form-control" placeholder="Aún no hay registros" value="{{ userToShow.last_login }}" disabled>
+                                          </div>
+
+                                          <!-- Fecha de Alta Solo lectura-->
+                                          <div class="form-group">
+                                             <label>Fecha de Alta</label>
+                                             <input id="date_joined" name="date_joined" class="form-control" placeholder="" value="{{ userToShow.date_joined }}" disabled>
+                                          </div>
+
+                                          <div class="row hidden">
+                                             <div class="col-md-4">  
+                                                <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-confirmar" type="text" title="Guarde los cambios realizados"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Actualizar</span></button>
+                                             </div>
+                                             <div class="col-md-4">                                                
+                                                <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-secondary" title="Vea / Agregue detalles del cliente"><i class="fas fa-plus btn-icon-wrapper"></i><span>Cliente</span>
+                                             </div>
+                                             <div class="col-md-4">                                                
+                                                <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-secondary" title="Ver / Agregue detalles de la unidad de negocio"><i class="fas fa-plus btn-icon-wrapper"></i><span>Unidad de Negocio</span>
+                                             </div>
+                                          </div>
+                                          <!-- Magic button here -->
+                                          <button style="display: none;" id="btn-submit" type="text">Submit</button>    
+                                          <!-- Magic button end -->
+                                       </div>
+                                 </div>
+
+                                 <!-- Contenido para modal -->
+                                 <div style="display: none;">
+                                    <!-- Titulo -->
+                                    <div id="inTitulo"><span id="customTitulo">Confirmar datos para registro de usuario</span></div>
+                                    <!-- Descripción -->
+                                    <div id="inDescripción"><p  id="customDescripción">Resúmen de los datos para actualizar en registro del usuario</p></div>
+                                    <!-- Cuerpo -->
+                                    <div id="inDatos"><p  id="customDatos">Cuerpo de datos aqui</p></div>
+                                 </div>
+                                 <!-- Contenido para modal fin -->
+                              </div>
+                              <!-- /.box-body -->
+                           </form>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+{% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+   jQuery(document).ready(function() {
+
+      // Al cargar la página cargar lo siguiente
+      var cargo_init = jQuery("[data-init-role]").val();
+
+      jQuery('#grupos').on('change', function() {
+         seleccionadosGrupos = jQuery("#grupos option:selected").length;
+         totalGrupos = jQuery("#grupos option").length;
+         if ( seleccionadosGrupos == totalGrupos  ) {
+            jQuery('#role option').show();
+         } else {
+            jQuery("#grupos option:selected").each(function() {
+               console.log (  jQuery(this).attr("data-grupo-id") );
+               var elSeleccionado =  jQuery(this).attr("data-grupo-id");
+               jQuery('#role option[data-role-cliente-id !='+elSeleccionado+']').hide();
+               jQuery('#role option[data-role-cliente-id ='+elSeleccionado+']').show();
+            });
+         } // fin de if
+      }); 
+      // Fin de carga inicial
+
+      // Validación de forma
+      jQuery.validate({
+         lang: 'es',
+         borderColorOnError : '#9D292A',
+         addValidClassOnAll : true,
+         modules : 'security, file', 
+      });     
+
+      // Muestra los roles según los grupos de usuarios seleccionados
+      jQuery('#grupos').on('change', function() {
+         seleccionadosGrupos = jQuery("#grupos option:selected").length;
+         totalGrupos = jQuery("#grupos option").length;
+         if ( seleccionadosGrupos == totalGrupos  ) {
+            jQuery('#role option').show();
+         } else {            
+            jQuery("#grupos option:selected").each(function() {
+               var elSeleccionado =  jQuery(this).attr('data-grupo-id');
+               jQuery('#role option[data-role-cliente-id !='+elSeleccionado+']').hide();
+               jQuery('#role option[data-role-cliente-id ='+elSeleccionado+']').show();
+            });
+         } // fin de if
+      }); 
+
+      function getDataFromMultiple(cElem) {
+         var ctemp = '';
+         if ($(cElem).hasClass("selector")) {
+            var elemId = $(cElem).attr("id");
+            ctemp = $('#' + elemId + ' option:selected').toArray().map(item => item.text).join();
+            if (ctemp.includes('Seleccione')) {
+               textoInputSelector = 'Sin opción escogida';               
+            } else {
+               textoInputSelector = ctemp;
+            }            
+         } else if ($(cElem).is(':checkbox')) {
+            textoInputSelector = $(cElem). prop("checked") == 'on' ? 'SI':'NO';          
+         } else if ($(cElem).is(':radio')) {
+            console.log ( $(cElem).attr('name') )
+            var nameElem = $(cElem).attr('name');            
+            textoInputSelector = $("input[name='"+nameElem+"']:checked").val() == 1 ? 'SI':'NO'; 
+         } else {
+               textoInputSelector = $(cElem).val();
+         }
+         return textoInputSelector;
+      }
+
+      jQuery("#btn-confirmar").on("click", function(event){
+         event.preventDefault();        
+
+         if( ( jQuery('#password_confirma').val() == "" || jQuery('#password').val() == "" ) && !( jQuery('#password_confirma').val() == "" && jQuery('#password').val() == "" ) ) {         
+            alert('Llene el campo contraseña y el de confirmar contraseña, o bien, deje ambos en blanco por favor.'); 
+         } else {
+            jQuery('p#customDatos').html('');
+            jQuery('#modalDatos').html('');
+            // Inserción de contenido en elementos de modal
+            jQuery("#modalTitulo").html( jQuery("#inTitulo").html() );
+            jQuery("#modalDescripcion").html( jQuery("#inDescripción").html() );
+            jQuery("#modalDatos").html( jQuery("#inDatos").html() );
+            jQuery("#mi-modal").modal('show');
+
+            // get all the inputs into an array.        
+            var $inputs = $('#frm-actualizar :input');
+            var values = {};
+            var cTitulo,  cValor, cData = '';
+            
+            $inputs.each(function() {
+               if ($(this).hasClass("mostrar")) {
+
+                  if ( $(this).is(':radio')) {
+                     cTitulo = $('label[for="'+ $(this).attr('name') + '"]').text();
+                  } else {
+                     cTitulo = $(this).parent().find('label').text();
+                  }
+                  cValor =  getDataFromMultiple( $(this) );
+                  cData = cData + '<li class="fList"><span class="fTitulo">' + cTitulo + ':</span> ' + cValor + '</li>';
+                  values[this.name] = $(this).val();               
+               }
+            });
+            jQuery('p#customDatos').append('<ul>'+ cData + '</ul>');
+            //console.log (values);
+         } // fin de verificar campo password y Confirmación
+
+      });    
+      
+      jQuery("#btn-enviar").on("click", function(event){         
+         console.log ('Realizando submit de forma');            
+         jQuery("#btn-submit").trigger('click');
+         jQuery("#btn-cerrar").trigger('click');
+      });    
+      
+      // Muestra las unidades de negocio según el cliente seleccionado
+      jQuery('#cliente').on('change', function() {
+         clienteSeleccionado = jQuery("#cliente").val();   
+
+         if ( clienteSeleccionado != 0 ) {
+            jQuery("#planta option").each(function() {               
+               var elSeleccionado =  jQuery(this).val();
+               
+               if (  jQuery(this).attr('data-cliente-id') == clienteSeleccionado) {
+                  jQuery(this).show();
+               } else {
+                  jQuery(this).hide();
+               }            
+            });         
+         } else {
+            jQuery('[name="planta"]').val('0').change();
+             jQuery("#planta option").show();
+         }
+
+
+         
+      }); 
+
+   });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

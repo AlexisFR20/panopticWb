@@ -1,0 +1,308 @@
+{% extends 'administrador/bases/base_admin.html' %}
+{% block 'seo_header' %}
+<title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+<meta http-equiv="Content-Language" content="es-MX">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+<meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+{% block css %}
+<!-- Starts to include CSS list -->
+{% for css in css_list %}
+{% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->    
+{% load static %}
+<style>
+   /* Always set the map height explicitly to define the size of the div
+   * element that contains the map. */
+   #map {
+    height: 95%;
+   }        
+</style>
+<link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+{% block 'content' %}
+{% load static %}
+<div class="app-page-title">
+   <div class="page-title-wrapper">
+      <div class="page-title-heading">
+         <div class="mini-logo-panoptic">                
+            <i class="fa fa-user-circle size128 soundblue" aria-hidden="true"></i>                                   
+         </div>
+         <div>
+            Rondines &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Geocerca
+            <div class="admin-page-title-subheading">
+               Geocerca por Planta   <small></small>
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-6">
+            </div>
+            <div class="col-lg-6">
+               <nav class="" aria-label="admin breadcrumb">
+                  <ol class="admin breadcrumb pull-right">
+                     <li class="breadcrumb-item">
+                        <a>
+                        <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a> Rondines</a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:admin_perfiles_global_index' %}"> Mostrar Gecerca</a>
+                     </li>                    
+                  </ol>
+               </nav>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="tabs-animation">
+   <div class="row" >
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+         <div class="mb-3 card">
+         	<div class="card-header"><h3>{{planta.nombre}}</h3></div>
+            <div class="card-body">
+               <div id="map" style="height: 800px"></div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+{% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+<script type="text/javascript">
+		
+		function initMap() {   
+	            
+	      
+	      const myLatLng = { lat: {{planta.lat}}, lng: {{planta.lng}} };
+
+	      
+	      var map = new google.maps.Map(document.getElementById('map'), {
+	        zoom: 15,
+	        center: myLatLng,
+	      });
+
+	      var markerImage = new google.maps.MarkerImage('{% static "core/assets/images/unidad-negocio.png" %}', 
+            new google.maps.Size(48, 48),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(15, 15));   
+
+	      var plantaMarker = new google.maps.Marker({
+		    position: myLatLng,
+		    map,
+		    title: "{{planta.nombre}}",
+		    icon: markerImage
+		  });
+
+		  loadedPoly = ""
+
+	      polygono = "{{planta.polyradio}}" 
+	      if(polygono != "" && polygono != "None" ){
+
+		  	routes = JSON.parse(polygono);       
+            
+            // Now iterate through all the polylines and draw them on the map.
+            for(var i = 0; i < routes.length; i++) {
+                var newPath = [];
+                for (var j = 0; j < routes[i].length; j++) {
+                    // Format of routes[i][j] [[lat, lng], [lat2, lng2]...]
+                    newPath.push({ lat: routes[i][j][0], lng: routes[i][j][1] });
+                }
+                // Draw saved paths on the map with the same settings as they were drawn.
+                loadedPoly = new google.maps.Polygon({
+                    path: newPath,
+                    strokeColor: '#f3992a',
+                    fillColor: '#f3992a',
+                    strokeWeight: 4,
+                    strokeOpacity: 0.65,
+                    editable: false,
+                    clickable: true,
+                    zIndex: 100,
+                });
+
+                //allOverlays.push(loadedPoly);             
+                loadedPoly.setMap(map);            
+            }
+		  
+	      }
+
+	      	//guardias = {{guardias.count}}
+	      var guardMarkers = []
+	      {% for guardia in guardias %}
+	      	//guardia {{guardia}}
+	      	{% if guardia.getLastTracking != None %}
+	      	//{{guardia.getLastTracking.fecha}}\n
+	      	guardMarkers.push(new google.maps.Marker({
+		    position: {lat: {{guardia.getLastTracking.lat}}, lng: {{guardia.getLastTracking.lng}} },
+		    map,
+		    title: "{{guardia}}",
+		  	})
+		  	);
+	      	setTimeout(function() {
+			    console.log("isInArea "+checkInArea(new google.maps.LatLng({{guardia.getLastTracking.lat}}, {{guardia.getLastTracking.lng}} ) ) )
+			}, 1000);
+		  	
+		  	{% endif %}
+
+	      {% endfor %}
+
+
+
+		  	var i = 1;   
+
+			$.ajaxSetup({
+        		headers: { "X-CSRFToken": '{{csrf_token}}' }
+    		});               //  set your counter to 1
+
+			function myLoop() {         //  create a loop function
+			  setTimeout(function() {   //  call a 3s setTimeout when the loop is called
+			    console.log('actualiza tacks de guardias');   //  your code here
+			                
+
+
+			    $.ajax({
+	                url:  '{% url "administrador:admin_ajax_last_tracking" %}',
+	                data: {
+	                	'planta_id': {{planta.id}},
+	            	},
+	                datatype: 'json',
+	                type: 'GET',
+	                contentType: 'application/json; charset=utf-8',
+	                success: function (result) {
+	                	console.log(result)
+	                	if(result.length>0){
+	                		for (var x = 0; x < guardMarkers.length; x++) {
+							    guardMarkers[x].setMap(null);
+							}
+							guardMarkers = []
+	                	}
+	                	for (var i = 0; i<result.length; i++){
+	                		var item = result[i]
+	                		guardMarkers.push(new google.maps.Marker({
+						    position: {lat: parseFloat(item['lat']), lng: parseFloat(item['lng']) },
+						    map,
+						    title: item['guardia'],
+						  	})
+						  	)
+
+	                	}
+
+	            		myLoop()
+	                }
+	            })
+
+			                            //  ..  setTimeout()
+			  }, 5000)
+			}
+
+			myLoop(); 
+
+			function checkInArea(punto){
+				return google.maps.geometry.poly.containsLocation(punto, loadedPoly);    
+			}
+
+
+	      /*
+	      var polyOptions = {
+	        strokeWeight: 0,
+	        fillOpacity: 0.65,
+	        editable: true
+	      };
+
+	      drawingManager = new google.maps.drawing.DrawingManager({
+	          drawingMode: google.maps.drawing.OverlayType.POLYGON,
+	          drawingControl: true,
+	          drawingControlOptions: {
+	            position: google.maps.ControlPosition.TOP_CENTER,
+	            drawingModes: [              
+	              google.maps.drawing.OverlayType.POLYGON,              
+	              google.maps.drawing.OverlayType.RECTANGLE
+	            ]
+	          },
+	          markerOptions: {
+	              draggable: true
+	          },
+	          polylineOptions: {
+	              editable: true
+	          },
+	          rectangleOptions: polyOptions,
+	          circleOptions: polyOptions,
+	          polygonOptions: polyOptions,
+	          map: map
+	      });      
+
+	     google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
+	        if (e.type != google.maps.drawing.OverlayType.MARKER) {
+	            // Switch back to non-drawing mode after drawing a shape.
+	            //drawingManager.setDrawingMode(null);
+
+	            // Add an event listener that selects the newly-drawn shape when the user
+	            // mouses down on it.
+	            BorrarFigura();
+	            var newShape  = e.overlay;
+	            
+	            console.log('New Shape');
+	            console.log(newShape)
+	            newShape.type = e.type;
+	            console.log(newShape.type);
+	            google.maps.event.addListener(newShape, 'click', function() {
+	                setSelection(newShape);
+	            });
+
+	            var new_path = [];
+
+	            console.log(newShape);
+
+	            if (newShape.type == 'rectangle') {
+	              var bounds = newShape.getBounds();
+	              var ne = bounds.getNorthEast();
+	              var sw = bounds.getSouthWest();
+	              new_path.push([ne.lat(), ne.lng()]);
+	              new_path.push([sw.lat(), sw.lng()]);              
+	            } else if (newShape.type == 'polygon') {
+	              var arrPaths = newShape.getPath().getArray();                
+	              // Construct the new array of paths.
+	              for (var i = arrPaths.length - 1; i >= 0; i--) {
+	                  new_path.push([arrPaths[i].lat(), arrPaths[i].lng()]);
+	              }
+	            }
+
+
+	            var routes = [];
+	            routes.push(new_path); // Array of arrays [[lat, lng], [lat2, lng2]... ]            
+	            console.log('stringify');
+	            console.log (JSON.stringify(routes));
+
+	            
+	            setSelection(newShape);
+	            
+	        } else {
+	            drawingManager.setDrawingMode({
+	                polygonOptions: polyOptions
+	            });
+	            
+	        }            
+	        
+	    });
+	     */
+
+  	}
+
+</script>
+
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=visualization&callback=initMap">
+</script>
+
+{% endblock js %}

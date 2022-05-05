@@ -1,0 +1,406 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Encuestas</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+
+    <style>
+        #mapa{
+            width: 100%;
+            height: 560px;
+            border: 1px solid #e9e9e9;;             
+        }        
+        .map-control {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 2px rgba(33, 33, 33, 0.4);
+            font-family: "Roboto", "sans-serif";
+            margin: 10px;
+            /* Hide the control initially, to prevent it from appearing
+               before the map loads. */
+            display: none;
+          }
+    
+          /* Display the control once it is inside the map. */
+          #map .map-control {
+            display: block;
+          }
+    
+          .selector-control {
+            font-size: 14px;
+            line-height: 30px;
+            padding-left: 5px;
+            padding-right: 5px;
+          }
+    </style>
+
+{% endblock css %}
+
+{% block 'content' %}
+    <div class="app-page-title">    
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="mini-logo-panoptic">
+                    <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+                </div>
+                <div>D&D Management&nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Movimientos
+                    <div class="admin-page-title-subheading">
+                    Crear Movimiento
+                    </div>
+                </div>
+            </div> 
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                    </div>
+                    <div class="col-lg-6">
+                        <nav class="" aria-label="admin breadcrumb">
+                            <ol class="admin breadcrumb pull-right">
+                                <li class="breadcrumb-item">
+                                    <a>
+                                        <i aria-hidden="true" class="fa fa-home"></i>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a> D&D Management</a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{% url 'administrador:admin_movimientos_lista' %}">Movimientos</a>
+                                </li>
+                                <li class="active breadcrumb-item" aria-current="page">
+                                    Crear Movimiento
+                                </li>
+                            </ol>
+                        </nav>              
+                    </div>
+                </div>        
+            </div>        
+        </div>
+    </div>    
+
+    <div class="row" >        
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">                                            
+                        <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                        Crear Movimiento
+                    </div>                                                        
+                </div>
+                <div class="card-body">                                        
+                    <a href="{% url 'administrador:admin_movimientos_lista' %}" class="btn btn-primary size16">Volver a lista de movimientos</a>
+                    <hr>
+                    <br>        
+                    <div class="row mt-3 mb-5">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 mx-auto"> 
+                            {% if 'ok' in request.GET %}
+                                <h3 style="color: green">Actualizado</h3>
+                            {% endif %}                            
+                            <div id="mensaje" class="mb-2 mr-2 btn-transition btn btn-outline-light mayus size14" style="width: 98%; margin: 0 auto;">Mensaje</div><br/>
+                            <form id="crearMovimiento" method="post">{% csrf_token %}
+                                    {{ form.as_p }}
+                                <br>
+                                <input id="btnSubmit" type="submit" class="btn btn-primary size16" value="Guardar Movimiento" />
+                            </form>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-8 col-xl-8"">
+                            <h4>Mapa de Movimiento</h4>
+                            <div id="mapa"></div>
+                        </div>
+                    </div> <!-- End of row-->
+                </div>  <!-- End of Card Body-->
+            </div>
+        </div> 
+    </div> 
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+<script>
+    $( document ).ready(function() {        
+        var ren;       
+        var TipoIncidente;
+        
+        document.getElementById("id_estatus").readOnly = true;
+
+        $('select#id_estatus').css('display', 'none');
+        $("label[for='id_estatus']").append('<p id="aquiEstatus" class="size20 negrita"></p>');
+
+        if ( $('select#id_estatus').val()=='Normal') {
+            $('select#id_estatus').css('color', 'green');
+            $('p#aquiEstatus').css('color', 'green');
+            $('p#aquiEstatus').text('Normal');
+        }  
+
+        if ( $('select#id_estatus').val()=='Medio') {
+            $('select#id_estatus').css('color', 'orange');
+            $('p#aquiEstatus').css('color', 'orange');
+            $('p#aquiEstatus').text('Medio');
+        }  
+
+        if ( $('select#id_estatus').val()=='Relevante') {
+            $('select#id_estatus').css('color', 'red');
+            $('p#aquiEstatus').css('color', 'red');
+            $('p#aquiEstatus').text('Relevante');
+        }  
+
+        $( "select#id_tipo_incidente" ).change(function() {
+            TipoIncidente = $('select#id_tipo_incidente').val();   
+            console.log(TipoIncidente);
+
+            if (parseInt(TipoIncidente) == 1) {
+                $('select#id_estatus').val('Normal');                   
+                $('select#id_estatus').css('color', 'green');
+                $('p#aquiEstatus').css('color', 'green');
+                $('p#aquiEstatus').text('Normal');
+            } else if (parseInt(TipoIncidente) >= 2 && parseInt(TipoIncidente) <= 15) {
+                $('select#id_estatus').val('Medio');                   
+                $('select#id_estatus').css('color', 'orange');
+                $('p#aquiEstatus').css('color', 'orange');
+                $('p#aquiEstatus').text('Medio');
+            } else if (parseInt(TipoIncidente) >= 16 && parseInt(TipoIncidente) <= 21) {
+                $('select#id_estatus').val('Relevante');                   
+                $('select#id_estatus').css('color', 'red');       
+                $('p#aquiEstatus').css('color', 'red');
+                $('p#aquiEstatus').text('Relevante');                          
+            } else {
+                $('select#id_estatus').val('Normal');                   
+                $('select#id_estatus').css('color', 'green');
+                $('p#aquiEstatus').css('color', 'green');
+                $('p#aquiEstatus').text('Normal');
+            }
+        });
+    }); //  Ready
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=places"></script>
+<script>
+    function makeRouteInMap() {     
+        var data = {}; 
+        var getdata ;    
+        var oc = $('#id_origen_coords').val();
+        var dc = $('#id_destino_coords').val();    
+        var ocArray = oc.split(',');
+        var dcArray = dc.split(',');
+        var origen_lat = ocArray[0];
+        var origen_lng = ocArray[1];        
+        var destino_lat = dcArray[0];
+        var destino_lng = dcArray[1];
+        console.log('Resultante de Coordenadas');
+        console.log(origen_lat, origen_lng);
+        console.log(destino_lat, destino_lng);
+        console.log('******');    
+        map = new google.maps.Map( document.getElementById('mapa'), {'zoom':12, 'mapTypeId': google.maps.MapTypeId.ROADMAP, 'center': new google.maps.LatLng(origen_lat, origen_lng), mapTypeControlOptions: {
+            mapTypeIds: [
+              "roadmap",
+              "satellite",
+              "hybrid",
+              "terrain",
+              "styled_map"
+            ]
+          } });
+
+        map.mapTypes.set("styled_map", styledMapType);
+        map.setMapTypeId("styled_map");
+ 
+        ren = new google.maps.DirectionsRenderer( {'draggable':true} );
+        ren.setMap(map);
+        ser = new google.maps.DirectionsService();
+        
+        ser.route({ 'origin': new google.maps.LatLng(origen_lat, origen_lng), 'destination':  new google.maps.LatLng(destino_lat, destino_lng), 'travelMode': google.maps.DirectionsTravelMode.DRIVING},function(res,sts) {
+            if(sts=='OK')ren.setDirections(res);
+
+            // Obtener la duración para la primer ruta
+            var route = res.routes[0];
+            var duration = 0;
+
+            // Iteramos todos los legs de la ruta
+            route.legs.forEach(function (leg) {
+            // Sumamos la duracion de cada uno
+            // La duración esta en segundos.
+            duration += leg.duration.value;
+            });
+
+            // Por ejemplo: imprimimos el resultado en DOMElement con id 'duracion'
+            console.log( duration + ' segundos' );
+            var googleTime = parseInt(duration)/60;
+            $('#id_tiempo_estimado_google').val(googleTime.toFixed(2));
+            $('#id_tiempo_estimado_google').text(googleTime.toFixed(2));
+
+        })               
+    } // end of makeRouteInMap
+
+    function save_waypoints() {
+        var data = {}; 
+        var w=[],wp;
+        var rleg = ren.directions.routes[0].legs[0];
+        var rleg2 = ren.directions;        
+        data.start = {'lat': rleg.start_location.lat(), 'lng':rleg.start_location.lng()};
+        data.end = {'lat': rleg.end_location.lat(), 'lng':rleg.end_location.lng()};
+        var wp = rleg.via_waypoints; 
+        console.log(wp.length);
+        for(var i=0;i<wp.length;i++) { 
+            w[i] = [wp[i].lat(),wp[i].lng()];
+            // na
+        }
+        data.waypoints = w;
+         
+        var data = JSON.stringify(data);
+        console.log('data');
+        console.log(data);
+        return data;
+      // Guardado con éxito
+    }
+
+
+    function checkOrigenDestinoCoords() {
+        var bool = false
+        if ( $('#id_origen').val() != "" && $('#id_destino').val() != ""  ) {            
+            bool = true;
+            $('div#mensaje').text('Proceda a completar el registro del movimiento.');
+            $('#id_origen').css('background-color', 'transparent');
+            $('#id_destino').css('background-color', 'transparent');
+            setTimeout(function(){             
+                makeRouteInMap();
+                $( "#btnSubmit" ).prop( "disabled", false );
+            }, 500);        
+        } else {
+            $('div#mensaje').text('Para mostrar la ruta llene los campos Orígen y Destino');
+            $('#id_origen').css('background-color', '#f9f3e4');
+            $('#id_destino').css('background-color', '#f9f3e4');
+            $( "#btnSubmit" ).prop( "disabled", true );
+        }
+        //console.log(bool);
+        return bool;
+    }
+
+    function initialize() {
+        var input = document.getElementById('id_origen');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        google.maps.event.addListener(autocomplete, 'place_changed', function () {
+            var place = autocomplete.getPlace();
+            $('#id_origen_coords').val(place.geometry.location.lat()+','+place.geometry.location.lng());            
+        });
+
+        var input2 = document.getElementById('id_destino');
+        var autocomplete2 = new google.maps.places.Autocomplete(input2);
+        google.maps.event.addListener(autocomplete2, 'place_changed', function () {
+            var place2 = autocomplete2.getPlace();
+            $('#id_destino_coords').val(place2.geometry.location.lat()+','+place2.geometry.location.lng());        
+        });
+    }
+    
+    google.maps.event.addDomListener(window, 'load', initialize);     
+</script>
+<script>    
+    var init_lat = 31.7383915; // Matrix Juarez Lat
+    var init_lng = -106.4541093; // Matrix Juarez Lng    
+    // https://snazzymaps.com/style/20/gowalla
+    const styledMapType = new google.maps.StyledMapType(
+        [{"featureType":"administrative.land_parcel","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"landscape.man_made","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"simplified"},{"lightness":20}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"hue":"#f49935"}]},{"featureType":"road.highway","elementType":"labels","stylers":[{"visibility":"simplified"}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"hue":"#fad959"}]},{"featureType":"road.arterial","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"visibility":"simplified"}]},{"featureType":"road.local","elementType":"labels","stylers":[{"visibility":"simplified"}]},{"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"all","stylers":[{"hue":"#a1cdfc"},{"saturation":30},{"lightness":49}]}]
+    ); 
+    mapy = new google.maps.Map( document.getElementById('mapa'), {
+			'zoom':5, 
+			'mapTypeId': google.maps.MapTypeId.ROADMAP, 
+			'center': new google.maps.LatLng(init_lat, init_lng),mapTypeControlOptions: {
+        		mapTypeIds: [
+          			"roadmap",
+          			"satellite",
+          			"hybrid",
+          			"terrain",
+         	 		"styled_map"
+        		]
+      		} 
+	});
+	
+	var czindex = 500;
+
+	var shape = {
+		coords: [1,1,1,47,30,47,30,1],
+		type: 'poly'
+	};
+
+	var iconoss = {
+    	{% for tipo in tipoincidentes %}
+        	'{{ tipo.alias }}': { 'nombre': "{{ tipo.nombre }}", 'img': "/media/{{ tipo.icono }}" },
+    	{% endfor %}
+ 	};
+	
+	{% for p in incidentes %}
+		var title = '{{ p.tipo }}';
+    	if (title == 'asalto_transeuntes') {
+       		title = 'Asalto a Transeuntes';
+    	} else if (title == 'robo_vehiculo') {
+        	title = 'Robo de Vehículo';
+        }
+ 
+      	var tipo_inci = "{{ p.tipo|stringformat:"s" }}";
+        if (title != 'robo-vehiculo' && title != 'asalto-a-negocios' && title != 'violacion' && title != 'feminicidio' && title !=     'auto-partes' && title != 'transeuntes' && title != 'extorsion' && title != 'robo-casa' && title != 'violencia-familiar')  {
+        	var marker = new google.maps.Marker({
+            	position: {lat: {{ p.lat}}, lng: {{ p.lng }} },
+                	map: mapy,
+                   	icon: iconoss[tipo_inci].img,
+                   	shape: shape,
+                   	title: title.toUpperCase(),
+                   	zIndex: czindex
+              	});
+    	}	
+	{% endfor %}
+
+    mapy.mapTypes.set("styled_map", styledMapType);
+    mapy.setMapTypeId("styled_map");
+
+    $( document ).ready(function() {
+        $("label[for='id_waypoints']").hide();
+        $("label[for='id_fecha_fin']").hide();
+        $("label[for='id_origen_coords']").hide();
+        $("label[for='id_destino_coords']").hide();
+        $("label[for='id_confirmacion']").hide();
+        $("label[for='id_ef']").hide();
+        $( "#id_origen_coords" ).prop( "readonly", true );
+        $( "#id_destino_coords" ).prop( "readonly", true );
+        $( "#btnSubmit" ).prop( "disabled", true );
+        
+        $( "input" ).change(function() {
+            console.log( checkOrigenDestinoCoords() );
+        });
+
+        $('form#crearMovimiento').submit(function() {
+            var rJSON = save_waypoints();
+            $('#id_waypoints').val(rJSON);
+            $('#id_waypoints').text(rJSON);            
+            return True;
+        });
+
+    });  // Ready
+
+    if (!origen_destino_filled_check()) {
+        $('div#mensaje').text('Para mostrar la ruta llene los campos Orígen y Destino');
+        $('#id_origen').css('background-color', '#f9f3e4');
+        $('#id_destino').css('background-color', '#f9f3e4');
+    }
+
+    function origen_destino_filled_check(campo) {
+        var flag = false;
+        if (typeof campo !== 'undefined') {
+            console.log('Contenido de CAMPO');
+            console.log($(campo).val());
+        }
+        return flag;
+    }
+</script>
+{% endblock js%}

@@ -1,0 +1,160 @@
+{% extends 'administrador/bases/base_admin.html' %}
+{% block 'seo_header' %}
+<title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+<meta http-equiv="Content-Language" content="es-MX">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+<meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+{% block css %}
+<!-- Starts to include CSS list -->
+{% for css in css_list %}
+{% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->    
+{% load static %}
+<style>
+   /* Always set the map height explicitly to define the size of the div
+   * element that contains the map. */
+   #map {
+   height: 100%;
+   }        
+</style>
+<link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+{% block 'content' %}
+{% load static %}
+<div class="app-page-title">
+   <div class="page-title-wrapper">
+      <div class="page-title-heading">
+         <div class="mini-logo-panoptic">                
+            <i class="fa fa-user-circle size128 soundblue" aria-hidden="true"></i>                                   
+         </div>
+         <div>
+            Rondines &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Ver Rondín
+            <div class="admin-page-title-subheading">
+               Ver Rondin  <small>{{ rondin.nombre }} </small>    
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-6">
+            </div>
+            <div class="col-lg-6">
+               <nav class="" aria-label="admin breadcrumb">
+                  <ol class="admin breadcrumb pull-right">
+                     <li class="breadcrumb-item">
+                        <a>
+                        <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a> Rondines</a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:admin_perfiles_global_index' %}"> Ver Rondín</a>
+                     </li>                    
+                  </ol>
+               </nav>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="tabs-animation">
+   <div class="row" >
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+         <div class="mb-3 card">
+            <div class="card-body">
+               <div class="row">                  
+                  <div class="col-sm-12 col-md-12 col-lg-12">
+                     <div class="lista-usuarios-card">
+                        <div class="container-fluid">
+                           <div class="form-heading">Registro del Rondin <span class="bgp-color-verde">{{ rondin.nombre }}</span></div>                           
+                           <!-- form start -->
+                           <form  id="frm-ver" role="form" >
+                              {% csrf_token %}
+                              <div class="container-fluid">
+                                 <div class="row">
+                                       <div class="col-xs-12 col-md-12 col-lg-6">  
+                                           <!-- Nombre del Rondin -->
+                                          <div class="form-group">
+                                            <label>Nombre del Rondín</label>
+                                            <input  type="text" id="nombre" name="nombre" class="form-control mostrar" placeholder="Nombre del Rondin" value="{{ rondin.nombre }}" disabled>
+                                          </div>
+                                          <!-- Tiempo Estimado  del Rondin -->
+                                          <div class="form-group">
+                                            <label>Tiempo Estimaod</label>
+                                            <input  type="text" id="tiempo_estimado" name="tiempo_estimado" class="form-control mostrar" placeholder="Tiempo estimado" value="{{ rondin.tiempo_estimado }} minutos" disabled>
+                                          </div>
+                                          <!-- Correos de Contacto del Rondin -->
+                                          <div class="form-group">
+                                              <label>Correos de contacto</label>
+                                              <input  type="text" id="correos_contacto" name="correos_contacto" class="form-control mostrar" placeholder="Correos de contacto" value="{{ rondin.correos_contacto }}" disabled>
+                                          </div>
+                                          <!-- Unidad de Negocio al que pertenece el  Rondin -->
+                                          <div class="form-group">
+                                              <label>Cliente</label>
+                                              <input  type="text" id="planta_id" name="planta_id" class="form-control mostrar" placeholder="Unidad de negocio" value="{{ rondin.cliente }}" disabled>
+                                          </div>
+                                          <div class="form-group">
+                                              <label>Planta</label>
+                                              <input  type="text" id="planta_id" name="planta_id" class="form-control mostrar" placeholder="Unidad de negocio" value="{{ rondin.planta }}" disabled>
+                                          </div>
+                                          <!-- Categoría del Rondin -->
+                                          <div class="form-group">
+                                              <label>Categoría del Rondin</label>
+                                              <input  type="text" id="categoria_id" name="categoria_id" class="form-control mostrar" placeholder="Categoría del rondin" value="{{ rondin.categoria.nombre}}" disabled>
+                                          </div>
+                                          <div class="form-group">
+                                              <label>Usuario Aguilas</label>
+                                              <input  type="text" id="admin_aguilas_id" name="admin_aguilas_id" class="form-control mostrar" placeholder="Usuario Aguilas" value="{{ rondin.admin_aguilas_id }}" disabled>
+                                          </div>
+                                          <div class="position-relative form-check pad-bot20">
+                                              <label class="form-check-label">
+                                                  <input type="checkbox" name="activo" id="activo" class="form-check-input freeze" {% if rondin.activo == True %} checked {% endif %}> Activo
+                                              </label> 
+                                          </div>
+
+                                       </div> <!-- Fin de panel izquierdo -->
+
+                                       <div class="col-xs-12 col-md-12 col-lg-6">
+                                        <div class="form-heading">Registro del Puntos y Tareas <span class="bgp-color-verde">{{ rondin.nombre }}</span></div>  
+                                          {% for puntos in puntos_rodin %}
+                                            
+                                            <span class="btn-wide btn btn-primary mayus">{{ puntos.nombre }}</span>
+                                            
+                                            <ul>
+                                              
+                                            
+                                            {% for tarea in puntos.get_list_tareas %}
+                                              <li>{{ tarea }}</li>
+                                            {% endfor %}
+                                            </ul>
+                                            <hr>
+
+
+                                          {% endfor %}
+                                       </div> <!-- Fin de panel derecho -->
+                                       
+                                 </div>                                 
+                              </div> <!-- Fin de container -->
+                              <!-- /.box-body -->
+                           </form>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+{% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js %}

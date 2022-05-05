@@ -1,0 +1,88 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Encuestas</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+    <div class="app-page-title">    
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="mini-logo-panoptic">
+                    <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+                </div>
+                <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Gestión de Cuestionarios
+                    <div class="admin-page-title-subheading">
+                    Editar Cuestionario
+                    </div>
+                </div>
+            </div> 
+            <div class="page-title-actions">
+                <nav class="" aria-label="admin breadcrumb">
+                    <ol class="admin breadcrumb pull-right">
+                        <li class="breadcrumb-item">
+                            <a>
+                                <i aria-hidden="true" class="fa fa-home"></i>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a> Análisis de Riesgo</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'administrador:admin_list_encuestas' %}"> Gestión de Cuestionarios</a>
+                        </li>
+                        <li class="active breadcrumb-item" aria-current="page">
+                            <a href="#">Editar Cuestionario</a>  
+                        </li>
+                    </ol>
+                </nav>     
+            </div> <!-- Page title actions -->
+        </div> <!-- Page Title Wrapper -->
+    </div>  <!-- app page title -->
+    
+    <a href="{% url 'administrador:admin_list_encuestas' %}" class="btn btn-primary size16">Volver a lista de encuestas</a>   
+
+    <main role="main">
+        <div class="container">
+            <div>
+                <h2>{{encuesta.nombre}}</h2>
+            </div>
+            <p>categoria: {{encuesta.categoria}}</p>
+            <p>creada {{encuesta.created_at}}</p>
+            <br>           
+            <div class="row mt-3">
+                <div class="col-md-9 mx-auto">
+                    <div>
+                        {% if 'ok' in request.GET %}
+                            <h1>OK</h1>
+                        {% endif %}
+                        <form action="" method="post">{% csrf_token %}
+                                {{ form.as_p }}
+                            <br>
+                            <input type="submit" class="btn btn-primary size16" value="Actualizar" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>                
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

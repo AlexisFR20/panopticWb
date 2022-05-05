@@ -1,0 +1,229 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - DD Management</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+{% load static %}
+<style>  
+  #mapa {
+    width: 100%;
+    height: 590px;
+  }       
+</style>    
+
+<div class="text-center">
+    <span class="bgp-color-azul diamante-medium-regular" style="font-size: 38px;">*D</span><span class="bgp-color-azul" style="font-size: 34px;">&</span><span class="bgp-color-azul diamante-medium-regular" style="font-size: 38px;">D MANAGEMENT</span>
+</div>
+<hr> 
+    
+<!-- Selector -->
+<div class="row" >        
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+    <div class="mb-3 card">            
+        <div class="card-body text-center">        
+            <h5 class="card-title size20 bgp-color-azul">Cliente: {{ vcliente.nombre }}</h5>                                                                                             
+            <div class="input-group">                              
+                
+                {% if vplantas %}
+                <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+                    <option value="">-- Unidad de Negocio --</option>
+                    {% for planta in vplantas.all %}
+                    <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                    {% endfor %}
+                </select>
+                &emsp;
+                {% endif %}
+                <input id="dates" name="dates" required="required" class="form-control" style="width: 58px;">                      
+                &emsp;            
+
+            </div>              
+        </div>  
+    </div>
+</div> 
+</div>   
+
+<div class="row" >        
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+      <div class="mb-3 card mincard"> <!-- Inicio de card -->
+          <div class="card-header-tab card-header-tab-animation card-header grisdash">
+              <div class="card-header-title size14">                                            
+                  <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                  Cumplimiento de llegada a destinos
+              </div>                
+          </div>
+          <div class="card-body">  
+              <div id="chart"></div>
+          </div>  
+      </div> <!-- Fin de card -->
+  </div> 
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">        
+      <div class="mb-3 card mincard"> <!-- Inicio de card -->
+          <div class="card-header-tab card-header-tab-animation card-header grisdash">
+              <div class="card-header-title size14">                                            
+                  <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                  Cumplimiento de llegada a destinos
+              </div>                
+          </div>
+          <div class="card-body">  
+              <div id="chart2"></div>
+          </div>  
+      </div> <!-- Fin de card -->
+  </div>
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">        
+      <div class="mb-3 card mincard"> <!-- Inicio de card -->
+          <div class="card-header-tab card-header-tab-animation card-header grisdash">
+              <div class="card-header-title size14">                                            
+                  <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                  Relación de Movimientos Concluídos y Activos
+              </div>                
+          </div>
+          <div class="card-body">  
+              <div id="chart3"></div>
+          </div>  
+      </div> <!-- Fin de card -->
+  </div>
+</div> 
+
+<div class="row" >        
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+      <div class="mb-3 card">
+          <div class="card-header-tab card-header-tab-animation card-header grisdash">
+              <div class="card-header-title size14">                                            
+                  <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                  Historial de Movimientos
+              </div>                
+          </div>
+          <div class="card-body">                                     
+              <div class="row">
+                  <div class="col-md-12"> 
+                      <!--  Data Table Start -->
+                      <table id="basica" class="table table-striped table-bordered dt-responsive nowrap escondido" style="width: 100%">
+                          <thead>
+                              <tr>
+                                  <th>Vehículo</th>
+                                  <th>Unidad de Negocio</th>                                    
+                                  <th>Órígen</th>
+                                  <th>Destino</th>                                                                        
+                                  <th>Fecha</th>                                                                        
+                                  <th>¿Llegó a tiempo?</th>                                                                        
+                                  <th>ETA</th>                                                                        
+                                  <th>ETA Google</th>
+                                  <th>Confirmado</th> 
+                                  <th>Estatus</th> 
+                                  <th>Fecha de Llegada</th> 
+                                  <th>Peso</th> 
+                                  <th>Gls</th> 
+                                  <th>Valor de Carga</th>  
+                                  <th>Acciones</th>                       
+                              </tr>
+                          </thead>
+                          <tbody>                                
+                          </tbody>                                                      
+                      </table> 
+                      <!-- Data Table End -->
+                      <div id="tblContenedor"></div>
+                  </div>
+              </div>
+              
+          </div>  
+      </div>
+  </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-6">
+        
+        <div class="row pad-bot20">
+            <div class="col-md-6">            
+                
+              <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                    <div class="card-header-title">
+                       Valor de Movimientos
+                    </div>                                                         
+                </div>
+                <div class="card-body">
+                  <div id="chart4"></div>
+                  <p>El dato obtenido es en base a un rango de diario.</p>
+                </div>                          
+            </div> <!-- MB3 -->
+
+            </div>    
+            <div class="col-md-6">      
+              
+              <div class="mb-3 card mincardreg">
+                <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                    <div class="card-header-title">      
+                        Cargas en Ruta
+                    </div>                                                         
+                </div>
+                <div class="card-body bigdashnumber">
+                    <div id="cargasenruta"></div>
+                </div>                          
+            </div> <!-- MB3 -->
+                
+                <div class="mb-3 card">
+                    <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                        <div class="card-header-title">                                                                         Rutas de Riesgo
+                        </div>                                                         
+                    </div>
+                    <div class="card-body bigdashnumber">
+                      <div id="rutasenriesgo"></div>
+                  </div>                               
+                </div> <!-- MB3 -->
+
+                <div class="mb-3 card">
+                  <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                      <div class="card-header-title"> 
+                          Objetivo de Llegada a Tiempo (50%) 
+                      </div>                                                         
+                  </div>
+                  <div class="card-body bigdashnumber">
+                    <div id="objetivollegadas"></div>
+                  </div>                                                  
+              </div> <!-- MB3 -->
+
+            </div>    
+        </div>
+        
+    </div>
+    <div class="col-md-6">
+
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header" style="background-color: #e9e9e9;">
+                    <div class="card-header-title">                                                                            
+                        Mapa de Rutas                            
+                    </div>                                                         
+                </div>
+                <div class="card-body">                               
+                  <div id="mapa"></div> 
+                </div>                          
+            </div> <!-- MB3 -->            
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+
+{% include 'core/includes/js/modulo_dd/js_dashboard.htm' %}
+{% endblock js%}

@@ -1,0 +1,350 @@
+{% load static %}
+<!-- GPS Test category -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIX6WrjQ6HgnfcI50Xb8ezhohFDeOE8s&libraries=visualization"></script>
+<script>
+    // dom is ready ...
+    $(function(){
+
+        // set your connect application key and username / password values below ...
+        var APP_KEY      = '66fe3c00-486a-4d1e-a201-ff47f5343198'
+          , CONNECT_ROOT = 'https://connect.calamp.com'
+          , username     = 'jcamarillo'
+          , password     = 'prueba1CTC('
+          , $message     = $('.message');
+
+        var randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+        var circle;
+        // authenticate with connect, then retrieve the authenticated user object ...
+        
+        // https://connect.calamp.com/connect/results/events/device/1363148796/devicecommand?idType=ESN&v=2.0&pg=1&pgsize=100        
+
+        function authenticate(){		
+            var url     = '/connect/services/login?useAuthToken=true&username=' + username + '&password=' + password
+              , request = connectRequest(url, 'POST', 'html')
+              , promise = request.then(function(response) {
+                    $message.text('Retrieving User from Connect ...');
+                    return connectRequest('/connect/services/users/currentUser');
+              }, error);
+            promise.then(retrieveDevices, error);
+            $message.text('Authenticating with Connect ...');				
+            setTimeout(function(){ authenticate(); }, 20000);            
+        };
+
+        // retrieve devices for the authenticated user's default account ...
+        function retrieveDevices(response) {                    
+            var account = response.response.results[0].user.account;
+            $message.text('Retrieving Events for ' + account.title);
+            
+            console.log('GPS DEVICE ID');
+            console.log($('div#gpsid').text());
+            connectRequest('/connect/results/events/device/' + $('div#gpsid').text() + '/latest/?idType=ESN&v=2.0&pg=1&pgsize=10').then(renderEvents, error);            
+        };
+
+        // upon recieving the response for the events request, render the events ...
+        function renderEvents(response) {
+            console.log('Contenido de RESPONSE ');
+            
+            console.log(response.response);
+            //console.log(response.response.results[0].avlEvent.address.addressLatitude);
+            //console.log(response.response.results[0].avlEvent.address.addressLongitude);
+            //console.log(response.response.results[0].avlEvent.address.street);
+            //console.log(response.response.results[0].avlEvent.address.city);
+            //console.log(response.response.results[0].avlEvent.address.state);  
+            var t = response.response.results;
+            //console.log('Tamano de T');
+            //console.log(t.length);
+            var MarkerArray = [];
+
+            var i;
+            var estatus = $('div#estatus').attr('data-estatus');
+            var trackColor = '#50D537'; // Normal 
+            // Alb
+            var directionsService = new google.maps.DirectionsService();
+
+            var oc = $('#origen_coords').val();
+            var dc = $('#destino_coords').val();    
+            var ocArray = oc.split(',');
+            var dcArray = dc.split(',');
+            var origen_lat = ocArray[0];
+            var origen_lng = ocArray[1];        
+            var destino_lat = dcArray[0];
+            var destino_lng = dcArray[1];
+
+            pointA = new google.maps.LatLng(origen_lat, origen_lng);
+            pointB = new google.maps.LatLng(destino_lat, destino_lng);
+            // Alb -
+            
+            if (estatus == 'Medio') {
+                trackColor = '#ED6D3B';
+            } else if (estatus == 'Relevante') {
+                trackColor = '#B20000';
+            }
+
+            for (i = 1; i < t.length-2; i++) {
+                //console.log( t[i].avlEvent.address.addressLatitude + " / " +  t[i].avlEvent.address.addressLongitude + "<br>")
+                var m = new google.maps.Marker({
+                    map: map,
+                    position: {lat: t[i].avlEvent.address.addressLatitude, lng: t[i].avlEvent.address.addressLongitude},
+                    //icon: { url: "{% static 'core/assets/images/tracedotred.png' %}"},               
+                    icon: pinSymbol(trackColor),     
+                }); 
+                MarkerArray.push(m);
+
+            } 
+            let devLat = response.response.results[0].avlEvent.address.addressLatitude;
+            let devLng = response.response.results[0].avlEvent.address.addressLongitude;
+
+            if (!map) {
+                map = new google.maps.Map(document.getElementById("mapa"), {
+                    center: {
+                    lat: devLat,
+                    lng: devLng
+                    },
+                    zoom: 16
+                });             
+            } else {
+                var center = new google.maps.LatLng(devLat, devLng);                
+                //console.log('Moviendo mapa 2');
+                map.panTo(center);
+            }
+    
+            if ( $('#marcador').text() == 'done') {
+                marker.setMap(null);    
+                //console.log('He borrado el marcador');
+
+                // borrar marcadores del array
+                i=1;
+                //console.log(MarkerArray);
+                for (i = 1; i < MarkerArray.length; i++) {
+                    MarkerArray[i].setMap(null);                      
+                }
+            }
+
+            function existsImage(strImagen) {
+                dImage = "";                
+                if (strImagen != "" && strImagen != null && strImagen != '/media/') {
+                    dImage = '<img class="img-fluid" width=100 src="' + strImagen + '"  />'
+                }                
+                return dImage;
+            }
+
+            var contentString = '<div id="content" style="width: 95%">'+
+                '<div id="siteNotice">' +
+                '</div>' +
+                '<h6 id="firstHeading" class="bgp-color-azul">DATOS DE TRAYECTO</h6>' +
+                '<div id="bodyContent">' +
+                '<div class="row">' +
+                '<div class="col-md-9">' +
+                '<table class="mb-0 table table-striped goleft"> <tbody><tr><td>Nombre</td><td>' + $('input#chofer').val()+ '</td></tr><tr><td>Matr&iacute;cula</td><td class="mayus">' + $('input#placas').val()+ '</td></tr><tr><td>Destino</td><td><div class="truncate">' + $('input#destino').val()+ '</div></td></tr><tr><td>Empresa</td><td class="mayus">' + $('input#emp_transp').val()+ '</td></tr><tr><td>Ubicación</td><td><div class="truncate">'+ response.response.results[0].avlEvent.address.street + ', ' + response.response.results[0].avlEvent.address.city + ', ' + response.response.results[0].avlEvent.address.state + '</div></td></tr></tbody></table>' +                
+                '</div>' + // col-md-8
+                '<div class="col-md-3">' +
+                '<div class="text-center">'+
+                existsImage($('input#imagen').val()) +                
+                '</div>' +
+                '</div>' + // col-md-4
+                '</div>' + // Row
+                '</div>' + // BodyContent
+                '</div>';
+            
+            
+            var infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+
+            function pinSymbol(color) {
+                return {
+                    path: 'M 0,0 C -2,-20 -10,-22 -10,-30 A 10,10 0 1,1 10,-30 C 10,-22 2,-20 0,0 z M -2,-30 a 2,2 0 1,1 4,0 2,2 0 1,1 -4,0',
+                    fillColor: color,
+                    fillOpacity: 1,
+                    strokeColor: '#000',
+                    strokeWeight: 2,
+                    scale: 1,
+               };
+            }
+
+            var estatus = $('div#estatus').attr('data-estatus');
+            var vehiculo = { url: "{% static 'core/assets/images/troquita.png' %}"};
+            if (estatus == 'Medio') {
+                vehiculo = { url: "{% static 'core/assets/images/t-medio.png' %}"};
+            } else if (estatus == 'Relevante') {
+                vehiculo = { url: "{% static 'core/assets/images/t-relevante.png' %}"};
+            }
+            
+            marker = new google.maps.Marker({                
+                'position' : new google.maps.LatLng(devLat, devLng),
+                'title': response.response.results[0].avlEvent.address.street,                
+                'icon': vehiculo,                 
+            }),
+            markerA = new google.maps.Marker({
+                position: pointA,
+                title: "point A",
+                label: "A",
+                map: map
+            }),
+            markerB = new google.maps.Marker({
+                position: pointB,
+                title: "point B",
+                label: "B",
+                map: map
+            });
+            
+
+            if (circle) {
+                circle.setMap(null);
+                console.log("valido");    
+            }
+
+            circle = new google.maps.Circle({
+                map: map,
+                radius: 100,
+                fillColor: '#8EE5EE',
+                strokeColor: '#50A6C2'
+            });
+
+            circle.bindTo('center', marker, 'position');
+
+            marker.setZIndex(1000000);
+
+            marker.addListener('click', function() {
+                infowindow.open(map, marker);
+              });    
+
+            $('#marcador').text('done');
+    
+            marker.setMap(map);
+
+            ren = new google.maps.DirectionsRenderer( {'draggable':true, preserveViewport :true});
+            ren.setMap(map);
+            ser = new google.maps.DirectionsService();            
+
+            var polylineOptions = {
+                strokeColor: '#C83939',
+                strokeOpacity: 1,
+                strokeWeight: 4
+            };
+            var polylines = [];
+            var h = [] ;
+            function renderDirectionsPolylines(response) {
+				for (var i = 0; i < polylines.length; i++) {
+				polylines[i].setMap(null);
+				}
+				var legs = response.routes[0].legs;
+				for (i = 0; i < legs.length; i++) {
+					var steps = legs[i].steps;
+					for (j = 0; j < steps.length; j++) {
+						var nextSegment = steps[j].path;
+						var stepPolyline = new google.maps.Polyline(polylineOptions);
+						for (k = 0; k < nextSegment.length; k++) {
+							stepPolyline.getPath().push(nextSegment[k]);
+						}
+						polylines.push(stepPolyline);
+						stepPolyline.setMap(map);
+						// route click listeners, different one on each step
+						google.maps.event.addListener(stepPolyline, 'click', function(evt) {
+							infowindow.setContent("you clicked on the route<br>" + evt.latLng.toUrlValue(6));
+							infowindow.setPosition(evt.latLng);
+							infowindow.open(map);
+						})
+					}
+				}
+			} // renderDirectionsPolylines
+        
+            ser.route({ 'origin': pointA, 'destination':  pointB, 'travelMode': google.maps.DirectionsTravelMode.DRIVING},function (response, status){
+                ren.setDirections(response);
+                renderDirectionsPolylines(response);
+                console.log("polylines=" + polylines.length);
+                for (var i = 0; i < polylines.length; i++) {
+					for (var j = 0; j < polylines[i].getPath().getLength(); j++) {
+						if (google.maps.geometry.spherical.computeDistanceBetween(polylines[i].getPath().getAt(j), circle.getCenter()) < circle.getRadius()) {
+							//console.log("route intersects circle at:" + polylines[i].getPath().getAt(j).toUrlValue(6));
+							h[i,j]=polylines[i].getPath().getAt(j).toUrlValue(6);
+							var mark = new google.maps.Marker({
+								map: circle.getMap(),
+								position: polylines[i].getPath().getAt(j),
+								icon: {
+								  url: "https://maps.gstatic.com/intl/en_us/mapfiles/markers2/measle.png",
+								  size: new google.maps.Size(7, 7),
+								  anchor: new google.maps.Point(3.5, 3.5)
+								}
+							});
+							// document.getElementById('result').innerHTML += "route intersects circle at:"+polylines[i].getPath().getAt(j).toUrlValue(6)+"<br>";
+						}
+					}
+				}
+				//console.log("polylines=" + polylines.length);
+				//console.log(polylines);
+                // h son los puntos de la ruta en intersección
+                var hora_actual = moment().format('YYYY-MM-DD HH:mm'); 
+                console.log('Hora actual');
+                console.log(hora_actual);
+				if (h.length == 0) {
+                  console.log("el punto esta fuera de la ruta");                  
+                    $.ajax({
+                        url:  '{% url "administrador:get_ajax_fuera_ruta" %}',
+                        data: { 'movimiento_id': {{ movimiento.id }}},
+                        datatype: 'json',
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',            
+                        success: function (data) {
+                            console.log(data);
+                        }
+                    });  
+
+				} else if (h.length != 0){
+				  console.log("h=" + h.length);
+                  console.log(h);
+                    $.ajax({
+                        url:  '{% url "administrador:get_ajax_dentro_ruta" %}',
+                        data: { 'movimiento_id': {{ movimiento.id }}},
+                        datatype: 'json',
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',            
+                        success: function (data) {
+                            console.log('dentro de ...');
+                            console.log(data);
+                        }
+                    });  
+				}
+
+            });
+            
+        };
+
+        // an error occurred, display the error message ...
+        function error(err){
+            $message.text('An Error occurred: ' + err.statusText);
+        };
+
+        /**
+         * Provides a simple utility for creating $.ajax requests specific to Connect.
+         *
+         * @param  url  A valid, Connect service endpoint / URL
+         * @param  method The HTTP method of the given service; either GET, or POST, defaults to POST
+         * @param  type The content type of the request, defaults to json
+         */
+        function connectRequest(url, method, type) {
+            return $.ajax(CONNECT_ROOT + url, {
+                'headers': {'calamp-services-app': APP_KEY}
+              , 'type': method || 'GET'
+              , 'dataType': type || 'json'
+              , 'crossDomain' : true
+              , 'xhrFields': {
+                  'withCredentials': true
+                }
+            });
+        };
+
+        let map;
+        // authenticate with connect ...
+        if ($('div#gpsid').text() != null || $('div#gpsid').text() != '' ) {
+            authenticate();
+        } else {
+            $('div#mapa').hide();
+        }
+        
+    });
+
+    
+
+</script>
+

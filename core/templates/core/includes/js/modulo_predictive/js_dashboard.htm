@@ -1,0 +1,1610 @@
+{% load static %}
+<script>
+    $(document).ready(function() {
+
+        var vstart, vend, vplanta = null, tblMovimientos;        
+        moment.locale('es');        
+    
+        $( "select#planta" ).change(function() {            
+            vplanta = $(this).val();
+            $('table#tbl-movimientos tbody tr').remove();     
+                
+        });
+    
+        $('input[name="dates"]').daterangepicker(
+            {
+                "timePicker": false,
+                //startDate: moment().subtract(2, 'months').format("MM-DD-YYYY"),
+                //endDate: moment().add('1', 'day').format("MM-DD-YYYY"),
+                ranges: {
+                'Hoy': [moment(), moment()],
+                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+                'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+                'Este mes': [moment().startOf('month'), moment().endOf('month')],
+                'Mes pasado': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                "locale": {            
+                    "applyLabel": "Aplicar",
+                    "cancelLabel": "Cancelar",
+                    "fromLabel": "Desde",
+                    "toLabel": "Hasta",
+                    "customRangeLabel": "Personalizar",
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sa"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ]
+                
+                }
+            },
+            function(start, end) {                                                    
+                vplanta = $('select#planta').val();
+                vstart = start.format('YYYY-MM-DD HH:mm');                                
+                vend = end.format('YYYY-MM-DD HH:mm');                                
+                if (vstart == vend) {
+                    vend = moment(vstart). add(1, 'days').format('YYYY-MM-DD HH:mm');
+                }
+                refreshApex(vstart, vend, vplanta);               
+            } // fin de (start, end)
+        );          
+                                          
+        vplanta = $('select#planta').val();
+        vstart = moment().startOf('day').format('YYYY-MM-DD HH:mm');        
+        vend = moment(vstart). add(1, 'days').format('YYYY-MM-DD HH:mm');                
+        callChartsPredictic(vstart, vend, vplanta);
+
+        $('select#planta').on('change', function(){
+          vplanta = $('select#planta').val();              
+          refreshApex(vstart, vend, vplanta);
+        });             
+    }); // Ready
+</script>
+<script>
+  var grafica1, grafica2, grafica3, grafica4, grafica5, grafica6, grafica7, grafica8, grafica9, grafica10, grafica11, grafica12, grafica13, grafica14;
+    function refreshApex(vstart, vend, vplanta) {
+        $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_incidentes_servicio" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+              // borra contenido de div
+              $("#chart").remove();
+              $("#prechart").append('<div id="chart"></div>');
+              if (data == null) {
+                console.log(' chingaod no llega beoen 1' );
+              } else {
+                makeChartscolum(data);                            
+                console.log(' Si llegaaaaa 1' );
+              }
+          }
+      });  
+
+      //aqui
+
+       $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_recibos" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+             $("#chart2").remove();
+              $("#prechart2") .append('<div id="chart2"></div>');
+              if (data == null) {
+                console.log(' chingaod no llega beoen 2');
+              } else {
+                makeChartReceipts(data);   
+                console.log(' Si llegaaaaa 2' );
+                console.log(data);
+              }
+              
+          }
+      });        
+      $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_entrada_equipo" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+              $("#chart3").remove();
+              $("#prechart3") .append('<div id="chart3"></div>');
+               if (data == null) {
+                console.log(' chingaod no llega beoen 3');
+              } else {
+                makeChartEquipo(data);   
+                console.log(' Si llegaaaaa 3' );
+              }
+                
+          }
+      });        
+      $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_entrada_areas_restingida" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+              $("#chart4").remove();
+              $("#prechart4") .append('<div id="chart4"></div>');
+              if (data == null) {
+                console.log(' chingaod no llega beoen 4');
+              } else {
+                makeCharAreaRestringida(data);
+                console.log(' Si llegaaaaa 4' );
+              }
+               
+          }
+      });     
+
+      // Obtiene el parámetro a revisar      
+      $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_registro_vehiculos" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+              $("#chart5").remove();
+              $("#prechart5") .append('<div id="chart5"></div>');
+              if (data == null) {
+                console.log(' chingaod no llega beoen 5');
+              } else {
+                makeCharEntradaVehiculos(data);
+                console.log(' Si llegaaaaa 5' );
+              }
+               
+          }
+      }); 
+
+      var tipo_incidente = $('#tipo_incidente').val();      
+      $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_revision_18_puntos" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta, 'tincidente': $('#tipo_incidente').val() },
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',             
+          success: function (data) {           
+              var diasArray = [];
+              ApexCharts.exec('chart_revision_puntos', 'updateSeries', [
+                  { data: data.incidentes }
+              ]);                
+              ApexCharts.exec('chart_revision_puntos', 'updateOptions', {
+                  xaxis: {
+                      categories: data.dias
+                  }
+              }, false, true);
+          }
+      }); 
+      $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_rondines" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+               $("#chart11").remove();
+              $("#prechart11") .append('<div id="chart11"></div>');
+              if (data == null) {
+                console.log(' chingaod no llega beoen 6');
+              } else {
+                makeCharRondines(data);
+                console.log(' Si llegaaaaa 6' );
+              }
+               
+          }
+      }); 
+      $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_entradas_salidas_trailers" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (data) {
+              $("#chart7").remove();
+              $("#prechart7") .append('<div id="chart7"></div>');
+              if (data == null) {
+                console.log(' chingaod no llega beoen 7');
+              } else {
+                makeChartsEntradasSalidas(data); 
+                console.log(' Si llegaaaaa 7' );
+              }
+              
+            }
+        });          
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_paquetes_dañados" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (data) {
+              $("#chart8").remove();
+              $("#prechart8") .append('<div id="chart8"></div>');
+              if (data == null) {
+                console.log(' chingaod no llega beoen 8');
+              } else {
+                makeChartsPaquetes(data);    
+                console.log(' Si llegaaaaa 8' );
+              }
+              
+            }
+        });           
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_registro_visitantes" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (data) {
+              $("#chart9").remove();
+              $("#prechart9") .append('<div id="chart9"></div>');
+              if (data == null) {
+                console.log(' chingaod no llega beoen 9');
+              } else {
+                makeChartsRegistroVisitantes(data); 
+                console.log(' Si llegaaaaa 9' );
+              }
+              
+            }
+        });                    
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_empleado_sin_gafete" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (data) {
+              $("#chart10").remove();
+              $("#prechart10") .append('<div id="chart10"></div>');
+               if (data == null) {
+                console.log(' chingaod no llega beoen 10');
+              } else {
+                makeChartsRegistroEmpleadosSinGafete(data); 
+                console.log(' Si llegaaaaa 10' );
+              }
+              
+            }
+        });  
+        
+        $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_faltas" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+            $("#chartfaltas").remove();
+            $("#prechartfaltas") .append('<div id="chartfaltas"></div>');
+            if (data == null) {
+                console.log(' chingaod no llega beoen 11');
+              } else {
+                makeChartsFaltas(data);
+                console.log(' Si llegaaaaa 11' );
+              }
+            
+          }
+      });   
+
+        $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_bajas" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+            $("#chartbajas").remove();
+            $("#prechartbajas") .append('<div id="chartbajas"></div>');
+            console.log(' es el 12' );
+            console.log(typeof data);
+            console.log(' ***' );
+            if (data == null) {
+                console.log(' chingaod no llega beoen 12');
+              } else {
+                makeChartsBajas(data);
+                console.log(' Si llegaaaaa 12' );
+              }
+            
+          }
+      }); 
+
+      $.ajax({
+          url:  '{% url "administrador:get_ajax_charts_numero_vacantes" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+            $("#chartvacantes").remove();
+            $("#prechartvacantes") .append('<div id="chartvacantes"></div>');
+            if (data == null) {
+                console.log(' chingaod no llega beoen 13');
+              } else {
+                makeChartsVacantes(data);
+                console.log(' Si llegaaaaa 13' );
+              }
+            
+          }
+      });
+      $.ajax({
+          url:  '{% url "administrador:load_estados_fuerza_by_range" %}',
+          data: { 'start':  moment(vstart).format('YYYY-MM-DD'), 'end':  moment(vend).format('YYYY-MM-DD'), 'planta_id': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+              var diasArray = [];
+              
+              $("#chartcobertura").html("<span style='line-height: 48px; font-size: 100px;'>"+data.cobertura+"%</span>")
+              $("#chartrotacion").html("<span style='line-height: 48px; font-size: 100px;'>"+data.rotacion+"%</span>")
+              $("#chartausentismo").html("<span style='line-height: 48px; font-size: 100px;'>"+data.ausentismo+"%</span>")
+          }
+      });
+      $.ajax({
+          url:  '{% url "administrador:get_ajax_chart_numero_capacitaciones" %}',
+          data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+          datatype: 'json',
+          type: 'GET',
+          contentType: 'application/json; charset=utf-8',            
+          success: function (data) {
+              $("#chartcapacitacion").remove();
+            $("#prechartcapacitacion") .append('<div id="chartcapacitacion"></div>');
+            if (data == null) {
+                console.log(' chingaod no llega beoen 14');
+              } else {
+                makeChartsCapacitaciones(data);
+                console.log(' Si llegaaaaa 14' );
+              }
+            
+          }
+      });
+      
+                        
+    } // end of refreshApex
+ 
+    function callChartsPredictic(vstart, vend, vplanta) {     
+        // Numero de incidentes
+        $.ajax({
+            url:  '{% url "administrador:load_estados_fuerza_by_range" %}',
+            data: { 'start':  moment(vstart).format('YYYY-MM-DD'), 'end':  moment(vend).format('YYYY-MM-DD'), 'planta_id': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                                         
+              //makeChartsFaltas(result);
+              $("#chartcobertura").html("<span style='line-height: 48px; font-size: 100px;'>"+result.cobertura+"%</span>")
+              $("#chartrotacion").html("<span style='line-height: 48px; font-size: 100px;'>"+result.rotacion+"%</span>")
+              $("#chartausentismo").html("<span style='line-height: 48px; font-size: 100px;'>"+result.ausentismo+"%</span>")
+              
+            }
+        }); 
+
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_chart_numero_capacitaciones" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                                         
+              makeChartsCapacitaciones(result);              
+            }
+        }); 
+
+
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_faltas" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                                         
+              makeChartsFaltas(result);
+              
+            }
+        });    
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_bajas" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                           
+              makeChartsBajas(result);
+              
+            }
+        }); 
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_vacantes" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                          
+              makeChartsVacantes(result);
+              
+            }
+        }); 
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_incidentes_servicio" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                           
+              
+              makeChartscolum(result);
+              
+            }
+        });       
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_recibos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                           
+              console.log(result);
+              makeChartReceipts(result);
+              
+            }
+        });
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_entrada_equipo" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                           
+              console.log(result);
+              makeChartEquipo(result);
+              
+            }
+        });       
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_entrada_areas_restingida" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                           
+              console.log(result);
+              makeCharAreaRestringida(result);
+              
+            }
+        });         
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_registro_vehiculos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                           
+              console.log(result);
+              makeCharEntradaVehiculos(result);
+              
+            }
+        });  
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_revision_18_puntos" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta, 'tincidente': $('#tipo_incidente').val()},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                           
+              console.log(result);
+              makeCharRevisionPuntos(result);
+              
+            }
+        }); 
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_rondines" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            
+            success: function (result) {                                                                           
+              console.log(result);
+              makeCharRondines(result);
+              
+            }
+        });   
+         $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_entradas_salidas_trailers" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (result) {                                                                           
+                makeChartsEntradasSalidas(result);
+            }
+        });        
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_paquetes_dañados" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (result) {                                                                           
+                makeChartsPaquetes(result);
+            }
+        });   
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_registro_visitantes" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (result) {   
+                console.log(result);                                                                        
+                makeChartsRegistroVisitantes(result);
+            }
+        });          
+        $.ajax({
+            url:  '{% url "administrador:get_ajax_charts_numero_empleado_sin_gafete" %}',
+            data: { 'start': vstart, 'end': vend, 'planta': vplanta},
+            datatype: 'json',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',            
+            success: function (result) {   
+                console.log(result);                                                                        
+                makeChartsRegistroEmpleadosSinGafete(result);
+            }
+        });             
+    } // end of function 
+</script>
+
+<script>
+  function makeChartsCapacitaciones(result){
+      
+      var options2 = {
+          series: [{
+          name: 'Capacitacion',
+          data: result.capacitaciones
+        }],
+          chart: {
+          id: 'charts_capacitaciones',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numeros de capacitacion'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " num capacitacion"
+            }
+          }
+        }
+        };
+
+        var chart2 = new ApexCharts(document.querySelector("#chartcapacitacion"), options2);
+        chart2.render().then(() => {
+          window.setTimeout(function() {
+            chart2.dataURI().then((uri) => {                                
+            grafica1 = uri;
+            console.log('Grafica1',grafica1.length);
+            })
+          }, 1000) 
+        });
+  }
+  function makeChartsFaltas(result){
+      
+      var options2 = {
+          series: [{
+          name: 'Faltas',
+          data: result.faltas
+        }],
+          chart: {
+          id: 'charts_faltas',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numeros de Faltas'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " num faltas"
+            }
+          }
+        }
+        };
+
+        var chart2 = new ApexCharts(document.querySelector("#chartfaltas"), options2);
+        chart2.render().then(() => {
+          window.setTimeout(function() {
+            chart2.dataURI().then((uri) => {                                
+            grafica2 = uri;
+            console.log('Grafica2',grafica2.length);
+            })
+          }, 1000) 
+        });
+  }
+  function makeChartsBajas(result){
+      console.log('result 12',result);
+      var options2 = {
+          series: [{
+          name: 'Bajas',
+          data: result.bajas
+        }],
+          chart: {
+          id: 'charts_bajas',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numeros de Bajas'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " num bajas"
+            }
+          }
+        }
+        };
+
+        var chart2 = new ApexCharts(document.querySelector("#chartbajas"), options2);
+
+        chart2.render().then(() => {
+          window.setTimeout(function() {
+            chart2.dataURI().then((uri) => {                                
+            grafica3 = uri;
+            console.log('Grafica3',grafica3.length);
+            })
+          }, 1000) 
+        });
+  }
+  function makeChartsVacantes(result){
+      
+      var options2 = {
+          series: [{
+          name: 'Vacantes',
+          data: result.vacantes
+        }],
+          chart: {
+          id: 'charts_vacantes',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numeros de vacantes'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " num vacantes"
+            }
+          }
+        }
+        };
+
+        var chart2 = new ApexCharts(document.querySelector("#chartvacantes"), options2);
+        chart2.render().then(() => {
+          window.setTimeout(function() {
+            chart2.dataURI().then((uri) => {                                
+            grafica4 = uri;
+            console.log('Grafica4',grafica4.length);
+            })
+          }, 1000) 
+        });
+  }
+  function makeChartscolum(result) {
+      var options1 = {
+          series: [{
+          name: 'Valores',
+          data: result.incidentes
+        }],
+          chart: {
+          id: 'chart_numero_incidentes',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numeros de Incidentes'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " inc serv"
+            }
+          }
+        }
+        };
+      
+        var chart = new ApexCharts(document.querySelector("#chart"), options1);
+        chart.render().then(() => {
+          window.setTimeout(function() {
+            chart.dataURI().then((uri) => {                                
+            grafica5 = uri;
+            console.log('Grafica5',grafica5.length);
+            })
+          }, 1000) 
+        });
+  }
+
+  function makeChartReceipts(result){
+      
+      var options2 = {
+          series: [{
+          name: 'Recibos',
+          data: result.recibos
+        }],
+          chart: {
+          id: 'charts_numero_recibos',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numeros de Recibos'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " num recibos"
+            }
+          }
+        }
+        };
+
+        var chart2 = new ApexCharts(document.querySelector("#chart2"), options2);
+        chart2.render().then(() => {
+          window.setTimeout(function() {
+            chart2.dataURI().then((uri) => {                                
+            grafica6 = uri;
+            console.log('Grafica6',grafica6.length);
+            })
+          }, 1000) 
+        });
+  }
+  function makeChartEquipo(result){
+      
+      var options2 = {
+          series: [{
+          name: 'Recibos',
+          data: result.equipos
+        }],
+          chart: {
+          id: 'charts_numero_equipo',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },  
+        yaxis: {
+          title: {
+            text: 'Cantidad de Equipo'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " num equipo"
+            }
+          }
+        }
+        };
+
+        var chart3 = new ApexCharts(document.querySelector("#chart3"), options2);
+        chart3.render().then(() => {
+          window.setTimeout(function() {
+            chart3.dataURI().then((uri) => {                                
+            grafica7 = uri;
+            console.log('Grafica7',grafica7.length);
+            })
+          }, 1000) 
+        });
+  }
+  function makeCharAreaRestringida(result) {
+      var options1 = {
+          series: [{
+          name: 'Valores',
+          data: result.entradas
+        }],
+          chart: {
+          id: 'chart_area_restringida',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numero de personas'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " persona"
+            }
+          }
+        }
+        };
+      
+        var chart4 = new ApexCharts(document.querySelector("#chart4"), options1);
+        chart4.render().then(() => {
+          window.setTimeout(function() {
+            chart4.dataURI().then((uri) => {                                
+            grafica8 = uri;
+            console.log('Grafica8',grafica8.length);
+            })
+          }, 1000) 
+        });
+  }
+  function makeCharEntradaVehiculos(result) {
+      var options1 = {
+          series: [{
+          name: 'Vehiculos',
+          data: result.vehiculos
+        }],
+          chart: {
+          id: 'chart_entrada_vehiculos',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numero de Vehiculos'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val 
+            }
+          }
+        }
+        };
+      
+        var chart5 = new ApexCharts(document.querySelector("#chart5"), options1);
+        chart5.render().then(() => {
+          window.setTimeout(function() {
+            chart5.dataURI().then((uri) => {                                
+            grafica9 = uri;
+            console.log('Grafica9',grafica9.length);
+            })
+          }, 1000) 
+        });
+  }
+  function makeCharRevisionPuntos(result) {
+      var options1 = {
+          series: [{
+          name: 'Valores',
+          data: result.incidentes
+        }],
+          chart: {
+          id: 'chart_revision_puntos',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numero de Vehiculos'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val + " Vehiculos"
+            }
+          }
+        }
+        };
+      
+        var chart6 = new ApexCharts(document.querySelector("#chart6"), options1);
+        chart6.render();
+  }
+  function makeCharRondines(result) {
+      var options1 = {
+          series: [{
+          name: 'Rondines',
+          data: result.rondines
+        }],
+          chart: {
+          id: 'chart_rondines',
+          type: 'bar',
+          height: 350
+        },
+        colors: ['#9D292A'],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'            
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: result.dias
+        },
+        yaxis: {
+          title: {
+            text: 'Numero de Rondines'
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        grid: {
+          show: true,
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },               
+       },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return  val 
+            }
+          }
+        }
+        };
+      
+        var chart11 = new ApexCharts(document.querySelector("#chart11"), options1);
+        chart11.render().then(() => {
+          window.setTimeout(function() {
+            chart11.dataURI().then((uri) => {                                
+            grafica10 = uri;
+            console.log('Grafica10',grafica10.length);
+            })
+          }, 1000) 
+        });
+  }
+</script>
+<script>
+    function makeChartsEntradasSalidas(result) {
+        var options3 = {
+            series: [{
+            name: 'Entradas',
+            data: result.entradas
+          }, {
+            name: 'Salidas',        
+            data: result.salidas
+          }],
+            chart: {
+            id: 'chart_Entrada_Salida',
+            type: 'bar',
+            height: 350
+          },
+          colors: ['#008C00', '#9D292A'],
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '55%'
+            },
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+          },
+          xaxis: {
+            categories: result.dias
+          },
+          yaxis: {
+            title: {
+              text: 'Numero de entradas y salidas'
+            }
+          },
+          fill: {
+            opacity: 1
+          },
+          grid: {
+            show: true,
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            },               
+         },
+          tooltip: {
+            y: {
+              formatter: function (val) {
+                return  val 
+              }
+            }
+          }
+          };
+    
+          var chart7 = new ApexCharts(document.querySelector("#chart7"), options3);
+          chart7.render().then(() => {
+          window.setTimeout(function() {
+            chart7.dataURI().then((uri) => {                                
+            grafica11 = uri;
+            console.log('Grafica11',grafica11.length);
+            })
+            }, 1000) 
+          });
+    }
+    function makeChartsPaquetes(result) {
+        var options3 = {
+            series: [{
+            name: 'Paquetes',
+            data: result.paquetes
+          }, {
+            name: 'Paquetes dañados',        
+            data: result.danados
+          }],
+            chart: {
+            id: 'chart_paquetes',
+            type: 'bar',
+            height: 350
+          },
+          colors: ['#008C00', '#9D292A'],
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '55%'
+            },
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+          },
+          xaxis: {
+            categories: result.dias
+          },
+          yaxis: {
+            title: {
+              text: 'Numero de Paquetes'
+            }
+          },
+          fill: {
+            opacity: 1
+          },
+          grid: {
+            show: true,
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            },               
+         },
+          tooltip: {
+            y: {
+              formatter: function (val) {
+                return   val + " Paquetes"
+              }
+            }
+          }
+          };
+    
+          var chart8 = new ApexCharts(document.querySelector("#chart8"), options3);
+          chart8.render().then(() => {
+          window.setTimeout(function() {
+            chart8.dataURI().then((uri) => {                                
+            grafica12 = uri;
+            console.log('Grafica12',grafica12.length);
+            })
+          }, 1000) 
+        });
+    }
+    
+</script>
+<script>
+function makeChartsRegistroVisitantes(result) {
+        var options = {
+            series: [{
+            name: 'Visitantes',
+            data: result.visitantes
+          }, {
+            name: 'Proveedores',        
+            data: result.proveedores
+          }, {
+            name: 'Contratistas',
+            data: result.contratistas
+          }],
+            chart: {
+            id: 'chart_registro_visitantes',
+            type: 'bar',
+            height: 350
+          },
+          colors: ['#008C00', '#9D292A', '#0066CC'],
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '55%'
+            },
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+          },
+          xaxis: {
+            categories: result.dias
+          },
+          yaxis: {
+            title: {
+              text: 'Numero de visitante'
+            }
+          },
+          fill: {
+            opacity: 1
+          },
+          grid: {
+            show: true,
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            },               
+         },
+          tooltip: {
+            y: {
+              formatter: function (val) {
+                return   val 
+              }
+            }
+          }
+          };
+    
+          var chart9 = new ApexCharts(document.querySelector("#chart9"), options);
+          chart9.render().then(() => {
+          window.setTimeout(function() {
+            chart9.dataURI().then((uri) => {                                
+            grafica13 = uri;
+            console.log('Grafica13',grafica13.length);
+            })
+          }, 1000) 
+        });
+    }
+    function makeChartsRegistroEmpleadosSinGafete(result) {
+        console.log(result);
+        var options1 = {
+            series: [{
+            name: 'Vehiculares',
+            data: result.vehiculares
+          }, {
+            name: 'Personales',        
+            data: result.personales
+          }, {
+            name: 'Ambos',
+            data: result.ambos
+          }],
+            chart: {
+            id: 'chart_empleados_sin_gafete',
+            type: 'bar',
+            height: 350
+          },
+          colors: ['#008C00', '#9D292A', '#0066CC'],
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '55%'
+            },
+          },
+          dataLabels: {
+            enabled: false
+          },
+          stroke: {
+            show: true,
+            width: 2,
+            colors: ['transparent']
+          },
+          xaxis: {
+            categories: result.dias
+          },
+          yaxis: {
+            title: {
+              text: 'Numero de falta de gafetes'
+            }
+          },
+          fill: {
+            opacity: 1
+          },
+          grid: {
+            show: true,
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            },               
+         },
+          tooltip: {
+            y: {
+              formatter: function (val) {
+                return   val 
+              }
+            }
+          }
+          };
+    
+          var chart10 = new ApexCharts(document.querySelector("#chart10"), options1);
+          chart10.render().then(() => {
+            window.setTimeout(function() {
+              chart10.dataURI().then((uri) => {                                
+              grafica14 = uri;
+              console.log('Grafica14',grafica14.length);
+              })
+            }, 1000) 
+          });
+    }
+  $("#print-pdf").on('click', function(){
+    //cliente = document.getElementById("cliente").value;
+    planta = document.getElementById("planta").value;          
+    data = grafica1.replace("data:image/png;base64,", "");      
+    data2 =  grafica2.replace("data:image/png;base64,", "");      
+    data3 =  grafica3.replace("data:image/png;base64,", "");      
+    data4 =  grafica4.replace("data:image/png;base64,", "");      
+    data5 =  grafica5.replace("data:image/png;base64,", "");      
+    data6 =  grafica6.replace("data:image/png;base64,", ""); 
+    data7 =  grafica7.replace("data:image/png;base64,", ""); 
+    data8 =  grafica8.replace("data:image/png;base64,", ""); 
+    data9 =  grafica9.replace("data:image/png;base64,", ""); 
+    data10 =  grafica10.replace("data:image/png;base64,", ""); 
+    data11 =  grafica11.replace("data:image/png;base64,", ""); 
+    data12 =  grafica12.replace("data:image/png;base64,", ""); 
+    data13 =  grafica13.replace("data:image/png;base64,", ""); 
+    data14 =  grafica14.replace("data:image/png;base64,", "");    
+    $.ajax({ 
+      type: "POST",                
+      headers: { "X-CSRFToken": '{{csrf_token}}' },                                
+      url: '{% url "administrador:generate_pdf_predictive" %}',
+      data: {  'planta': planta, 'img':  data , 'img2': data2, 'img3': data3, 'img4': data4, 'img5': data5, 'img6': data6,'img7': data7, 'img8': data8, 'img9': data9, 'img10': data10, 'img11': data11, 'img12': data12,'img13': data13,'img14': data14 },                                
+      success: function (response) {     
+      var blob = new Blob([response], { type: 'application/pdf' });
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveOrOpenBlob(blob); // for IE
+        }
+        else {
+          var fileURL = URL.createObjectURL(blob);
+            var newWin = window.open(fileURL);
+            newWin.focus();                        
+        }
+      }
+    });        
+  });
+</script>

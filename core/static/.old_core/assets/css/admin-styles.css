@@ -1,0 +1,303 @@
+span#clock {
+    color: blanchedalmond !important; 
+}
+
+.form-control:disabled, .form-control[readonly] {
+    background-color: white;
+    opacity: 0.9;
+} 
+
+table.niveles p {
+    margin-bottom: 4px;
+}
+span.item-encuesta {
+    width: 176px;
+    display: inline-block;
+    font-weight: bold;    
+}
+
+hr.seegreen4 {
+    background-color: lightseagreen; height: 4px;
+}
+
+ul.errorlist li { color: red }
+
+.checkformdj {
+    width:16px;height:16px; display: inline-block; position: relative; top: 4px; float: left; right: 6px;
+}
+
+.bg-dark-admin-aguilas {      
+    background-color: #e8e9ea !important;    
+    background-image: url(../images/admin/admin-menu-bck.jpg) !important;
+    background-position: left bottom !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+    border-right: 1px solid #dadada !important;
+}
+
+.bg-dark-admin-aguilas .vertical-nav-menu ul>li>a {
+    color: #272726 !important;    
+}
+.bg-dark-admin-aguilas .vertical-nav-menu li>a {    
+    height: 2.6rem;
+    font-size: 12px;
+}
+.bg-dark-admin-aguilas  .vertical-nav-menu li a i.metismenu-icon {
+    opacity: .7 !important;
+    top: 15px;
+    color: brown !important;
+}
+
+ol.admin.breadcrumb li a { color:#9D292A; text-decoration: none;  }
+.closed-sidebar .bg-dark-admin-aguilas {
+    background-image: url(../images/admin/admin-menu-bck-collapsed.jpg) !important;
+}
+
+.fieldset_shaded legend {
+    padding: 0.2em 0.5em;
+    border:1px solid rgb(235, 235, 235);
+    color:green;
+    font-size:90%;
+    text-align: center;
+}
+.adminmenuitem {
+    text-align: center;
+    width: 34px;
+    height: 34px;
+    line-height: 34px !important;
+    position: absolute;
+    left: 5px;
+    top: 46%;
+    margin-top: -20px;
+    font-size: 1.5rem !important;    
+    transition: color 300ms;
+    color: brown;
+}
+.admin.app-sidebar__inner {
+    padding: 2px 1rem 1.5rem;
+}
+.admin-page-title-subheading {
+    opacity: 0.9;
+    color: slategrey;
+    font-size: 15px;
+    padding: 3px 0 0;
+}
+.closed-sidebar .app-sidebar .app-sidebar__inner .adminmenuitem { 
+    text-indent: 0;
+    left: 50%;
+    margin-left: -17px
+}
+.closed-sidebar .app-sidebar:hover .app-sidebar__inner .adminmenuitem {
+    text-indent: initial;
+    left: 5px;
+    margin-left: 0
+}
+i.cardhead.fa, i.cardhead.fas{
+    color: brown;
+    padding-right: 8px;
+}
+.fadeblue { color: #547B98; }
+.labelCargo { font-size: 12px; font-weight: normal; }
+.setpointer { cursor: pointer !important; }
+.todosaguilas:after{
+    content: 'Ver todos los usuarios';
+}
+.todosaguilas:hover:after{
+    content: 'Todos los uuarios en Grupo Águilas';
+    font-weight: bold;
+}
+.todosclientes:after{
+    content: 'Ver todos los clientes';
+}
+.todosclientes:hover:after{
+    content: 'Ver todos los clientes en general';
+    font-weight: bold;
+}
+ol.admin.breadcrumb {
+    background-color: transparent;
+}
+.activo, .planta-optimo { color: #689b68; }
+.inactivo { color: #ccb8a3; }
+.planta-relevante { color: #9D292A; }
+.btnsInDataTable { padding: 4px ; }
+.btnsInDataTable i { padding-left: 2px; padding-right: 2px; }
+.highlightColumn { background-color: #fffef6; }
+.avatar-list-name { 
+    margin-top: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.posmarker-table { color: #689b68; }
+.geofence-table { color: #c8842f; }
+.form-group label:hover { font-weight: bold; }
+.user-panel-button { width: 100%; }
+.pair-panel-button { width: 50%; }
+.user-panel-button span { font-size: 16px; }
+.pair-panel-button span { font-size: 16px; }
+.fTitulo { padding: 1px 5px;  background-color: whitesmoke; color: #272726; border-right: 1px solid #d4d4d4;  min-width: 90px; display: inline-block; font-weight: bold; }
+.fList { list-style-type: square; } 
+
+.card-header, .card-title { font-size: 1rem; }
+.dropdown-menu .dropdown-header { font-size: 1rem; }
+.block-edit-rondines, .btn-click-punto, .btn-click-tarea { margin-bottom:0px !important; height: 4rem; position: relative; border-radius: 10px; }
+.smaller { font-size: 70%; font-weight: normal; color: #f8f8f8; text-shadow: 0 1px #333; }
+.smaller-black { font-size: 70%; font-weight: normal; color: #333;  }
+.block-logo { padding: 100px 0;  }
+.minHeightBlock { display: block; min-height:  524px; }
+.btn-txt-left { text-align: left !important; }
+.left-ico { display: inline-block; padding-right: 48px; width: 30px; height: 50px; float: left; }
+.right-desc { display: inline-block; width: auto; height: 50px; float: left; }
+.blockFields { height: 400px; }
+ul#puntosrondines { padding-left: 5px; }
+ul#puntosrondines li.punto { list-style-type: none; color: #002F82; }
+ul#puntosrondines li.punto i { top: 5px; position: relative; padding-right: 12px; }
+ul#puntosrondines li.punto span { text-transform: uppercase; }
+ul#puntosrondines li.punto input { border: 2px dashed #d3d3d3; padding: 0 5px; }
+a.btn-punto-delete { bottom: 1px; }
+a.btn-punto-delete i { top: 2px !important; padding-right: 0px !important; }
+a.btn-punto-delete:hover { color: #fff; }
+a.btn-punto-delete i { top: 2px !important; padding-right: 0px !important; }
+.btn-outline-danger {  color: #9D292A;  border-color: #9D292A; }
+.btn-outline-danger:hover {  background-color:transparent }
+.w215 { width: 215px; }
+.panel-rondin-h5 { margin: 4px 0 20px; color: #222222; font-size: 18px; }
+.width100 { width: 100%; }
+.width80 {
+    width: 80%;
+    height: 37px;
+    padding: 14px 0;
+    margin-top: 4px;
+}
+.position-absolute {
+    bottom: 0;
+    width: 100%;    
+    margin-left: -15px;
+    padding-right: 30px;
+}
+
+div#geomap_cover_rondin { 
+    width: 100%; 
+    height: 400px; 
+    background-image: url('../images/edite-mapa-rondines.jpg') !important; 
+    background-size: cover;    
+}
+
+div#safemap { 
+    width: 100%; 
+    height: 400px; 
+    background-color: #333;
+    opacity: 0.6;
+    display: block;
+}
+
+.app-page-title .page-title-heading { 
+    /* width: 720px;  */
+    font-size: 14px;
+}
+.markerlabel {    
+    color: white;
+    background-color: #9D292A;    
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;    
+    border: 1px solid rgb(201, 80, 82);
+    white-space: nowrap;    
+    position: relative;    
+    padding: 3px 10px;
+    left: -50%;
+}
+
+@media (max-width: 992px) {
+    ol.admin.breadcrumb.pull-right  {
+        float: none !important;
+    }
+    .minHeightBlock { display: block; min-height: auto; }
+}
+
+@media(max-width: 768px) {
+    .app-page-title .page-title-heading { width: 480px; }
+}
+
+/* Post it */
+.quote-container {
+    margin-top: 50px;
+    position: relative;
+}
+  
+  .note {
+    color: #222;
+    position: relative;
+    width: 220px;
+    margin: 0 auto;
+    padding: 10px;
+    font-family: Satisfy;
+    font-size: 15px;
+    box-shadow: 0 5px 10px 2px rgba(0,0,0,0.3);
+  }
+  
+  .note .author {
+    display: block;
+    margin: 40px 0 0 0;
+    text-align: right;
+  }
+
+  .yellow {
+    background: #eae672;
+    -webkit-transform: rotate(2deg);
+    -moz-transform: rotate(2deg);
+    -o-transform: rotate(2deg);
+    -ms-transform: rotate(2deg);
+    transform: rotate(2deg);
+  }
+
+  .pin {
+    background-color: #aaa;
+    display: block;
+    height: 32px;
+    width: 2px;
+    position: absolute;
+    left: 50%;
+    top: -16px;
+    z-index: 1;
+  }
+
+  .pin:after {
+    background-color: #A31;
+    background-image: radial-gradient(25% 25%, circle, hsla(0,0%,100%,.3), hsla(0,0%,0%,.3));
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px hsla(0,0%,0%,.1),
+                inset 3px 3px 3px hsla(0,0%,100%,.2),
+                inset -3px -3px 3px hsla(0,0%,0%,.2),
+                23px 20px 3px hsla(0,0%,0%,.15);
+    content: '';
+    height: 12px;
+    left: -5px;
+    position: absolute;
+    top: -10px;
+    width: 12px;
+  }
+
+  .pin:before {
+    background-color: hsla(0,0%,0%,0.1);
+    box-shadow: 0 0 .25em hsla(0,0%,0%,.1);
+    content: '';
+  
+    height: 24px;
+    width: 2px;
+    left: 0;
+    position: absolute;
+    top: 8px;
+  
+    transform: rotate(57.5deg);
+    -moz-transform: rotate(57.5deg);
+    -webkit-transform: rotate(57.5deg);
+    -o-transform: rotate(57.5deg);
+    -ms-transform: rotate(57.5deg);
+  
+    transform-origin: 50% 100%;
+    -moz-transform-origin: 50% 100%;
+    -webkit-transform-origin: 50% 100%;
+    -ms-transform-origin: 50% 100%;
+    -o-transform-origin: 50% 100%;
+  }
+

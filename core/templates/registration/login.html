@@ -1,0 +1,25 @@
+{% extends 'core/bases/base_login.html' %}{% load static %}
+
+{% block seo-header %}
+    <!-- SEO data content     --> 
+    <title>Sistema Panoptic - Inicio de Sesion *</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock seo-header %}
+
+{% block css %}
+<!-- Starts to include CSS list -->
+{% for css in css_list %}
+    {% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js %}

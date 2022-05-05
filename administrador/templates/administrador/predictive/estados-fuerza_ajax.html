@@ -1,0 +1,362 @@
+
+<div class="row" >        
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">     
+                    <h3>
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Estados de Fuerza: {{planta}}  <span class="badge badge-pill badge-secondary">{{ estadosfuerza.count }}</span>
+                    </h3>                                       
+                </div>                                                        
+            </div>
+            <div class="card-body">
+                
+                <h3> 
+                  <b>Cobertura General:</b> <span id="cobertura-general" class="bgp-color-cafe-tenue"></span> <span id="contadores"></span>
+                </h3>
+
+                <p>fechas desde {{inicio|date:'Y-m-d'}} hasta {{fin|date:'Y-m-d'}}</p>
+                <table class="table table-striped">
+                  <tr>
+                    <th></th>
+                    <th>Faltas</th>
+                    <th>Bajas</th>
+                    <th>Vacantes</th>
+                    <th>Personas</th>
+                  </tr>
+                  <tr>
+                    <th>Cantidades</th>
+                    <td>{{faltas.count}}</td>
+                    <td>{{bajas.count}}</td>
+                    <td>{{vacantes.n_vacantes__sum|default_if_none:"0"}}</td>
+                    <td id="personas"></td>
+                  </tr>
+                  <tr>
+                    <th></th>
+                    <th>Ausentismo</th>
+                    <th>Rotacion</th>
+                  </tr>
+                  <tr>
+                    <th>Porcentajes</th>
+                    <td id="ausentismo"></td>
+                    <td id="rotacion"></td>
+                  </tr>
+                </table>
+
+                <script type="text/javascript">
+                    var turnos = 0;
+                    var cubiertos = 0;
+                    var personas = 0;
+                </script>
+
+                <a href="{% url 'administrador:admin_estados_fuerza_create' %}" class="btn btn-primary" >Nuevo estado de fuerza</a>
+                <br>
+                <br>
+
+
+                {% for ef in estadosfuerza %}
+                
+                <div class="card">
+                  <div class="card-header" style="background-color: #eee">
+                      <h3>
+                        <a href="{% url 'administrador:admin_estados_fuerza_edit' ef.id %}" title="Editar estado de fuerza" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-edit size16"></i></a>
+                        <a href="{% url 'administrador:admin_estados_fuerza_delete' ef.id %}" class="btnsInDataTable btn-transition border-0 btn btn-outline-warning text-center"> <i class="fas fa-trash-alt size16  bgp-color-rojo"></i></a>
+                        {{ef.role.nombre}}
+                      </h3>    
+                  </div>
+                  <div class="card-body">
+
+                      <script type="text/javascript">
+                        var horas_{{ef.id}} = 0
+                        var turnos_{{ef.id}} = 0
+                        var turnos_dia_{{ef.id}} = 0
+                        var turnos_noche_{{ef.id}} = 0
+                        var cubiertos_{{ef.id}} = 0
+                        var personas_{{ef.id}} = 0
+                      </script>
+
+                    
+                      <p>{{ef.fecha_inicio}}</p>
+                      <p><b>Horas:</b> <span id="horas_{{ef.id}}">{{ ef.horas}}</span></p>
+                      <p><b>Personas:</b> <span id="personas_{{ef.id}}">{{ ef.personas}}</span></p>
+                      <h4>
+                        {% if ef.cobertura_set.first %}
+
+                        <a href="{% url 'administrador:admin_estados_fuerza_cobertura_create' ef.id %}" title="Editar cobertura" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-edit size16"></i></a>
+                        <b>Cobertura:</b> <span id="cobertura_{{ef.id}}" class="bgp-color-cafe-tenue">{{ ef.cobertura_set.first.porcentaje|stringformat:".2f" }}%</span> <span id="cubiertos_turnos_{{ef.id}}">({{ef.cobertura_set.first.total}}/{{ef.total}})</span>
+                        {% else %}
+                        <a href="{% url 'administrador:admin_estados_fuerza_cobertura_create' ef.id %}" class="btn btn-primary">Agregar cobertura</a>
+                        {% endif %}
+                      </h4>
+
+                      <table class="table table-striped">
+                          <thead>
+                              <tr>
+                                  <th>Turno</th>
+                                  <th>Lunes</th>
+                                  <th>Martes</th>
+                                  <th>Miércoles</th>
+                                  <th>Juevez</th>
+                                  <th>Viernes</th>
+                                  <th>Sábado</th>
+                                  <th>Domingo</th>
+                                  <th>Total</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                  <th>Fechas</th>
+
+                                  <td>{{ef.fecha_l|date:"Y-m-d"}}</td>
+                                  <td>{{ef.fecha_m|date:"Y-m-d"}}</td>
+                                  <td>{{ef.fecha_mi|date:"Y-m-d"}}</td>
+                                  <td>{{ef.fecha_j|date:"Y-m-d"}}</td>
+                                  <td>{{ef.fecha_v|date:"Y-m-d"}}</td>
+                                  <td>{{ef.fecha_s|date:"Y-m-d"}}</td>
+                                  <td>{{ef.fecha_d|date:"Y-m-d"}}</td>
+                              </tr>
+                              <tr>
+                                  <th>Día</th>
+                                  {% if ef.fecha_l|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_l|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="dia-l">{{ef.ld}}</td>
+                                  <script type="text/javascript">
+                                    turnos += {{ef.total_l}}
+                                    turnos_{{ef.id}} += {{ef.total_l}}
+                                    turnos_dia_{{ef.id}} += {{ef.ld}}
+                                  </script>
+                                    {% if ef.cobertura_set.first %}
+                                      <script type="text/javascript">
+                                          cubiertos += {{ef.cobertura_set.first.total_l}}
+                                          cubiertos_{{ef.id}} += {{ef.cobertura_set.first.total_l}}
+                                      </script>
+                                    {% endif %}
+                                  {% endif %}
+                                  {% if ef.fecha_m|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_m|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="dia-m">{{ef.md}}</td>    
+                                  <script type="text/javascript">
+                                    turnos += {{ef.total_m}}
+                                    turnos_{{ef.id}} += {{ef.total_m}}
+                                    turnos_dia_{{ef.id}} += {{ef.md}}
+                                  </script>
+                                    {% if ef.cobertura_set.first %}
+                                      <script type="text/javascript">
+                                          cubiertos += {{ef.cobertura_set.first.total_m}}
+                                          cubiertos_{{ef.id}} += {{ef.cobertura_set.first.total_m}}
+                                      </script>
+                                    {% endif %}
+                                  {% endif %}
+                                  {% if ef.fecha_mi|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_mi|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="dia-mi">{{ef.mid}}</td>
+                                  <script type="text/javascript">
+                                    turnos += {{ef.total_mi}}
+                                    turnos_{{ef.id}} += {{ef.total_mi}}
+                                    turnos_dia_{{ef.id}} += {{ef.mid}}
+                                  </script>
+                                    {% if ef.cobertura_set.first %}
+                                      <script type="text/javascript">
+                                          cubiertos += {{ef.cobertura_set.first.total_mi}}
+                                          cubiertos_{{ef.id}} += {{ef.cobertura_set.first.total_mi}}
+                                      </script>
+                                    {% endif %}
+                                  {% endif %}
+                                  {% if ef.fecha_j|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_j|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="dia-j">{{ef.jd}}</td>
+                                  <script type="text/javascript">
+                                    turnos += {{ef.total_j}}
+                                    turnos_{{ef.id}} += {{ef.total_j}}
+                                    turnos_dia_{{ef.id}} += {{ef.jd}}
+                                  </script>
+                                    {% if ef.cobertura_set.first %}
+                                      <script type="text/javascript">
+                                          cubiertos += {{ef.cobertura_set.first.total_j}}
+                                          cubiertos_{{ef.id}} += {{ef.cobertura_set.first.total_j}}
+                                      </script>
+                                    {% endif %}
+                                  {% endif %}
+                                  {% if ef.fecha_v|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_v|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="dia-v">{{ef.vd}}</td>
+                                  <script type="text/javascript">
+                                    turnos += {{ef.total_v}}
+                                    turnos_{{ef.id}} += {{ef.total_v}}
+                                    turnos_dia_{{ef.id}} += {{ef.vd}}
+                                  </script>
+                                    {% if ef.cobertura_set.first %}
+                                      <script type="text/javascript">
+                                          cubiertos += {{ef.cobertura_set.first.total_v}}
+                                          cubiertos_{{ef.id}} += {{ef.cobertura_set.first.total_v}}
+                                      </script>
+                                    {% endif %}
+                                  {% endif %}
+                                  {% if ef.fecha_s|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_s|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="dia-s">{{ef.sd}}</td>
+                                  <script type="text/javascript">
+                                    turnos += {{ef.total_s}}
+                                    turnos_{{ef.id}} += {{ef.total_s}}
+                                    turnos_dia_{{ef.id}} += {{ef.sd}}
+                                  </script>
+                                    {% if ef.cobertura_set.first %}
+                                      <script type="text/javascript">
+                                          cubiertos += {{ef.cobertura_set.first.total_s}}
+                                          cubiertos_{{ef.id}} += {{ef.cobertura_set.first.total_s}}
+                                      </script>
+                                    {% endif %}
+                                  {% endif %}
+                                  {% if ef.fecha_d|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_d|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="dia-d">{{ef.dd}}</td>
+                                  <script type="text/javascript">
+                                    turnos += {{ef.total_d}}
+                                    turnos_{{ef.id}} += {{ef.total_d}}
+                                    turnos_dia_{{ef.id}} += {{ef.dd}}
+                                  </script>
+                                    {% if ef.cobertura_set.first %}
+                                      <script type="text/javascript">
+                                          cubiertos += {{ef.cobertura_set.first.total_d}}
+                                          cubiertos_{{ef.id}} += {{ef.cobertura_set.first.total_d}}
+                                      </script>
+                                    {% endif %}
+                                  {% endif %}
+                                  <th id="dia-total_{{ef.id}}">{{ef.totalDia}}</th>
+                              </tr>
+
+                              <tr>
+                                  <th>Noche</th>
+                                  {% if ef.fecha_l|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_l|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="noche-l">{{ef.ln}}</td>
+                                  <script>
+                                    turnos_noche_{{ef.id}} += {{ef.ln}}
+                                  </script>
+                                  {% endif %}
+                                  {% if ef.fecha_m|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_m|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="noche-m">{{ef.mn}}</td>
+                                  <script>
+                                    turnos_noche_{{ef.id}} += {{ef.mn}}
+                                  </script>    
+                                  {% endif %}
+                                  {% if ef.fecha_mi|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_mi|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="noche-mi">{{ef.min}}</td>
+                                  <script>
+                                    turnos_noche_{{ef.id}} += {{ef.min}}
+                                  </script>
+                                  {% endif %}
+                                  {% if ef.fecha_j|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_j|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="noche-j">{{ef.jn}}</td>
+                                  <script>
+                                    turnos_noche_{{ef.id}} += {{ef.jn}}
+                                  </script>
+                                  {% endif %}
+                                  {% if ef.fecha_v|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_v|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="noche-v">{{ef.vn}}</td>
+                                  <script>
+                                    turnos_noche_{{ef.id}} += {{ef.vn}}
+                                  </script>
+                                  {% endif %}
+                                  {% if ef.fecha_s|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_s|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="noche-s">{{ef.sn}}</td>
+                                  <script>
+                                    turnos_noche_{{ef.id}} += {{ef.sn}}
+                                  </script>
+                                  {% endif %}
+                                  {% if ef.fecha_d|date:'Y-m-d' < inicio|date:'Y-m-d' or ef.fecha_d|date:'Y-m-d' > fin|date:'Y-m-d' %}
+                                  <td>NA</td>
+                                  {% else %}
+                                  <td id="noche-d">{{ef.dn}}</td>
+                                  <script>
+                                    turnos_noche_{{ef.id}} += {{ef.dn}}
+                                  </script>
+                                  {% endif %}
+                                  <th id="noche-total_{{ef.id}}">{{ef.totalNoche}}</th>
+                              </tr>
+                              <tr>
+                                  <td colspan="8"></td>
+                                  <th id="total_{{ef.id}}"style="border-top: 1px solid black"></th>
+                              </tr>
+                          </tbody>
+
+
+                      </table>
+                      <script type="text/javascript">
+                        console.log("turnos_{{ef.id}}", turnos_{{ef.id}});
+                        $('#total_{{ef.id}}').html(turnos_{{ef.id}})
+                        $('#cubiertos_turnos_{{ef.id}}').html("("+cubiertos_{{ef.id}}+"/"+turnos_{{ef.id}}+")")
+                        $('#dia-total_{{ef.id}}').html(turnos_dia_{{ef.id}})
+                        $('#noche-total_{{ef.id}}').html(turnos_noche_{{ef.id}})
+
+                        var horas_{{ef.id}} = turnos_{{ef.id}}*12
+                        $('#horas_{{ef.id}}').html(horas_{{ef.id}})
+                        $('#personas_{{ef.id}}').html((horas_{{ef.id}}/60))
+
+                        var cobertura_{{ef.id}} = (cubiertos_{{ef.id}}/turnos_{{ef.id}})*100
+                        $('#cobertura_{{ef.id}}').html(cobertura_{{ef.id}}.toFixed(2)+"%")
+
+                      </script>
+
+                  </div>
+                </div>
+
+                
+                
+                {% endfor %}
+                <script type="text/javascript">
+                  console.log("turnos", turnos)
+                  console.log("cubiertos", cubiertos)
+
+                  var horas = 0
+                  horas = turnos * 12
+                  personas = horas/60
+
+                  if(turnos == 0){
+                      $('#cobertura-general').html("Indefinida")  
+                  }else{
+                      $('#cobertura-general').html((cubiertos/turnos*100).toFixed(2)+"%")
+                  }
+                  $('#contadores').html("("+cubiertos+"/"+turnos+")")
+                  if({{faltas.count}}>0){
+                      $('#ausentismo').html(({{faltas.count}}/turnos*100).toFixed(2)+"%")
+                  }else{
+                      $('#ausentismo').html("0%")
+                  }
+                  if({{bajas.count}}>0){
+                      $('#rotacion').html(({{bajas.count}}/personas*100).toFixed(2)+"%")
+                  }else{
+                      $('#rotacion').html("0%")
+                  }
+                  $('#personas').html(personas)
+
+
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+

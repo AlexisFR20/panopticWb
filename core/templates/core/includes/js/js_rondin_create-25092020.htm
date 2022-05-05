@@ -1,0 +1,362 @@
+<script>
+$(document).ready(function() {
+
+    // Validación de forma
+   $.validate({
+       lang: 'es',
+       borderColorOnError : '#9D292A',
+       addValidClassOnAll : true,
+       modules : 'security, file', 
+   });          
+
+   $('#btn-rondin-guardar').click(function(e) {
+       e.preventDefault();
+       var allspan='';
+       var hasta = $( "form#frm-crear-rondin #tags span.emailAdd" ).length -1;
+       $( "form#frm-crear-rondin #tags span.emailAdd" ).each(function( index ) {                
+           allspan = allspan + $(this).text();                
+           if (index != hasta) allspan = allspan + ',';
+       });
+       //console.log(allspan);
+       $('form#frm-crear-rondin input#correos_contacto').val(allspan);
+       $('form#frm-crear-rondin input#correos_contacto').text(allspan);
+       $('form#frm-crear-rondin').submit();
+   });
+
+   $('#btn-rondin-actualizar').click(function(e) {
+       e.preventDefault();
+       var allspanAct='';
+       var hastaAct = $( "form#frm-edicion-rondin #tags span.emailAdd" ).length -1;
+       $( "form#frm-edicion-rondin #tags span.emailAdd" ).each(function( index ) {                
+           allspanAct = allspanAct + $(this).text();                
+           if (index != hastaAct) allspanAct = allspanAct + ',';
+       });
+       //console.log(allspan);
+       $('form#frm-edicion-rondin #correos_contacto').val(allspanAct);
+       $('form#frm-edicion-rondin #correos_contacto').text(allspanAct);
+       $('form#frm-edicion-rondin').submit();
+   });
+   
+   $(document).on('click', '#btn-rondin-cancelar', function(){            
+       // Panel de Rondin
+       $('form#frm-edicion-rondin').hide();
+       $('#btn-rondines-contenedor').show();
+       // Panel de Puntos
+       $('div#crear-punto-contenedor').hide();   
+       $('div#block-punto-logo').show();   
+       // Panel de Puntos            
+       $('div#crear-tarea-contenedor').hide();   
+       $('div#block-tarea-logo').show();   
+       // Panel de Evidencias            
+       $('div#evidencias-contenedor').hide();   
+       $('div#block-evidencias-logo').show();   
+       // Panel de Mapa
+       $('div#geomap_rondin').hide();
+       $('div#geomap_cover_rondin').show();
+       // Se quita el nombre del rondín si se cancela
+       $('span#rondin-seleccionado-nombre').text('');
+       // Se quita el id del rondin en la lista de puntos
+       $('#listar-puntos').attr('rondin-id', 0);
+       $('#listar-tareas').attr('rondin-id', 0);
+       $('#listar-evidencias').attr('rondin-id', 0);
+   });
+   
+   $(document).on('click', '#btn-puntos-crearmod', function(){            
+       // Panel de Puntos
+       $('div#scroll_puntos').hide();
+       $('form#frm-crear-punto').show();
+       $('div#row-puntos_crearmod').hide();
+       // Panel de Mapa            
+       $('div#geomap_cover_rondin').hide();
+       $('div#geomap_rondin').show();               
+   });
+   
+   $(document).on('click', '#btn-crear-puntos-final', function(e){            
+       // Guarda puntos en rondín asociado
+       e.preventDefault();            
+       // Se ejecuta al haber presionado el botón de #btn-crear-puntos-final
+       savePoints();     
+       
+   });
+
+   $(document).on('click', '.btn-click-rondin', function(){            
+       // Panel de Rondin
+       $('form#frm-edicion-rondin').show();             
+        $('div#control-block-tareas').show();   //  GEAR icon
+       // Panel de Puntos            
+       $('div#crear-punto-contenedor').show();   
+       $('div#block-punto-logo').hide();               
+       // Panel de Tareas
+       $('div#crear-tarea-contenedor').show();   
+       $('div#block-tarea-logo').hide();               
+       // Panel de Evidencias
+       $('div#evidencias-contenedor').show();   
+       $('div#block-evidencias-logo').hide();   
+       
+
+            
+                   
+       var rondin_id = $(this).attr('id');
+       if (rondin_id > 0) {
+           $('#btn-rondines-contenedor').hide();
+           $('#edicion-de-rondin-contenedor').show();
+           $('#frm-edicion-rondin').attr('action', '/backstage/rondines/rondin/editar/' + rondin_id);
+
+           jQuery.get({                       // initialize an AJAX request
+               url: '/backstage/ajax/ajax_load_rondin',
+               data: {
+                   'rondin_id': rondin_id   
+               },
+               success: function (data) {                           
+                   // Llenado de datos en Forma de edición de rondin
+                   $('form#frm-edicion-rondin input#nombre').val(data.nombre);
+                   $('form#frm-edicion-rondin select#admin_aguilas').val(data.admin_aguilas);
+                   $('form#frm-edicion-rondin select#cliente').val(data.cliente_id);
+                   $('form#frm-edicion-rondin select#planta').val(data.planta_id);
+                   $('form#frm-edicion-rondin select#tiempo_estimado').val(data.tiempo_estimado);
+
+                   // Envio de datos de rondin a panel de tareas
+                   $('span#rondin-seleccionado-nombre').text(data.nombre);
+                   // Envio de datos de rondin a panel de mapa                        
+                   $('div#geomap_rondin').attr('data-planta-gps-lat', data.lat)
+                   $('div#geomap_rondin').attr('data-planta-gps-lng', data.lng)
+
+                   var str = data.correos_contacto;
+                   if (str != '') {                        
+                       var arrCorreosContacto = str.split(',');
+                       var i;
+                       for (i = 0; i < arrCorreosContacto.length; i++) {   
+                           $('<span class="emailAdd" tabindex="1">' + arrCorreosContacto[i] + '</span>').insertBefore('form#frm-edicion-rondin div.emailtag div#tags input');
+                       }                        
+                   }
+               }
+           }); // fin de AJAX       
+           
+           jQuery.get({  // Obtiene los rondines de la planta selecta
+               url: '/backstage/ajax/ajax_load_puntos_de_rondin',
+               data: {
+                   'rondin_id': rondin_id   
+               },
+               success: function (data) {                                 
+                   $('#listar-puntos').html(data);
+                   $('#listar-puntos').attr('rondin-id', rondin_id);
+                   // Inicia Google Maps
+                   initialize();                         
+               }
+           }); // fin de AJAX  
+
+           jQuery.get({  // Obtiene las tareas de la planta selecta
+               url: '/backstage/ajax/ajax_load_tareas_de_rondin',
+               data: {
+                   'rondin_id': rondin_id   
+               },
+               success: function (data) {                                 
+                   $('#listar-tareas').html(data);
+                   $('#listar-tareas').attr('rondin-id', rondin_id);                           
+                   $("span.tasks").each(function() {
+                       var t = $(this).text().split(',');                            
+                       var tSize = t.length; var checkStr='';
+                       for (var i = 0; i < tSize; i++) {                                
+                           var myval = t[i];
+                           checkStr = checkStr + '&emsp;<i class="fas fa-check"></i> &nbsp;' + myval.trim() + '<br/>';        
+                       }
+                       $(this).html(checkStr);                            
+                    });                         
+               }
+           }); // fin de AJAX  
+
+           jQuery.get({  // Obtiene las evidencias del rondin
+               url: '/backstage/ajax/ajax_load_evidencias_de_rondin',
+               data: {
+                   'rondin_id': rondin_id   
+               },
+               success: function (data) {                                 
+                   $('#listar-evidencias').html(data);
+                   $('#listar-evidencias').attr('rondin-id', rondin_id);  
+               }
+           }); // fin de AJAX  
+
+       }
+   });     
+   
+   $('#sub-agregar-tarea').click(function() {            
+       $('div#block-tarea-logo').hide();            
+       $('div#crear-tarea-contenedor').show();
+       $('span#rondin-seleccionado-nombre').text('Aqui va el nombre');
+   });
+   
+   $('#sub-listar-tareas').click(function() {
+       console.log('Listando tareas de rondin seleccionado');
+   });
+   
+   $('#sub-listar-rondines').click(function() {
+       $('form#frm-edicion-rondin').hide();
+
+       $('div#crear-punto-contenedor').hide();   
+       $('div#block-punto-logo').show();   
+
+       $('div#geomap_rondin').hide();
+       $('div#geomap_cover_rondin').show();
+
+       $('div#control-block-tareas').hide();
+       $('div#btn-rondines-contenedor').show();
+       $('span#rondin-seleccionado-nombre').text('<seleccione rondín>');
+   });     
+
+   $('input[name="date_joined"]').datepicker({
+       format: 'mm/dd/yyyy',
+       language: 'es'
+   });
+
+   var options = {
+       //now: "12:35", //hh:mm 24 hour format only, defaults to current time
+       twentyFour: false,  //Display 24 hour format, defaults to false
+       upArrow: 'wickedpicker__controls__control-up',  //The up arrow class selector to use, for custom CSS
+       downArrow: 'wickedpicker__controls__control-down', //The down arrow class selector to use, for custom CSS
+       close: 'wickedpicker__close', //The close class selector to use, for custom CSS
+       hoverState: 'hover-state', //The hover state class to use, for custom CSS
+       title: 'Seleccione una Hora', //The Wickedpicker's title,
+       showSeconds: false, //Whether or not to show seconds,
+       timeSeparator: ' : ', // The string to put in between hours and minutes (and seconds)
+       secondsInterval: 1, //Change interval for seconds, defaults to 1,
+       minutesInterval: 1, //Change interval for minutes, defaults to 1
+       beforeShow: null, //A function to be called before the Wickedpicker is shown
+       afterShow: null, //A function to be called after the Wickedpicker is closed/hidden
+       show: null, //A function to be called when the Wickedpicker is shown
+       clearable: false, //Make the picker's input clearable (has clickable "x")
+   };
+   $('#hour_joined').wickedpicker(options);
+
+   /*$('input[name="hour_joined"]').datetimepicker({
+       format: 'HH:mm'
+   });*/
+
+   /*$('input[name="alta_rondin"]').val(today);
+   $('#alta_rondin').attr("data-date", moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+
+   $("#alta_rondin").on("change", function() {        
+       $('#alta_rondin_real').attr("data-date", moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+       $('#alta_rondin_real').val( moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+        $('#hour_joined').val( moment( $('#alta_rondin_real').val() ).format("HH:mm") );
+   }).trigger("change")*/
+
+    // Muestra las unidades de negocio según el cliente seleccionado
+   $('#cliente').on('change', function() {
+       clienteSeleccionado = $("#cliente").val();   
+
+       if ( clienteSeleccionado != 0 ) {
+       $("#planta option").each(function() {               
+           var elSeleccionado =  $(this).val();
+           
+           if (  $(this).attr('data-cliente-id') == clienteSeleccionado) {
+               $(this).show();
+           } else {
+               $(this).hide();
+           }            
+       });         
+       } else {
+       $('[name="planta"]').val('0').change();
+           $("#planta option").show();
+       }         
+   }); 
+
+   $('.clienteSel').on('change', function() {
+       
+       clienteSeleccionadoSel = $(".clienteSel").val();               
+
+       if ( clienteSeleccionadoSel != 0 ) {
+           $(".plantaSel option").each(function() {               
+               var elListado =  $(this).attr('data-cliente-id-sel');                    
+               
+               if (  clienteSeleccionadoSel == elListado) {
+                   $(this).show();
+               } else {
+                   $(this).hide();
+               }            
+           });         
+       } else {
+       $('.plantaSel').val('0').change();
+           $(".plantaSel option").show();
+       }         
+   }); 
+
+   $('select#planta_rondines').on('change', function() {
+       var planta_sel_id = $(this).val();            
+
+       jQuery.get({  // Obtiene los rondines de la planta selecta
+           url: '/backstage/ajax/ajax_load_rondines_de_planta',
+           data: {
+               'planta_id': planta_sel_id   
+           },
+           success: function (data) {                           
+               $('div#un_original').hide();
+               $('div#un_load').show();
+               $('div#btn-rondines-contenedor').show();                    
+               $('form#frm-edicion-rondin').hide();                    
+               $('div#un_load').html(data);                         
+           }
+       }); // fin de AJAX        
+   }); 
+
+   function savePoints() {
+       console.log('Acción de guardar puntos en rondín.');
+       // Quitar puntos asignados a rondín en DB
+       var remRondinId = $('#listar-puntos').attr('rondin-id');
+       if ( Number(remRondinId) == 0 ) {
+           // Sin rondin asignado
+           alert('No se tiene rondín asociado al punto(s).')
+       } else {
+           // Rondin asignado 
+           // Crea o actualiza los puntos de Rondin modo AJAX
+           $('ul#puntosrondines li').each(function(index) {
+               if ( ! $(this).hasClass('base') && $(this).find( 'input' ).eq(1).val() != "<Escriba nombre del punto>") {
+                   var add_punto = {
+                       id: $(this).attr('id'),
+                       lat: $(this).attr('lat'),
+                       lng:$(this).attr('lng'),                            
+                       nombre: $(this).find( 'input' ).eq(1).val(),
+                       rondin_id: remRondinId
+                   }                                       
+                   ajaxSaveUpdatePuntos(add_punto);
+               }
+           });
+       }
+   }
+
+   function ajaxSaveUpdatePuntos(add_punto) {
+       console.log(add_punto);
+       // Llamada AJAX donde add_punto es un objecto con 
+       // los datos para generar registro del punto
+       jQuery.get({                       
+           url: '/backstage/ajax/ajax_agregar_mod_punto',
+           data: {
+               'punto_id': add_punto.id,
+               'punto_lat': add_punto.lat,
+               'punto_lng': add_punto.lng,                    
+               'punto_nombre': add_punto.nombre,
+               'punto_rondin_id': add_punto.rondin_id
+           },
+           success: function (data) {                           
+               console.log(data);
+               //window.location = "https://www.example.com";
+               if (data.trim() == 'true') {
+                   $('#msg-punto-success').show();
+                   $('#msg-punto-error').hide();                        
+               } else {
+                   $('#msg-punto-error').show();
+                   $('#msg-punto-success').hide();
+               }
+               setTimeout( window.location.href='/backstage/rondines/rondin/crear', 2000);
+           }
+       }); // fin de AJAX   
+
+       return true;
+   }
+
+   $('input[name="alta_rondin"]').datepicker({
+       format: 'mm/dd/yyyy',
+       language: 'es'
+   });
+
+});
+</script>

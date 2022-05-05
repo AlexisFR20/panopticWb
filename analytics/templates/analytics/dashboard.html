@@ -1,0 +1,298 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+ 
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        .box { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }          
+    </style>   
+    <style>  
+        #map {
+          width: 100%;
+          height: 374px;
+        }       
+      </style>  
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">    
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Dashboard General
+                <div class="admin-page-title-subheading">
+                   Dashboard
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Predictive Analytics</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:area_list' %}"> Dashboard General</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Dashboard
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">            
+            <div class="card-body text-center">        
+                <h5 class="card-title size20 bgp-color-azul">Cliente: {{ vcliente.nombre }}</h5>                                                                                             
+                <div class="input-group">                              
+                    {% if not vcliente %}
+                    <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+                        <option value="" >-- Cliente --</option>
+                        {% for cliente in clientes.all %}                                                   
+                        <option value="{{ cliente.id }}">{{ cliente }}</option>
+                        {% endfor %}
+                    </select>            
+                    &emsp;
+                    {% endif %}
+                    {% if vplantas.count > 1 %}
+                    <select name="planta" id="planta" style="width: 96px;" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Unidad de Negocio --</option>
+                        {% for planta in vplantas.all %}
+                        <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                        {% endfor %}
+                    </select>
+                    &emsp;
+                    {% else %}
+                    <select name="planta" id="planta" style="width: 0px; display: none;" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Unidad de Negocio --</option>
+                        {% for planta in vplantas.all %}
+                        <option selected value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                        {% endfor %}
+                    </select>                    
+                    {% endif %}
+                    <input id="dates" name="dates" required="required" class="form-control" style="width: 58px;">                      
+                    &emsp;            
+
+                </div>              
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Incidentes de servicio
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">        
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Número de recibos de almacen
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart2"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">        
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Cantidad de equipo ingresado
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart3"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div>
+</div> 
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Número de entradas a áreas restringidas
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart4"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">        
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Número de vehículos que entraron
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart5"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">        
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Revisión 18 puntos
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="tipo_incidente_container">
+                    <select name="tipo_incidente" id="tipo_incidente">
+                        <option value="evidencia_defensa">Defensa</option>
+                        <option value="evidencia_motor">Motor</option>
+                        <option value="evidencia_llantas">Llantas</option>                        
+                        <option value="evidencia_piso_cabina">Piso Cabina</option>                        
+                        <option value="evidencia_tanque_conbustible">Tanque Gasolina</option>                        
+                        <option value="evidencia_cabina">Cabina</option>                        
+                        <option value="evidencia_suspension_aire">Sispensión de Aire</option>                        
+                        <option value="evidencia_flecha_embrague">Flecha de Embrague</option>                        
+                        <option value="evidencia_quinta_rueda">Quinta Rueda</option>                        
+                        <option value="evidencia_debajo_plataforma">Debajo de Plataforrma</option>                        
+                        <option value="evidencia_puertas_internas_externas">Puertas Internas Externas</option>                        
+                        <option value="evidencia_piso_interior_cajas">Piso Inferior Cajas</option>                        
+                        <option value="evidencia_paredes_laterales">Paredes Laterales</option>                        
+                        <option value="evidencia_pared_frontal">Pared Frontal</option>            
+                        <option value="evidencia_techo">Techo</option>            
+                        <option value="evidencia_unidad_refrigeracion">Unidad de Refrigeración</option>            
+                        <option value="evidencia_escape">Escape</option>            
+                        <option value="evidencia_revision_sello">Revisión de Sello</option>                                    
+                    </select>
+                </div>
+                <div id="chart6"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div>
+</div> 
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Número de entradas y salidas de trailers
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart7"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">        
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Paquetes
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart8"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">        
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Rondines
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart11"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div>
+</div> 
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de visitantes
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart9"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div> 
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">        
+        <div class="mb-3 card mincard"> <!-- Inicio de card -->
+            <div class="card-header-tab card-header-tab-animation card-header grisdash">
+                <div class="card-header-title size14">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Empleados sin gafete
+                </div>                
+            </div>
+            <div class="card-body">  
+                <div id="chart10"></div>
+            </div>  
+        </div> <!-- Fin de card -->
+    </div>
+</div> 
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+{% include 'core/includes/js/modulo_predictive/js_dashboard.htm' %}
+<!-- Ends to include JS list -->
+{% endblock js %}

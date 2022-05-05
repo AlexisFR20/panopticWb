@@ -1,0 +1,123 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-car size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>D & D Management &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Carga
+                <div class="admin-page-title-subheading">
+                   Ver Registro de Carga
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> D & D Management</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:cargas_list' %}">Registro de Cargs</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Ver Registro de Tipo de Vehículo
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Ver Tipo de Vehículo
+                </div>                                                        
+            </div>
+            <div class="card-body">       
+                <hr>
+                <a href="{%  url 'administrador:cargas_list' %}" class="btn btn-primary size16">Volver a Historial de Cargas</a>
+                <a href="{%  url 'administrador:cargas_create' %}" class="btn btn-success size16">Agregar Registro de Cargas</a>
+                <hr>
+                <br>         
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form id="paqueteria_detail_form">
+                            <div class="position-relative form-group">
+                                <label for="tipo" class="">Tipo</label>
+                                <input name="tipo" id="tipo" type="text" class="form-control" readonly value="{{ object.tipo }}">
+                            </div> 
+
+                            <div class="position-relative form-group">
+                                <label for="folio" class="">Folio</label>
+                                <input name="folio" id="folio" type="text" class="form-control" readonly value="{{ object.folio }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="peso" class="">Peso</label>
+                                <input name="peso" id="peso" type="text" class="form-control" readonly value="{{ object.peso }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="movimiento" class="">Movimiento</label>
+                                <input name="movimiento" id="movimiento" type="text" class="form-control" readonly value="{{ object.movimiento }}">
+                            </div>                            
+                        </form>   
+                    </div>
+                </div>                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+        // No hay nada que ejecutar
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

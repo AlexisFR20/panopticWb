@@ -1,0 +1,62 @@
+<!--  Data Table Start -->
+<table id="tbl-puntos-hechos" class="table table-striped table-bordered dt-responsive nowrap" style="width:100%">
+    <thead>
+        <tr>
+            <th>Rondín Hecho</th>                                
+            <th>Hora Inicio</th>
+            <th>Hora Final</th>            
+        </tr>
+    </thead>
+    <tbody>
+        {% for punto in puntos %}             
+        <tr data-puntohecho-id={{ punto.id }} data-rondinhecho-id={{ punto.rondinhecho_id }} data-punto-id={{ punto.punto_id }}> 
+            <td><b>{{ punto.rondinhecho.rondin.nombre }}</b></td>
+            <td>{{ punto.ph_hora_inicio }}</td>
+            <td>{{ punto.ph_hora_fin }}</td>             
+        </tr>
+        {% endfor %}           
+    </tbody>                              
+</table>        
+<!-- Data Table End -->
+<script>
+    $('#tbl-puntos-hechos tbody').on('click', 'tr', function () {
+        var rondinhecho_id = $(this).attr('data-rondinhecho-id');
+        var puntohecho_id = $(this).attr('data-puntohecho-id');
+        var punto_id = $(this).attr('data-punto-id');
+
+        //console.log('Rondin Hecho ID');
+        //console.log(rondinhecho_id);
+        //console.log('Punto Hecho ID');        
+        //console.log(puntohecho_id);        
+        //console.log('Punto ID');        
+        //console.log(punto_id);        
+
+        if (rondinhecho_id != 0 && puntohecho_id != 0 && punto_id != 0) {            
+            // Llamada AJAX para obtener información de reporte              
+            jQuery.get({                       
+                url: '/backstage/ajax/ajax_load_reporte_evidencias_de_puntos_hechos',
+                data: {
+                    'rondinhecho_id': rondinhecho_id,           
+                    'puntohecho_id': puntohecho_id,           
+                    'punto_id': punto_id           
+                },
+                success: function (data) {                           
+                    // Llenado de datos en Forma de edición de rondin
+                    //console.log(data);
+                    $('#evidencias').html(data);
+                    $('#tbl-puntos-hechos').DataTable().destroy();
+                    $('#tbl-puntos-hechos').DataTable({       
+                        "order": [[ 1, "desc" ]],    
+                        "searching": false,
+                        "pageLength":  10,    
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+                        }
+                    });
+                }
+            }); // fin de AJAX    
+        } // fin de if   
+     
+    });    
+</script>
+

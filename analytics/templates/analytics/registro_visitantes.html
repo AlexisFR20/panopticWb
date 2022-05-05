@@ -1,0 +1,505 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }  
+
+        .sw>.tab-content {
+            height: auto !important;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/smartwizard@5.0.0/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Visitante
+                <div class="admin-page-title-subheading">
+                   Crear Registro de Visitante
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Predictive Analytics</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{%  url 'analytics:visitantes_dashboard' %}"> Historial de Visitantes</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Crear Registro de Visitante
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Visitante
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form action="" method="post">
+                            {% csrf_token %}                
+                                            
+                            <!-- Formulario Wizard-->
+                            <div id="smartwizard">
+                                <ul class="nav forms-wizard">
+                                    <li>
+                                        <a class="nav-link" href="#step-1">
+                                            <em>1</em><span>Informacion del Previsitante</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" href="#step-2">
+                                            <em>2</em><span>Registro de Vehiculo</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" href="#step-3">
+                                            <em>3</em><span>Registro de Equipo</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" href="#step-4">
+                                            <em>4</em><span>Registro de Material</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link" href="#step-5">
+                                            <em>5</em><span>Finalizar Registro</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                    
+                                <div class="tab-content form-wizard-content">
+                                    <div id="step-1" class="tab-pane" role="tabpanel">
+                                        <div class="form-row">
+                                            <div class="col-md-12">
+                                                <div class="position-relative form-group">
+                                                    <label for="admin_aguilas" class="">Tipo de Previsitante</label>
+                                                    <select id="tipo" name="tipo" class="form-control mostrar selector" data-validation="required">
+                                                        <option value="" >-- Seleccione Tipo de Previsitante -- </option>                                   
+                                                        <option value="visitante">Visitante</option>
+                                                        <option value="proveedores">Proveedor</option>
+                                                        <option value="contratistas">Contratista</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="nombre">Nombre</label>
+                                                    <input name="nombre" id="nombre" placeholder="Ingrese Nombre" type="text" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="empresa">Empresa</label>
+                                                    <input name="empresa" id="empresa" placeholder="Ingrese Empresa" type="text" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="anfitrion">Anfitrion</label>
+                                                    <input name="anfitrion" id="anfitrion" placeholder="Ingrese Anfitrion" type="text" class="form-control">
+                                                </div>
+                                            </div>
+					    <div class="col-md-6">
+<div class="position-relative form-group">
+							    <label for="gafete">Gafete</label>
+							    <input name="gafete" placeholder="Ingrese gafete" id="gafete" type="text" class="form-control"></input>
+						    </div>
+
+					    </div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="identificacion">Identificacion</label>
+                                                    <input name="identificacion" id="identificacion" placeholder="Ingrese identificacion" type="text" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row escondido">
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="entrada">Fecha de Entrada</label>
+                                                    <input name="entrada" id="entrada" type="text" class="form-control">
+                                                </div>
+                                            </div>                                
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="salida">Fecha de Salida</label>
+                                                    <input name="salida" id="salida" type="text" class="form-control">
+                                                </div>
+                                            </div>                                
+                                        </div>
+                                    </div>
+                                    <div id="step-2" class="tab-pane" role="tabpanel">
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="placas">Placa</label>
+                                                    <input name="placas" id="placas" placeholder="Ingrese la Placas del Vehiculo" type="text" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="marca">Marca</label>
+                                                    <input name="marca" id="marca" placeholder="Ingrese la Marca del Vehiculo"
+                                                           type="text" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="modelo">Modelo</label>
+                                                    <input name="modelo" id="modelo" placeholder="Ingrese el Modelo del Vehiculo" type="text" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="position-relative form-group">
+                                                    <label for="nota">Nota</label>
+                                                    <input name="nota" id="nota" placeholder="Ingrese una Nota" type="text" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>                                            
+                                                    
+                                    </div>
+                                    <div id="step-3" class="tab-pane field_wrapper" role="tabpanel">
+                                        <div class="form-row">
+                                            <a href="javascript:void(0);" class="btn btn-primary btn-lg add_button" title="Add field">Agrgar otro Equipo</a>
+                                        </div>                                
+                                    </div>
+
+                                    <div id="step-4" class="tab-pane field_wrapper_material" role="tabpanel">
+                                        <div class="form-row">
+                                            <a href="javascript:void(0);" class="btn btn-primary btn-lg add_button_material" title="Add field">Agrgar otro Material</a>
+                                        </div>                                      
+                                    </div>
+                                    <div id="step-5" class="tab-pane" role="tabpanel">
+                                        <div class="no-results">
+                                            <div class="swal2-icon swal2-success swal2-animate-success-icon">
+                                                <div class="swal2-success-circular-line-left" style="background-color: rgb(255, 255, 255);"></div>
+                                                <span class="swal2-success-line-tip"></span>
+                                                <span class="swal2-success-line-long"></span>
+                                                <div class="swal2-success-ring"></div>
+                                                <div class="swal2-success-fix" style="background-color: rgb(255, 255, 255);"></div>
+                                                <div class="swal2-success-circular-line-right" style="background-color: rgb(255, 255, 255);"></div>
+                                            </div>
+                                            <div class="results-subtitle mt-4">Finalizar Registro!</div>
+                                            <div class="results-title d-none">You arrived at the last form wizard step!</div>
+                                            <div class="mt-3 mb-3"></div>
+                                            <div class="text-center">
+                                                <button id="enviar" class="btn-shadow btn-wide btn btn-success btn-lg">Finalizar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="clearfix d-none">
+                                <button type="button" id="reset-btn" class="btn-shadow float-left btn btn-link">Reset</button>
+                                <button type="button" id="next-btn" class="btn-shadow btn-wide float-right btn-pill btn-hover-shine btn btn-primary">Next</button>
+                                <button type="button" id="prev-btn" class="btn-shadow float-right btn-wide btn-pill mr-3 btn btn-outline-secondary">Previous</button>
+                            </div>
+                            <!-- Formulario Wizard -->
+                        </form>   
+                    </div>
+                </div>
+                <br><br>              
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- JavaScript Wizard -->
+<script src="https://cdn.jsdelivr.net/npm/smartwizard@5.0.0/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
+<script>
+    jQuery(document).ready(function($) {
+
+        // SmartWizard initialize
+        $('#smartwizard').smartWizard({
+            selected: 0, // Initial selected step, 0 = first step
+            theme: 'default', // theme for the wizard, related css need to include for other than default theme
+            justified: true, // Nav menu justification. true/false
+            autoAdjustHeight: true, // Automatically adjust content height
+            cycleSteps: false, // Allows to cycle the navigation of steps
+            backButtonSupport: true, // Enable the back button support
+            enableURLhash: true, // Enable selection of the step based on url hash
+            transition: {
+                animation: 'none', // Effect on navigation, none/fade/slide-horizontal/slide-vertical/slide-swing
+                speed: '400', // Transion animation speed
+                easing:'' // Transition animation easing. Not supported without a jQuery easing plugin
+            },
+            toolbarSettings: {
+                toolbarPosition: 'bottom', // none, top, bottom, both
+                toolbarButtonPosition: 'right', // left, right, center
+                showNextButton: true, // show/hide a Next button
+                showPreviousButton: true, // show/hide a Previous button
+                toolbarExtraButtons: [] // Extra buttons to show on toolbar, array of jQuery input/buttons elements
+            },
+            anchorSettings: {
+                anchorClickable: true, // Enable/Disable anchor navigation
+                enableAllAnchors: false, // Activates all anchors clickable all times
+                markDoneStep: true, // Add done css
+                markAllPreviousStepsAsDone: true, // When a step selected by url hash, all previous steps are marked done
+                removeDoneStepOnNavigateBack: false, // While navigate back done step after active step will be cleared
+                enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
+            },
+            keyboardSettings: {
+                keyNavigation: false, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+                keyLeft: [37], // Left key code
+                keyRight: [39] // Right key code
+            },
+            lang: { // Language variables for button
+                next: 'Siguiente',
+                previous: 'Anterior'
+            },
+            disabledSteps: [], // Array Steps disabled
+            errorSteps: [], // Highlight step with errors
+            hiddenSteps: [], // Hidden steps
+            onFinish: function() {
+                console.log('hola');
+                return false;
+            }
+        });
+
+        $('#enviar').click(function(){
+
+            var tipo = $('#tipo').val();
+            var nombre = $('#nombre').val();
+            var empresa = $('#empresa').val();
+            var anfitrion = $('#anfitrion').val();
+            var identificacion = $('#identificacion').val();
+
+            $('.error').hide(); 
+
+            if(tipo == '') {
+                $("#tipo").focus().after("<div class='alert alert-danger error' role='alert'>Seleccione Tipo de Visitante Direccion</div>");
+                $('#smartwizard').smartWizard("goToStep", 0);
+                return false;
+            } else if(nombre == '') {
+                $("#nombre").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese un Nombre</div>");
+                $('#smartwizard').smartWizard("goToStep", 0);
+                return false;
+            } else if(empresa == '') {
+                $("#empresa").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese la Empresa</div>");
+                $('#smartwizard').smartWizard("goToStep", 0);
+                return false;
+            } else if(anfitrion == '') {
+                $("#anfitrion").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese el Anfitrión</div>");
+                $('#smartwizard').smartWizard("goToStep", 0);
+                return false;
+            } else if(identificacion == '') {
+                $("#identificacion").focus().after("<div class='alert alert-danger error' role='alert'>Ingrese Identificación del Visitante</div>");
+                $('#smartwizard').smartWizard("goToStep", 0);
+                return false;
+            } 
+
+
+            
+            
+
+        });
+        $('#tbl-lista').DataTable({    
+            dom: 'Bfrtip',
+            buttons: [
+            {
+                extend: 'pdfHtml5',
+                title: 'Tabla de Visitantes',
+                orientation: 'landscape',
+                //download: 'open',
+                messageTop: 'Reporte visitantes',
+
+                /*customize: function ( doc ) {
+                    doc.content.splice( 1, 0, {
+                        margin: [ 0, 0, 0, 12 ],
+                        alignment: 'center',
+                        image: 'http://panoptic.iottechnologies.mx/static/core/assets/images/logo-panoptic-black.png'
+                    } );
+                }*/
+            }],    
+            "order": [[ 1, "desc" ]],
+            "pageLength":  10,    
+           "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+           }
+        });
+    });
+</script>
+<!-- Ends to include JS list -->
+<script>
+    $(document).ready(function() {
+
+        /*// Takes present value in FECHA field
+        var entrada = $('#id_entrada').val();
+        var salida = $('#id_salida').val();        
+        
+        // Change of html portion for DATETIMEPICKER
+        $('input[name="entrada"]').parent().html('<div class="form-group"><div class="input-group date" id="datetimepicker1" data-target-input="nearest"><label style="width: 100%;"for="id_fecha">Hora de Entrada:</label><input type="text" name="entrada" id="entrada" class="form-control datetimepicker-input" data-target="#datetimepicker1"><input type="hidden" name="initial-entrada" id="initial-id_entrada"><div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div></div></div>' );
+
+        $('input[name="salida"]').parent().html('<div class="form-group"><div class="input-group date" id="datetimepicker2" data-target-input="nearest"><label style="width: 100%;"for="id_salida">Hora de Salida:</label><input type="text" name="salida" id="salida" class="form-control datetimepicker-input" data-target="#datetimepicker2"><input type="hidden" name="initial-salida" id="initial-id_salida"><div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div></div></div>' );
+        // Binding of DATETIMEPIKER  to  wrap 
+        $('#datetimepicker1, #datetimepicker2').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm',
+            defaultDate: new Date()
+        });             
+        // Reassigning values for DATETIMEPICKER input wrap        
+        $('#id_entrada').val(entrada);
+        $('#initial-id_entrada').val(entrada);
+        $('#id_salida').val(salida);
+        $('#initial-id_salida').val(salida);*/
+
+    });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    
+    var maxField = 10; //Input fields increment limitation
+    var x = 1; //Initial field counter is 1
+    var addButton = $('.add_button'); //Add button selector
+    var wrapper = $('.field_wrapper'); //Input field wrapper 
+
+    var maxField_material = 10; //Input fields increment limitation
+    var x_material = 1; //Initial field counter is 1
+    var addButton_material = $('.add_button_material'); //Add button selector
+    var wrapper_material = $('.field_wrapper_material'); //Input field wrapper    
+    
+    //Once add button is clicked
+    $(addButton).click(function(){
+        //Check maximum number of input fields
+        if(x < maxField){ 
+            
+            $(wrapper).append(
+                '<div class="form-row">' +                                                
+                '    <div class="col-md-3">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="nombre_equipo">Descripcion del Equipo</label>' +
+                '            <input name="equipo['+x+'][nombre_equipo]" id="nombre_equipo" placeholder="Ingrese Descripción del Equipo" type="text" class="form-control">' +
+                '        </div>' +
+                '    </div>' +               
+                '    <div class="col-md-3">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="num_serie_equipo"># de Serie del Equipo</label>' +
+                '            <input name="equipo['+x+'][num_serie_equipo]" id="num_serie_equipo" placeholder="Ingrese # de Serie del Equipo" type="text" class="form-control">' +
+                '       </div>' +
+                '    </div>' +
+                 '    <div class="col-md-3">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="cantidad_equipo">Cantidad</label>' +
+                '            <input name="equipo['+x+'][cantidad_equipo]" id="cantidad_equipo" placeholder="Ingrese la Cantidad" type="text" class="form-control">' +
+                '        </div>' +
+                '    </div>' +
+                '</div>' 
+            ); //Add field html
+            x++; //Increment field counter
+        }
+    });
+    
+    //Once remove button is clicked
+    $(wrapper).on('click', '.remove_button', function(e){
+        e.preventDefault();
+        $(this).parent('div').remove(); //Remove field html
+        x--; //Decrement field counter
+    });
+
+    //Once add button is clicked
+    $(addButton_material).click(function(){
+        //Check maximum number of input fields
+        if(x_material < maxField_material){ 
+            
+            $(wrapper_material).append(
+                '<div class="form-row">' +                                                
+                '    <div class="col-md-3">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="descripcion_material">Descripcion del Material</label>' +
+                '            <input name="material['+x_material+'][descripcion_material]" id="descripcion_material" placeholder="Ingrese Descripción del Material" type="text" class="form-control">' +
+                '        </div>' +
+                '    </div>' +               
+                '    <div class="col-md-3">' +
+                '        <div class="position-relative form-group">' +
+                '            <label for="tipo_material">Tipo de Material</label>' +
+                '            <input name="material['+x_material+'][tipo_material]" id="tipo_material" placeholder="Ingrese Tipo de Material" type="text" class="form-control">' +
+                '       </div>' +
+                '    </div>' +   
+                '</div>' 
+            ); //Add field html
+            x_material++; //Increment field counter
+        }
+    });
+    
+
+    //Once remove button is clicked
+    $(wrapper_material).on('click', '.remove_button_material', function(e){
+        e.preventDefault();
+        $(this).parent('div').remove(); //Remove field html
+        x_material--; //Decrement field counter
+    });
+});
+</script>
+
+<!-- Ends to include JS list -->
+{% endblock js %}

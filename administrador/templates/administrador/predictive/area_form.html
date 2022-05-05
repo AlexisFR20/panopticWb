@@ -1,0 +1,124 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Área Restringida
+                <div class="admin-page-title-subheading">
+                   Crear Registro de Área Restringida
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Predictive Analytics</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{%  url 'administrador:area_list' %}"> Registro de Área Restringida</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Crear Registro de Área Restringida
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Crear Recibo de Área Restringida
+                </div>                                                        
+            </div>
+            <div class="card-body">                  
+                
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form action="" method="post">
+                            {% csrf_token %}                
+                            {{ form.as_p }}                
+                            <div class="text-left">
+                                <input type="submit" class="btn-transition btn btn-primary size16" value="Crear Registro de Área Restringida" />
+                            </div>
+                        </form>   
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+        // Takes present value in FECHA field
+        var fecha = $('#id_fecha').val();
+        var fecha_salida = $('#id_fecha_salida').val();        
+        
+        // Change of html portion for DATETIMEPICKER
+        $('input[name="fecha"]').parent().html('<div class="form-group"><div class="input-group date" id="datetimepicker1" data-target-input="nearest"><label style="width: 100%;"for="id_fecha">Hora de Entrada:</label><input type="text" name="fecha" id="fecha" class="form-control datetimepicker-input" data-target="#datetimepicker1"><input type="hidden" name="initial-fecha" id="initial-id_fecha"><div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div></div></div>' );
+
+        $('input[name="fecha_salida"]').parent().html('<div class="form-group"><div class="input-group date" id="datetimepicker2" data-target-input="nearest"><label style="width: 100%;"for="id_fecha_salida">Hora de Salida:</label><input type="text" name="fecha_salida" id="fecha_salida" class="form-control datetimepicker-input" data-target="#datetimepicker2"><input type="hidden" name="initial-fecha_salida" id="initial-id_fecha_salida"><div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div></div></div>' );
+        // Binding of DATETIMEPIKER  to  wrap 
+        $('#datetimepicker1, #datetimepicker2').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm',
+            defaultDate: new Date()
+        });				
+        // Reassigning values for DATETIMEPICKER input wrap        
+        $('#id_fecha').val(fecha);
+        $('#initial-id_fecha').val(fecha);
+        $('#id_fecha_salida').val(fecha_salida);
+        $('#initial-id_fecha_salida').val(fecha_salida);
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

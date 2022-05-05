@@ -1,0 +1,18 @@
+{% load static %}
+<!-- Smooth scroll bar for DOM elements  -->
+<script src="{% static 'core/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+<script>    
+    const pr = new PerfectScrollbar('.scrollbar-sidebar', {
+        wheelSpeed: 2,
+        wheelPropagation: true,
+        minScrollbarLength: 20
+    });
+   // setTimeout(function(){ 
+     //   const ps = new PerfectScrollbar('.scroll_wrapper', {
+      //  wheelSpeed: 2,
+       // wheelPropagation: true,
+        //minScrollbarLength: 20
+    //}); }, 8000);
+
+    
+</script>

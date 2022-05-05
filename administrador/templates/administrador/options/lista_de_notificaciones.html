@@ -1,0 +1,37 @@
+{% load static %}
+{% for n in notificaciones %}
+<div class="vertical-time-simple vertical-without-time vertical-timeline vertical-timeline--one-column">
+                                                        
+	<div class="vertical-timeline-item dot-danger vertical-timeline-element">
+		<div><span class="vertical-timeline-element-icon bounce-in"></span>
+			<div class="vertical-timeline-element-content bounce-in">
+			  
+				
+				<div class="timeline-title bgp-color-negro">{{n.titulo}} | {{ n.fecha|date:"SHORT_DATE_FORMAT" }}  <b>{{n.fecha|time:"H:i"}}</b></div>
+                {% if n.idproblema == None %}
+                    <p class="bgp-color-azul size14">{{n.mensaje}}</p>
+                {% else %}
+                    {% if n.modelo == "Movimiento" %}
+                        <a class="bgp-color-azul size14" href="{% url 'ddmanagement:home' %}" target="_blank">{{ n.mensaje }}</a>
+                    {% elif n.modelo == "EstadoFuerza" %}
+                        <a class="bgp-color-azul size14" href="{% url 'analytics:estados_fuerza' %}" target="_blank">{{n.mensaje}}</a>
+                    {% elif n.modelo == "Incidentes" %}
+                        <a class="bgp-color-azul size14" href="{% url 'administrador:admin_incidentes_servicio_detalle' n.idproblema %}" target="_blank">{{ n.mensaje}}</a>
+                    {% elif n.modelo == "RondinHecho" %}
+                        <a class="bgp-color-azul size14" href="{% url 'analytics:rondinhecho_detalle' n.idproblema %}" target="_blank">{{n.mensaje}}</a>
+                    {% elif n.modelo == "Papeleta" %}
+                        <a class="bgp-color-azul size14" href="{% url 'arnes:detail_papeleta' n.idproblema %}" target="_blank">{{n.mensaje}}</a>
+                    {% else %}
+                        <p class="bgp-color-azul size14">{{n.mensaje}}</p>
+                    {% endif %}
+                {% endif %}
+				<span class="vertical-timeline-element-date"></span>
+			</div>
+		</div>
+	</div>
+																   
+</div>
+{% empty %}
+    <p class="size24 text-center" style="line-height: 40px;">No hay nuevas notificaciones.</p>
+{% endfor %}           
+<!-- por dia -->

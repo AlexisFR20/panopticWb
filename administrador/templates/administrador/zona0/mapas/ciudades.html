@@ -1,0 +1,173 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }  
+
+        .sw>.tab-content {
+            height: auto !important;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/smartwizard@5.0.0/dist/css/smart_wizard_all.min.css" rel="stylesheet" type="text/css" />
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-chart-bar size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ZONA 0 &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Ciudades
+                <div class="admin-page-title-subheading">
+                   Crear Registro de una Ciudad
+                </div>
+            </div>
+        </div> 
+	
+		{% comment %}
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Zona 0</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{%  url 'administrador:admin_visitantes_index' %}"> Registro de Visitante</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Crear
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+		{% endcomment %}
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Ciudades
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+               
+				<div class="row m-3">
+				<div class="col-md-8">
+				<table id="tbl-ciudades" class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th>Ciudades registradas</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for c in ciudades %}
+							<tr>	
+								<td>{{c.nombre}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				</div>
+				<div class="col-md-4" style="display: block;">
+					<div style="display: block; text-align: center;">
+						<h4>Agregar ciudad</h4>
+						<input id="inp-ciudad" type="text" class="form-control" placeholder="Nombre de la ciudad" aria-label="Ciudad">
+						<button id="btn-ciudad" type="button" class="btn btn-primary" style="float: right; top: 5px;">Registrar</button>
+					</div>
+				</div>
+				</div>
+				{% comment %} 
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form action="" method="post">
+                            {% csrf_token %}                
+                                            
+                            <!-- Formulario Wizard-->
+                            </div>
+                            <!-- Formulario Wizard -->
+                        </form>   
+                    </div>
+                </div>
+                <br><br>              
+                {% endcomment %}
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- JavaScript Wizard -->
+<script src="https://cdn.jsdelivr.net/npm/smartwizard@5.0.0/dist/js/jquery.smartWizard.min.js" type="text/javascript"></script>
+<!-- Ends to include JS list -->
+
+<script type="text/javascript">
+	$(document).ready(function(){
+    	$("#tbl-ciudades").DataTable({
+			"pageLength": 10
+		});
+			
+		const addCity = () => {
+			if($("#inp-ciudad").val() === ""){
+				alert("Ingresa el nombre de la ciudad");
+			}else{
+				$.ajax({
+					type: "POST",
+					headers: {
+						"X-CSRFToken": '{{csrf_token}}'
+					},
+					data: { "ciudad": $("#inp-ciudad").val()},
+					success: function(msg){
+						alert("Ciudad agregada con éxito");
+					}
+				});
+			}
+		}
+		
+		$("#btn-ciudad").click(addCity);
+	});
+</script>
+
+<!-- Ends to include JS list -->
+{% endblock js %}

@@ -1,0 +1,211 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }        
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>PREDICTIVE ANALYTICS &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Incidentes de servicio
+                <div class="admin-page-title-subheading">
+                   Historial
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Predictive Analytics</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Incidentes de servicio</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Historial
+                            </li>
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>        
+    </div>
+</div>                                
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-9 col-xl-9">
+        <div class="mb-3 card">
+            
+            
+        </div>
+    </div> 
+</div> 
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Historial 
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}                                               
+                
+                <!--  Data Table Start -->
+                <table id="tbl-lista" class="table table-striped table-bordered dt-responsive "  style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Planta</th>
+                            <th>Fecha</th>
+                            <th>Guardia</th>
+                            <th>Nota</th>
+                            <th>Evidencia</th>
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for incidente in incidentes %}
+                        <tr>
+                            <td>{{ incidente.id }}</td>
+                            <td>{{ incidente.planta }}</td>
+                            <td>{{ incidente.fechaformateada }}</td> 
+                            <td>{{ incidente.guardia | upper }}</td>
+                            <td>{{ incidente.nota }}</td>
+                            <td align="center">{% if incidente.evidencia %} <a href="{{incidente.evidencia.url}}" target="evidencia">
+                                {% if '.jpg' in incidente.evidencia.name or '.png' in incidente.evidencia.name %}
+                                    <img src="{{incidente.evidencia.url}}" height="60px">
+                                {% else %}
+                                    {{incidente.evidencia.name}}
+                                {% endif %}
+                            </a> {% endif %}</td>
+                            
+                        </tr> 
+                        {% endfor %}     
+                    </tbody>   
+                    <tfoot>
+                        <tr>
+                            <th>Id</th>
+                            <th>Planta</th>
+                            <th>Fecha</th>
+                            <th>Guardia</th>
+                            <th>Nota</th>
+                            <th>Evidencia</th>
+
+                        </tr>
+                    </tfoot>                       
+                </table>        
+                <!-- Data Table End -->
+                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.flash.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/1.6.3/js/buttons.print.min.js"></script>
+
+<script>
+    jQuery(document).ready(function() {
+
+        var groupColumn = 1;
+        var table = $('#tbl-lista').DataTable({
+            "columnDefs": [
+                { "visible": false, "targets": groupColumn }
+            ],
+            "order": [[ groupColumn, 'asc' ]],
+            "displayLength": 20,
+            dom: 'Bfrtip',
+            buttons: [
+            {
+                extend: 'excelHtml5',
+                title: 'Incidentes de servicio historial'
+            },
+            {
+                extend: 'pdfHtml5',
+                title: 'Incidentes de servicio historial'
+            }], 
+            "drawCallback": function ( settings ) {
+                var api = this.api();
+                var rows = api.rows( {page:'current'} ).nodes();
+                var last=null;
+    
+                api.column(groupColumn, {page:'current'} ).data().each( function ( group, i ) {
+                    if ( last !== group ) {
+                        $(rows).eq( i ).before(
+                            '<tr class="group"><td colspan="7">'+group+'</td></tr>'
+                        );
+    
+                        last = group;
+                    }
+                } );
+            },
+            "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            }
+        });
+
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

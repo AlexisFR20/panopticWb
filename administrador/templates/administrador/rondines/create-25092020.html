@@ -1,0 +1,982 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */       
+        #geomap_rondin {
+		    width: 100%;
+		    height: 400px;
+		}
+        #ui-id-1 {
+            display:block !important;
+            z-index: 9999;
+            cursor: pointer;
+        }        
+        .wickedpicker{z-index: 9999;}
+        .custom{ 
+         display:flex; flex-direction: column;
+
+        }
+        .custom2{
+            
+             margin:0;   
+            
+        }
+     
+        
+
+/*766*/
+        @media (min-width: 764px) {
+            .custom{  
+            
+            display:flex;
+            flex-direction: row!important; 
+            }
+            .custom2{
+                
+            }
+            .custom3{
+
+        }
+
+
+}
+    </style>        
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">                
+                <i class="fas fa-plus-circle size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Rondines &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Crear Rondín
+                <div class="admin-page-title-subheading">
+                    Crear Rondín
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Rondines</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Crear Rondín</a>
+                            </li>                            
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>    
+    </div>
+</div>    
+
+
+
+
+
+<div class="row">
+            {% if  messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+           {% endfor %}
+        {% endif %} 
+        <div id="msg-punto-success" class="alert alert-danger" role="alert" style="display: none">
+            Punto(s) editados exitosamente en rondin            
+        </div>        
+        <div id="msg-punto-success" class="alert alert-success" role="alert" style="display: none">
+            Punto(s) editados exitosamente en rondin            
+        </div>
+</div>
+
+
+
+<div class="custom " style="">        
+    <div>             
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">
+                    <i class="cardhead pe-7s-lintern size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Crear Nuevo Rondín
+                </div>                
+            </div>           
+                
+            <div class="card-body"><!-- style="position: relative;">-->
+                <div class="main-card card">
+                    <div class="card-body minHeightBlock">
+                        <div class="container">
+                            <!-- Forma para crear rondin -->
+                            <form class="custom3" id="frm-crear-rondin" action="{% url 'administrador:admin_rondines_rondin_create' %}" role="form" method="POST"> 
+                                {% csrf_token %}                                                         
+                                <div class="row">
+                                    
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <!-- Nombre de Rondín -->
+                                        <div class="form-group">
+                                            <label>Nombre de Rondín</label>
+                                            <input data-validation="length" data-validation-length="8-50" type="text" id="nombre" name="nombre" class="form-control mostrar" placeholder="Escriba un nombre corto para el rondín"  data-validation="required">
+                                        </div>
+
+                                        <!-- Lista de Guardias en la Organización-->
+                                        <div class="position-relative form-group">
+                                            <label for="admin_aguilas" class="">Seleccione un Guardía</label>
+                                            <select id="admin_aguilas" name="admin_aguilas" class="form-control mostrar selector" data-validation="required">
+                                                <option value="" >-- Seleccione un Guardía -- </option>                                   
+                                                {% for guardia in guardias %}}
+                                                <option value="{{ guardia.id }}">{{ guardia.first_name }} {{ guardia.last_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Selección de cliente -->                                          
+                                        <div class="position-relative form-group"><label for="cliente" class="">Seleccione el cliente asociado</label>
+                                            <select id="cliente" name="cliente" class="form-control mostrar selector" data-validation="required">
+                                            <option value="" >-- Seleccione el cliente -- </option>
+                                            {% for cliente in clientes.all %}                                                   
+                                                    <option value="{{ cliente.id }}">{{ cliente }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Selección de Unidad de Negocio por cliente para el usuario -->                                          
+                                        <div class="position-relative form-group">
+                                            <label for="planta" class="">Seleccione la Unidad de Negocio asociada</label>
+                                            <select name="planta" id="planta" class="form-control mostrar selector" data-validation="required">
+                                            <option value="" >-- Seleccione Unidad de Negocio -- </option>
+                                            {% for planta in plantas.all %}
+                                                <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">    
+                                        <!-- Tiempo Estimado para Rondín-->
+                                        <div class="position-relative form-group">
+                                                <label for="tiempo_estimado" class="">Tiempo Estimado</label>
+                                                <select id="tiempo_estimado" name="tiempo_estimado" class="form-control mostrar selector" data-validation="required">
+                                                <option value="" >-- Seleccione tiempo -- </option>                                                                       
+                                                        <option value="30">30 minutos</option>
+                                                        <option value="45">45 minutos</option>
+                                                        <option value="60">60 minutos</option>
+                                                        <option value="90">90 minutos</option>
+                                                        <option value="120">120 minutos</option>
+                                                        <option value="150">150 minutos</option>
+                                                </select>
+                                        </div>                                             
+
+                                        <!-- Correos de contacto -->
+                                        <div class="position-relative form-group">
+                                            <div class="emailtag">
+                                                <div id="tags">
+                                                    <label for="correos_contacto" class="">Correos de contacto</label>
+                                                    <input type="text" size="8" id="correos_contacto" name="correos_contacto" class="form-control mostrar" />
+                                                </div>
+                                            </div>                                        
+                                        </div>                                    
+                                        
+                                    </div>                                    
+                                    
+                                </div>
+                                <div class="custom2">
+                                    <div class="row custom2">                                        
+                                        <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-rondin-guardar" type="submit" title="Guardar rondín"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Guardar Rondín</span></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Fin de Forma para crear rondin-->
+                        </div>                        
+                    </div>
+                </div>
+                <div class="resize-triggers"><div class="expand-trigger"><div style="width: 502px; height: 432px;"></div></div><div class="contract-trigger"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">                                 
+                    <i class="cardhead fas fa-edit size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Mostrar / editar rondínes
+                </div>                
+                <div id="control-block-tareas" class="btn-actions-pane-right text-capitalize actions-icon-btn" style="display: none;">
+                    <div class="btn-group">
+                        <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn-icon btn-icon-only btn btn-link">
+                            <i class="lnr-cog btn-icon-wrapper bgp-color-verde"></i>
+                        </button>
+                        <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu-right rm-pointers dropdown-menu-shadow dropdown-menu-hover-link dropdown-menu dropdown-menu-right bgp-lima" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(28px, 36px, 0px);">
+                            <h6 tabindex="-1" class="dropdown-header bgp-color-azul" style="margin: 0px;">
+                                Acciones
+                            </h6>
+                            <button id="sub-agregar-tarea" type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon fas fa-tasks"> </i><span>Agregar tarea</span></button>
+                            <button id="sub-listar-tareas" type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon fa fa-list-alt"> </i><span>Listar tareas</span></button>
+                            <button id="sub-listar-rondines" type="button" tabindex="0" class="dropdown-item"><i class="dropdown-icon lnr-book"> </i><span>Listar rondines</span></button>
+                            <!-- <div tabindex="-1" class="dropdown-divider"></div>
+                            <div class="p-1 text-right">
+                                <button class="mr-2 btn-shadow btn-sm btn btn-link">Ver algo</button>
+                                <button class="mr-2 btn-shadow btn-sm btn btn-primary">Acción General</button>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>           
+                
+            <div class="card-body" style="position: relative;">
+                <div class="main-card card">
+                    <div class="card-body minHeightBlock" style="padding-top: 28px;">
+                        <div id="filtros_rondin">
+                            <!--Se selecciona la planta para motrar los rondines respectivos-->
+                            <div class="position-relative form-group">
+                                <label for="planta" class="">Seleccione la Unidad de Negocio asociada</label>
+                                <select name="planta_rondines" id="planta_rondines" class="form-control" data-validation="required">                                
+                                <option value="" >-- Seleccione Unidad de Negocio -- </option>
+                                {% for planta in plantas.all %}
+                                    <option value="{{ planta.id }}">{{ planta }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="btn-rondines-contenedor">
+
+                            <div class="scroll-area-sm" style="height: 264px;">
+                                <div class="scrollbar-container ps ps--active-y">
+                                    <div class="p-3">                                        
+                            
+                                        <div id="un_original">  
+                                            {% for rondin in rondines %}
+                                                <button id="{{ rondin.id }}" class="mb-2 mr-2 btn btn-primary btn-lg btn-block size16 mayus block-edit-rondines btn-click-rondin btn-txt-left">                                 
+                                                <div class="left-ico">                                        
+                                                    <i class="fas fa-qrcode btn-icon-wrapper size32"> </i>     
+                                                </div>
+                                                <div class="right-desc">
+                                                    {{ rondin.nombre }} <br> <span class="smaller"?>{{ rondin.planta }}</span>
+                                                </div>                                                                
+                                            </button>                      
+                                            {% endfor %}            
+                                        </div> <!-- Fin de un_original -->    
+                                        
+                                        <div id="un_load" style="display: none;">
+
+                                        </div>
+
+                                    </div>
+                                <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px; height: 200px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 99px;"></div></div></div>
+                            </div>
+                            <br>                
+                        </div>
+                        
+                        <div id="edicion-de-rondin-contenedor" style="display: none;">
+                            <!-- Forma para crear rondin -->
+                            <form id="frm-edicion-rondin" action="{% url 'administrador:admin_rondines_rondin_block_edit' rondin_id=rondin_id %}" role="form" method="POST"> 
+                                {% csrf_token %}                                                         
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <!-- Nombre de Rondín -->
+                                        <div class="form-group">
+                                            <label>Nombre de Rondín</label>
+                                            <input data-validation="length" data-validation-length="8-50" type="text" id="nombre" name="nombre" class="form-control mostrar" placeholder="Escriba un nombre corto para el rondín"  data-validation="required">
+                                        </div>
+
+                                        <!-- Lista de Guardias en la Organización-->
+                                        <div class="position-relative form-group">
+                                            <label for="admin_aguilas" class="">Seleccione un Guardía</label>
+                                            <select id="admin_aguilas" name="admin_aguilas" class="form-control mostrar selector" data-validation="required">
+                                                <option value="" >-- Seleccione un Guardía -- </option>                                   
+                                                {% for guardia in guardias %}}
+                                                <option value="{{ guardia.id }}">{{ guardia.first_name }} {{ guardia.last_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Selección de cliente -->                                          
+                                        <div class="position-relative form-group"><label for="cliente" class="">Seleccione el cliente asociado</label>
+                                            <select id="cliente" name="cliente" class="form-control mostrar selector clienteSel" data-validation="required">
+                                            <option value="" >-- Seleccione el cliente -- </option>
+                                            {% for cliente in clientes.all %}                                                   
+                                                    <option value="{{ cliente.id }}">{{ cliente }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Selección de Unidad de Negocio por cliente para el usuario -->                                          
+                                        <div class="position-relative form-group">
+                                            <label for="planta" class="">Seleccione la Unidad de Negocio asociada</label>
+                                            <select name="planta" id="planta" class="form-control mostrar selector plantaSel" data-validation="required">
+                                            <option value="" >-- Seleccione Unidad de Negocio -- </option>
+                                            {% for planta in plantas.all %}
+                                                <option value="{{ planta.id }}" data-cliente-id-sel="{{ planta.cliente_id }}" >{{ planta }}</option>
+                                            {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">    
+                                        <!-- Tiempo Estimado para Rondín-->
+                                        <div class="position-relative form-group">
+                                                <label for="tiempo_estimado" class="">Tiempo Estimado</label>
+                                                <select id="tiempo_estimado" name="tiempo_estimado" class="form-control mostrar selector" data-validation="required">
+                                                <option value="" >-- Seleccione tiempo -- </option>                                                                       
+                                                        <option value="30">30 minutos</option>
+                                                        <option value="45">45 minutos</option>
+                                                        <option value="60">60 minutos</option>
+                                                        <option value="90">90 minutos</option>
+                                                        <option value="120">120 minutos</option>
+                                                        <option value="150">150 minutos</option>
+                                                </select>
+                                        </div>                                             
+
+                                        <!-- Correos de contacto -->
+                                        <div class="position-relative form-group">                                          
+                                            <label for="correos_contacto" class="">Correos de contacto</label>    
+                                            
+                                            <div class="scroll-area-sm" style="height: 202px;">
+                                                <div class="scrollbar-container ps ps--active-y">
+                                                    <div class="emailtag">
+                                                        <div id="tags">
+                                                            <input type="text" id="correos_contacto" name="correos_contacto" class="form-control mostrar" />
+                                                        </div>
+                                                    </div>                                                          
+                                                <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px; height: 200px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 99px;"></div></div></div>
+                                            </div>
+                                        </div>                                            
+                                    </div>
+
+                                </div>
+                                <div class="position-absolute">
+                                    <div class="row">   
+                                        <button class="pair-panel-button btn-icon-vertical btn-transition btn btn-outline-default" id="btn-rondin-cancelar" type="button" title="Cancelar"><i class="fas fa-times-circle  btn-icon-wrapper"></i> </i><span>Cancelar</span></button>
+                                        <button class="pair-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-rondin-actualizar" type="submit" title="Guardar rondín"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Actualizar Rondín</span></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Fin de Forma para crear rondin-->
+                        </div> <!-- Fin de edición de rondin contenedor -->
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">                                        
+                    <i class="cardhead fas fa-tasks size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Agregar puntos a rondín &nbsp;<span id="rondin-seleccionado-nombre" class="bgp-color-naranja"></span>
+                </div>                
+            </div>           
+                
+            <div class="card-body" style="position: relative;">
+                <div class="main-card card">
+                    <div class="card-body minHeightBlock" >                        
+
+                        <div id="crear-punto-contenedor" style="display: none;">
+
+                            <div id="scroll_puntos" class="scroll-area-sm" style="height: 400px;">
+                                <div class="scrollbar-container ps ps--active-y">
+                                    <div id="listar-puntos" class="listar-puntos">
+                                                    
+                                    </div>
+                                <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px; height: 200px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 99px;"></div></div></div>
+                            </div>
+
+                            <!-- Forma para crear punto en rondin selecto -->
+                            <form id="frm-crear-punto" role="form" style="display: none"> 
+                                {% csrf_token %}                                                         
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                                                           
+                                       <!-- Campos relacionado al punto del rondin -->
+                                       <div class="mb-2 mr-2 position-relative form-group">
+                                            &emsp;&emsp;
+                                            <div class="mb-2 mr-2 badge badge-pill badge-primary">Orden</div>
+                                            &emsp;
+                                            <div class="mb-2 mr-2 badge badge-pill badge-secondary">Descripción de Punto</div>
+
+                                            <div class="scroll-area-sm" style="height: 380px;">
+                                                <div class="scrollbar-container ps ps--active-y">
+                                                    <!-- Contenido de Scroll -->                                                     
+                                                    <ul id="puntosrondines">
+                                                        <li class="base" id="" style="display: none">
+                                                            <i class="fas fa-qrcode size24 bgp-color-negro"> </i>                                                           
+                                                            <span>Punto</span>
+                                                            <div class="punto-pill mb-2 mr-2 badge badge-pill badge-primary">7</div>
+                                                            <input class="escondido" size="3" type="text" name="" id="" value="10">                                  
+                                                            <input size="25" type="text" name="" id="" value="">
+                                                            <a href="#" title="Borrar punto" class="btn btn-outline-danger text-center btn-punto-delete" onclick="return confirm('¿Está seguro de borrar éste punto?') && DeleteMarker(id, simpleId)"><i class="fas fa-trash-alt size16 "></i></a>
+                                                        </li>
+                                                    </ul>
+                                                    <!-- Fin de Contenido de Scroll -->                     
+                                                <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px; height: 200px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 99px;"></div></div></div>
+                                            </div>
+
+                                        </div>    
+                                    </div>
+                                </div>
+                                <div class="position-absolute">
+                                    <div class="row">                                       
+                                        <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-crear-puntos-final" type="submit" title="Guardar rondín"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Crear Punto(s)</span></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Fin de Forma para crear puntos en rondin selecto-->
+                            
+                            
+                            <div class="position-absolute" id="row-puntos_crearmod">
+                                <div class="row">                                     
+                                    <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-puntos-crearmod" type="submit" title="Guardar rondín"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Crear / Modificar Puntos</span></button>
+                                </div>
+                            </div>                            
+                            
+                        </div> <!-- Fin de crear-tarea-contenedor -->
+                        <div id="block-punto-logo" class="block-logo text-center">
+                            <p class="size32" style="line-height: 40px;">Seleccione rondín para editar</p>
+                            <img src="{% static 'core/assets/images/logo-panoptic-black.png' %}" class="img-fluid" alt="Logo Grupo Aguilas">                            
+                        </div>                            
+                        <!-- <div class="block-tareas" style="display: none">
+                            <button class="mb-2 mr-2 btn-pill btn btn-warning btn-lg btn-block size18"> Tareas / Notas...           </button>                      
+                        </div> -->
+                    </div> 
+                </div>                
+            </div>
+        </div>
+    </div>
+</div> <!--  end of row -->  
+
+<div class="row">  
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">                                        
+                    <i class="cardhead fas fa-tasks size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Agregar tareas a rondín &nbsp;<span id="rondin-seleccionado-nombre" class="bgp-color-naranja"></span>
+                </div>                
+            </div>           
+                
+            <div class="card-body" style="position: relative;">
+                <div class="main-card card">
+                    <div class="card-body minHeightBlock" >                       
+                        
+                        <div id="crear-tarea-contenedor" style="display: none;">
+
+                            <div id="scroll_taraes" class="scroll-area-sm" style="height: 400px;">
+                                <div class="scrollbar-container ps ps--active-y">
+                                    <div id="listar-tareas" class="listar-tareas">
+                                                    
+                                    </div>
+                                <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px; height: 200px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 99px;"></div></div></div>
+                            </div>
+
+                             <!-- Forma para crear punto en rondin selecto -->
+                             <form id="frm-crear-tarea" role="form" style="display: none"> 
+                                {% csrf_token %}                                                         
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                                                           
+                                       <!-- Campos relacionado a las tareas del rondin -->
+
+                                       Contenido de forma
+                                       
+                                    </div>
+                                </div>
+                                <div class="position-absolute">
+                                    <div class="row">                                       
+                                        <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-crear-puntos-final" type="submit" title="Crear Tarea(s)"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Crear Tarea(s)</span></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Fin de Forma para crear puntos en rondin selecto-->                            
+                            
+                            <div class="position-absolute" id="row-tareas_crearmod">
+                                <div class="row">                                     
+                                    <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-tareas-crearmod" type="submit" title="Crear / Modificar Tareas"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Crear / Modificar Tareas</span></button>
+                                </div>
+                            </div>          
+
+                        </div>  <!-- Fin de crear-tarea-contenedor -->
+                        
+                        <div id="block-tarea-logo" class="block-logo text-center">
+                            <p class="size32" style="line-height: 40px;">Seleccione rondín para editar</p>
+                            <img src="{% static 'core/assets/images/logo-panoptic-black.png' %}" class="img-fluid" alt="Logo Grupo Aguilas">                            
+                        </div>                      
+
+                    </div>  <!-- Card Body -->
+                </div>                
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">                  
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">                    
+                    <i class="cardhead fas fa-archive size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Evidencias del rondín &nbsp;<span id="rondin-seleccionado-nombre" class="bgp-color-naranja"></span>
+                </div>
+            </div>           
+                
+            <div class="card-body" style="position: relative;">
+                <div class="main-card card">
+                    <div class="card-body minHeightBlock">
+                        
+                        <div id="evidencias-contenedor" style="display: none;">
+
+                            <div id="scroll_taraes" class="scroll-area-sm" style="height: 400px;">
+                                <div class="scrollbar-container ps ps--active-y">
+                                    <div id="listar-evidencias" class="listar-evidencias">
+                                            
+                                    </div>
+                                <div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px; height: 200px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 99px;"></div></div></div>
+                            </div>                                                  
+                            
+                           
+
+                        </div>  <!-- Fin de evidencias-contenedor -->
+                        
+                        <div id="block-evidencias-logo" class="block-logo text-center">
+                            <p class="size32" style="line-height: 40px;">Evidencias de Rondín</p>
+                            <img src="{% static 'core/assets/images/logo-panoptic-black.png' %}" class="img-fluid" alt="Logo Grupo Aguilas">                            
+                        </div>  
+
+                    </div> <!-- Card Body -->
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">      
+                    <i class="cardhead fas fa-street-view size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Mapa de Rondines y Puntos
+                </div>                
+            </div>           
+                
+            <div class="card-body" style="position: relative;">
+                <div class="main-card card">
+                    <div class="card-body minHeightBlock" style="padding-top: 28px;">                    
+                        <div id="geomap_cover_rondin"></div>                        
+                            <div id="geomap_rondin" data-planta-gps-lat="0" data-planta-gps-lng="0" style="display: none;"></div>                        
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+</div> <!--  end of row -->  
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    $(document).ready(function() {
+
+         // Validación de forma
+        $.validate({
+            lang: 'es',
+            borderColorOnError : '#9D292A',
+            addValidClassOnAll : true,
+            modules : 'security, file', 
+        });          
+
+        $('#btn-rondin-guardar').click(function(e) {
+            e.preventDefault();
+            var allspan='';
+            var hasta = $( "form#frm-crear-rondin #tags span.emailAdd" ).length -1;
+            $( "form#frm-crear-rondin #tags span.emailAdd" ).each(function( index ) {                
+                allspan = allspan + $(this).text();                
+                if (index != hasta) allspan = allspan + ',';
+            });
+            //console.log(allspan);
+            $('form#frm-crear-rondin input#correos_contacto').val(allspan);
+            $('form#frm-crear-rondin input#correos_contacto').text(allspan);
+            $('form#frm-crear-rondin').submit();
+        });
+
+        $('#btn-rondin-actualizar').click(function(e) {
+            e.preventDefault();
+            var allspanAct='';
+            var hastaAct = $( "form#frm-edicion-rondin #tags span.emailAdd" ).length -1;
+            $( "form#frm-edicion-rondin #tags span.emailAdd" ).each(function( index ) {                
+                allspanAct = allspanAct + $(this).text();                
+                if (index != hastaAct) allspanAct = allspanAct + ',';
+            });
+            //console.log(allspan);
+            $('form#frm-edicion-rondin #correos_contacto').val(allspanAct);
+            $('form#frm-edicion-rondin #correos_contacto').text(allspanAct);
+            $('form#frm-edicion-rondin').submit();
+        });
+        
+        $(document).on('click', '#btn-rondin-cancelar', function(){            
+            // Panel de Rondin
+            $('form#frm-edicion-rondin').hide();
+            $('#btn-rondines-contenedor').show();
+            // Panel de Puntos
+            $('div#crear-punto-contenedor').hide();   
+            $('div#block-punto-logo').show();   
+            // Panel de Puntos            
+            $('div#crear-tarea-contenedor').hide();   
+            $('div#block-tarea-logo').show();   
+            // Panel de Evidencias            
+            $('div#evidencias-contenedor').hide();   
+            $('div#block-evidencias-logo').show();   
+            // Panel de Mapa
+            $('div#geomap_rondin').hide();
+            $('div#geomap_cover_rondin').show();
+            // Se quita el nombre del rondín si se cancela
+            $('span#rondin-seleccionado-nombre').text('');
+            // Se quita el id del rondin en la lista de puntos
+            $('#listar-puntos').attr('rondin-id', 0);
+            $('#listar-tareas').attr('rondin-id', 0);
+            $('#listar-evidencias').attr('rondin-id', 0);
+        });
+        
+        $(document).on('click', '#btn-puntos-crearmod', function(){            
+            // Panel de Puntos
+            $('div#scroll_puntos').hide();
+            $('form#frm-crear-punto').show();
+            $('div#row-puntos_crearmod').hide();
+            // Panel de Mapa            
+            $('div#geomap_cover_rondin').hide();
+            $('div#geomap_rondin').show();               
+        });
+        
+        $(document).on('click', '#btn-crear-puntos-final', function(e){            
+            // Guarda puntos en rondín asociado
+            e.preventDefault();            
+            // Se ejecuta al haber presionado el botón de #btn-crear-puntos-final
+            savePoints();     
+            
+        });
+
+        $(document).on('click', '.btn-click-rondin', function(){            
+            // Panel de Rondin
+            $('form#frm-edicion-rondin').show();             
+             $('div#control-block-tareas').show();   //  GEAR icon
+            // Panel de Puntos            
+            $('div#crear-punto-contenedor').show();   
+            $('div#block-punto-logo').hide();               
+            // Panel de Tareas
+            $('div#crear-tarea-contenedor').show();   
+            $('div#block-tarea-logo').hide();               
+            // Panel de Evidencias
+            $('div#evidencias-contenedor').show();   
+            $('div#block-evidencias-logo').hide();   
+            
+
+                 
+                        
+            var rondin_id = $(this).attr('id');
+            if (rondin_id > 0) {
+                $('#btn-rondines-contenedor').hide();
+                $('#edicion-de-rondin-contenedor').show();
+                $('#frm-edicion-rondin').attr('action', '/backstage/rondines/rondin/editar/' + rondin_id);
+
+                jQuery.get({                       // initialize an AJAX request
+                    url: '/backstage/ajax/ajax_load_rondin',
+                    data: {
+                        'rondin_id': rondin_id   
+                    },
+                    success: function (data) {                           
+                        // Llenado de datos en Forma de edición de rondin
+                        $('form#frm-edicion-rondin input#nombre').val(data.nombre);
+                        $('form#frm-edicion-rondin select#admin_aguilas').val(data.admin_aguilas);
+                        $('form#frm-edicion-rondin select#cliente').val(data.cliente_id);
+                        $('form#frm-edicion-rondin select#planta').val(data.planta_id);
+                        $('form#frm-edicion-rondin select#tiempo_estimado').val(data.tiempo_estimado);
+
+                        // Envio de datos de rondin a panel de tareas
+                        $('span#rondin-seleccionado-nombre').text(data.nombre);
+                        // Envio de datos de rondin a panel de mapa                        
+                        $('div#geomap_rondin').attr('data-planta-gps-lat', data.lat)
+                        $('div#geomap_rondin').attr('data-planta-gps-lng', data.lng)
+
+                        var str = data.correos_contacto;
+                        if (str != '') {                        
+                            var arrCorreosContacto = str.split(',');
+                            var i;
+                            for (i = 0; i < arrCorreosContacto.length; i++) {   
+                                $('<span class="emailAdd" tabindex="1">' + arrCorreosContacto[i] + '</span>').insertBefore('form#frm-edicion-rondin div.emailtag div#tags input');
+                            }                        
+                        }
+                    }
+                }); // fin de AJAX       
+                
+                jQuery.get({  // Obtiene los rondines de la planta selecta
+                    url: '/backstage/ajax/ajax_load_puntos_de_rondin',
+                    data: {
+                        'rondin_id': rondin_id   
+                    },
+                    success: function (data) {                                 
+                        $('#listar-puntos').html(data);
+                        $('#listar-puntos').attr('rondin-id', rondin_id);
+                        // Inicia Google Maps
+                        initialize();                         
+                    }
+                }); // fin de AJAX  
+
+                jQuery.get({  // Obtiene las tareas de la planta selecta
+                    url: '/backstage/ajax/ajax_load_tareas_de_rondin',
+                    data: {
+                        'rondin_id': rondin_id   
+                    },
+                    success: function (data) {                                 
+                        $('#listar-tareas').html(data);
+                        $('#listar-tareas').attr('rondin-id', rondin_id);                           
+                        $("span.tasks").each(function() {
+                            var t = $(this).text().split(',');                            
+                            var tSize = t.length; var checkStr='';
+                            for (var i = 0; i < tSize; i++) {                                
+                                var myval = t[i];
+                                checkStr = checkStr + '&emsp;<i class="fas fa-check"></i> &nbsp;' + myval.trim() + '<br/>';        
+                            }
+                            $(this).html(checkStr);                            
+                         });                         
+                    }
+                }); // fin de AJAX  
+
+                jQuery.get({  // Obtiene las evidencias del rondin
+                    url: '/backstage/ajax/ajax_load_evidencias_de_rondin',
+                    data: {
+                        'rondin_id': rondin_id   
+                    },
+                    success: function (data) {                                 
+                        $('#listar-evidencias').html(data);
+                        $('#listar-evidencias').attr('rondin-id', rondin_id);  
+                    }
+                }); // fin de AJAX  
+
+            }
+        });     
+        
+        $('#sub-agregar-tarea').click(function() {            
+            $('div#block-tarea-logo').hide();            
+            $('div#crear-tarea-contenedor').show();
+            $('span#rondin-seleccionado-nombre').text('Aqui va el nombre');
+        });
+        
+        $('#sub-listar-tareas').click(function() {
+            console.log('Listando tareas de rondin seleccionado');
+        });
+        
+        $('#sub-listar-rondines').click(function() {
+            $('form#frm-edicion-rondin').hide();
+
+            $('div#crear-punto-contenedor').hide();   
+            $('div#block-punto-logo').show();   
+
+            $('div#geomap_rondin').hide();
+            $('div#geomap_cover_rondin').show();
+
+            $('div#control-block-tareas').hide();
+            $('div#btn-rondines-contenedor').show();
+            $('span#rondin-seleccionado-nombre').text('<seleccione rondín>');
+        });     
+
+        $('input[name="date_joined"]').datepicker({
+            format: 'mm/dd/yyyy',
+            language: 'es'
+        });
+
+        var options = {
+            //now: "12:35", //hh:mm 24 hour format only, defaults to current time
+            twentyFour: false,  //Display 24 hour format, defaults to false
+            upArrow: 'wickedpicker__controls__control-up',  //The up arrow class selector to use, for custom CSS
+            downArrow: 'wickedpicker__controls__control-down', //The down arrow class selector to use, for custom CSS
+            close: 'wickedpicker__close', //The close class selector to use, for custom CSS
+            hoverState: 'hover-state', //The hover state class to use, for custom CSS
+            title: 'Seleccione una Hora', //The Wickedpicker's title,
+            showSeconds: false, //Whether or not to show seconds,
+            timeSeparator: ' : ', // The string to put in between hours and minutes (and seconds)
+            secondsInterval: 1, //Change interval for seconds, defaults to 1,
+            minutesInterval: 1, //Change interval for minutes, defaults to 1
+            beforeShow: null, //A function to be called before the Wickedpicker is shown
+            afterShow: null, //A function to be called after the Wickedpicker is closed/hidden
+            show: null, //A function to be called when the Wickedpicker is shown
+            clearable: false, //Make the picker's input clearable (has clickable "x")
+        };
+        $('#hour_joined').wickedpicker(options);
+
+        /*$('input[name="hour_joined"]').datetimepicker({
+            format: 'HH:mm'
+        });*/
+
+        /*$('input[name="alta_rondin"]').val(today);
+        $('#alta_rondin').attr("data-date", moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+
+        $("#alta_rondin").on("change", function() {        
+            $('#alta_rondin_real').attr("data-date", moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+            $('#alta_rondin_real').val( moment( $('#alta_rondin').val() ).format("YYYY-MM-DD HH:mm") );
+             $('#hour_joined').val( moment( $('#alta_rondin_real').val() ).format("HH:mm") );
+        }).trigger("change")*/
+
+         // Muestra las unidades de negocio según el cliente seleccionado
+        $('#cliente').on('change', function() {
+            clienteSeleccionado = $("#cliente").val();   
+
+            if ( clienteSeleccionado != 0 ) {
+            $("#planta option").each(function() {               
+                var elSeleccionado =  $(this).val();
+                
+                if (  $(this).attr('data-cliente-id') == clienteSeleccionado) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }            
+            });         
+            } else {
+            $('[name="planta"]').val('0').change();
+                $("#planta option").show();
+            }         
+        }); 
+
+        $('.clienteSel').on('change', function() {
+            
+            clienteSeleccionadoSel = $(".clienteSel").val();               
+
+            if ( clienteSeleccionadoSel != 0 ) {
+                $(".plantaSel option").each(function() {               
+                    var elListado =  $(this).attr('data-cliente-id-sel');                    
+                    
+                    if (  clienteSeleccionadoSel == elListado) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }            
+                });         
+            } else {
+            $('.plantaSel').val('0').change();
+                $(".plantaSel option").show();
+            }         
+        }); 
+
+        $('select#planta_rondines').on('change', function() {
+            var planta_sel_id = $(this).val();            
+
+            jQuery.get({  // Obtiene los rondines de la planta selecta
+                url: '/backstage/ajax/ajax_load_rondines_de_planta',
+                data: {
+                    'planta_id': planta_sel_id   
+                },
+                success: function (data) {                           
+                    $('div#un_original').hide();
+                    $('div#un_load').show();
+                    $('div#btn-rondines-contenedor').show();                    
+                    $('form#frm-edicion-rondin').hide();                    
+                    $('div#un_load').html(data);                         
+                }
+            }); // fin de AJAX        
+        }); 
+
+        function savePoints() {
+            console.log('Acción de guardar puntos en rondín.');
+            // Quitar puntos asignados a rondín en DB
+            var remRondinId = $('#listar-puntos').attr('rondin-id');
+            if ( Number(remRondinId) == 0 ) {
+                // Sin rondin asignado
+                alert('No se tiene rondín asociado al punto(s).')
+            } else {
+                // Rondin asignado 
+                // Crea o actualiza los puntos de Rondin modo AJAX
+                $('ul#puntosrondines li').each(function(index) {
+                    if ( ! $(this).hasClass('base') && $(this).find( 'input' ).eq(1).val() != "<Escriba nombre del punto>") {
+                        var add_punto = {
+                            id: $(this).attr('id'),
+                            lat: $(this).attr('lat'),
+                            lng:$(this).attr('lng'),                            
+                            nombre: $(this).find( 'input' ).eq(1).val(),
+                            rondin_id: remRondinId
+                        }                                       
+                        ajaxSaveUpdatePuntos(add_punto);
+                    }
+                });
+            }
+        }
+
+        function ajaxSaveUpdatePuntos(add_punto) {
+            console.log(add_punto);
+            // Llamada AJAX donde add_punto es un objecto con 
+            // los datos para generar registro del punto
+            jQuery.get({                       
+                url: '/backstage/ajax/ajax_agregar_mod_punto',
+                data: {
+                    'punto_id': add_punto.id,
+                    'punto_lat': add_punto.lat,
+                    'punto_lng': add_punto.lng,                    
+                    'punto_nombre': add_punto.nombre,
+                    'punto_rondin_id': add_punto.rondin_id
+                },
+                success: function (data) {                           
+                    console.log(data);
+                    //window.location = "https://www.example.com";
+                    if (data.trim() == 'true') {
+                        $('#msg-punto-success').show();
+                        $('#msg-punto-error').hide();                        
+                    } else {
+                        $('#msg-punto-error').show();
+                        $('#msg-punto-success').hide();
+                    }
+                    setTimeout( window.location.href='/backstage/rondines/rondin/crear', 2000);
+                }
+            }); // fin de AJAX   
+
+            return true;
+        }
+
+        $('input[name="alta_rondin"]').datepicker({
+            format: 'mm/dd/yyyy',
+            language: 'es'
+        });
+
+    });
+</script>
+
+<script>
+    $('.scrollbar-container').each(function () {
+        const ps = new PerfectScrollbar($(this)[0], {
+            wheelSpeed: 2,
+            wheelPropagation: false,
+            minScrollbarLength: 20
+        });
+    });    
+    const ps = new PerfectScrollbar('.scrollbar-sidebar', {
+        wheelSpeed: 2,
+        wheelPropagation: true,
+        minScrollbarLength: 20
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

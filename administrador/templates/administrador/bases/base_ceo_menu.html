@@ -1,0 +1,355 @@
+                        <ul class="vertical-nav-menu">                                                                                                    
+                            <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="{% url 'entorno:zona0' %}">ADMINISTRACIÓN</a></li>  
+                            <li>
+                                <a href="{% url 'administrador:admin_home' %}">                                
+                                    <i class="adminmenuitem fas fa-tachometer-alt" aria-hidden="true"></i>                                    
+                                        INICIO DE CEO                            
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'ceo_global' %}">                                
+                                    <i class="adminmenuitem fas fa-tachometer-alt" style="color: #002F82 !important" aria-hidden="true"></i>                                    
+                                        IR A GENERAL                                    
+                                </a>
+                            </li>
+                            
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-lintern negrita"></i>
+                                    RONDINES
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a href="{% url 'administrador:admin_rondines_resumen' %}">                                              
+                                            <i class="fas fa-tachometer-alt"></i>
+                                            &nbsp;Dashboard                                         
+                                        </a>
+                                    </li>    
+                                    <li>
+                                        <a href="{% url 'administrador:admin_rondines_reportes' %}">                                              
+                                            <i class="fa fa-wpforms" aria-hidden="true"></i>
+                                            &nbsp;Reporte de Rondines 
+                                        </a>
+                                    </li>  
+                                    <li>
+                                        <a href="{% url 'administrador:admin_rondines_rondin_create' %}">                                              
+                                            <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                                            &nbsp;Agregar Rondín
+                                        </a>
+                                    </li>                                    
+                                    <li>
+                                        <a href="{% url 'administrador:admin_rondines' %}">                                              
+                                            <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                            &nbsp;Listado de Rondines                                            
+                                        </a>
+                                    </li>                          
+                                    <li>                                        
+                                        <a href="{% url 'administrador:admin_rondines_qr' %}">                                              
+                                            <i class="fas fa-qrcode" aria-hidden="true"></i>
+                                            &nbsp;Impresi&oacute;n de QR's Rondines                                            
+                                        </a>
+                                    </li>                                                                           
+                                </ul>
+                            </li>                            
+                            <li>
+                                <a href="#">
+                                    <i class="adminmenuitem fa fa-bar-chart-o" aria-hidden="true"></i>                                    
+                                    PREDICTIVE ANALYTICS
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li>                                        
+                                        <a href="{% url 'administrador:admin_predictive_analytics_dashboard' %}">                                              
+                                            <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                                            &nbsp;Dashboard                                            
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">                                            
+                                            <i class="fas fa-truck-moving" aria-hidden="true"></i>
+                                            &nbsp;E/S de Trailers
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:admin_es_trailers_historial' %}">
+                                                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                                    </i>Historial
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>   
+                                    <li>
+                                        <a href="#">                                            
+                                            <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                            &nbsp;Revisión 18 Puntos 
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:admin_18puntos_historial' %}">
+                                                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                                    </i>Historial
+                                                </a>
+                                            </li>                                          
+                                        </ul>
+                                    </li>   
+                                    <li>
+                                        <a href="#">
+                                            <i class="fas fa-user-check" aria-hidden="true"></i>
+                                            &nbsp;Registro de Visitantes
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:visitantes_list' %}">
+                                                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                    </i>Lista
+                                                </a>
+                                            </li> 
+                                            <li>
+                                                <a href="{% url 'administrador:visitantes_create' %}">
+                                                    <i class="fas fa-user-edit" aria-hidden="true"></i>
+                                                    </i>Registrar Visitante
+                                                </a>
+                                            </li>                                            
+                                        </ul>
+                                    </li>
+                                    <li class="escondido">
+                                        <a href="#">
+                                            <i class="fas fa-car" aria-hidden="true"></i>
+                                            &nbsp;Registro de Vehículos
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="escondido">
+                                        <a href="#">
+                                            <i class="fas fa-flask" aria-hidden="true"></i>
+                                            &nbsp;Entrada de Químicos
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                    </li> 
+                                    <li>
+                                        <a href="#">
+                                            <i class="fas fa-box" aria-hidden="true"></i>
+                                            &nbsp;Registro de Paquetería <span class="bgp-color-naranja">*</span>
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:paqueteria_list' %}">
+                                                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                                    </i>Historial
+                                                </a>
+                                                <a href="{% url 'administrador:paqueteria_create' %}">
+                                                    <i class="fas fa-user-edit" aria-hidden="true"></i>
+                                                    </i>Registro de Paquetería
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fas fa-id-card" aria-hidden="true"></i>
+                                            &nbsp;Empleados sin Gafete <span class="bgp-color-naranja">*</span>
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:empleadosg_list' %}">
+                                                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                                    </i>Historial
+                                                </a>
+                                                <a href="{% url 'administrador:empleadosg_create' %}">
+                                                    <i class="fas fa-user-edit" aria-hidden="true"></i>
+                                                    </i>Registro de Emp. sin Gafete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fas fa-hand-paper" aria-hidden="true"></i>
+                                            &nbsp;Registro de Área Restringida <span class="bgp-color-naranja">*</span>
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:area_list' %}">
+                                                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                                    </i>Historial
+                                                </a>
+                                                <a href="{% url 'administrador:area_create' %}">
+                                                    <i class="fas fa-user-edit" aria-hidden="true"></i>
+                                                    </i>Registro de Área Restringida
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fas fa-file-invoice" aria-hidden="true"></i>
+                                            &nbsp;Recibo de Almacén
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:empleadosg_list' %}">
+                                                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                                                    </i>Historial
+                                                </a>
+                                                <a href="{% url 'administrador:empleadosg_create' %}">
+                                                    <i class="fas fa-file-invoice" aria-hidden="true"></i>
+                                                    </i>Registro Recibo de Almacén
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li class="escondido">
+                                        <a href="#">
+                                            <i class="fas fa-toolbox" aria-hidden="true"></i>
+                                            &nbsp;Entrada de equipo
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:admin_entradaequipo_lista' %}">
+                                                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                    </i>Historial
+                                                </a>
+                                            </li>                                            
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="fas fa-truck-moving" aria-hidden="true"></i>
+                                            &nbsp;Incidentes de servicio
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:admin_incidentes_servicio_lista' %}">
+                                                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                    </i>Lista
+                                                </a>
+                                            </li>                                            
+                                        </ul>
+                                    </li>   
+                                    <li>                                        
+                                        <a href="{% url 'administrador:admin_estados_fuerza' %}">                                              
+                                            <i class="fas fa-users-cog" aria-hidden="true"></i>
+                                            &nbsp;Estados de Fuerza                                            
+                                        </a>
+                                    </li> 
+                                    <li>                                        
+                                        <a href="{% url 'administrador:admin_estados_fuerza_create' %}">                                              
+                                            <i class="fas fa-users-cog" aria-hidden="true"></i>
+                                            &nbsp;Registro de Estado de Fuerza                                            
+                                        </a>
+                                    </li>    
+                                    <li>                                        
+                                        <a href="{% url 'administrador:admin_estados_fuerza_cobertura_objetiva' %}">                                              
+                                            <i class="fas fa-users-cog" aria-hidden="true"></i>
+                                            &nbsp;Cobertura Objetiva                                        
+                                        </a>
+                                    </li> 
+                                    <li>
+                                        <a href="#">
+                                        <i class=""></i>
+                                        <i class="fas fa-th-list" aria-hidden="true"></i>
+                                        &nbsp;Categorias de Cursos <span class="bgp-color-naranja">*</span>
+                                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:categoria_curso_list' %}">
+                                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                                </i>Lista
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:categoria_curso_create' %}">
+                                                <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                                                </i>Crear Categoría de Curso <span class="bgp-color-naranja">*</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                        <i class="fas fa-file-contract" aria-hidden="true"></i>
+                                        &nbsp;Cursos <span class="bgp-color-naranja">*</span>
+                                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:curso_list' %}">
+                                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                                </i>Lista
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:curso_create' %}">
+                                                <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                                                </i>Crear Curso
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                        <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                                        &nbsp;Grados <span class="bgp-color-naranja">*</span>
+                                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:grado_list' %}">
+                                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                                </i>Lista
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:grado_create' %}">
+                                                <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                                                </i>Crear Grado
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                        <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
+                                        &nbsp;Capacitación <span class="bgp-color-naranja">*</span>
+                                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="{% url 'administrador:concentracion_list' %}">
+                                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                                </i>Lista
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{% url 'administrador:concentracion_create' %}">
+                                                <i class="fas fa-plus-circle" aria-hidden="true"></i>
+                                                </i>Crear Concentracion
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>                           
+                                </ul>
+                            </li>
+                        </ul>
+                        <br>
+                        <!-- Segmento para apunte de tareas activas en el desarrollo -->
+                        <div class="quote-container escondido">
+                            <i class="pin"></i>
+                            <blockquote class="note yellow">
+                            Generar gráfica de rondines dinámica
+                                <br><a href="{% url 'administrador:admin_rondines_reportes' %}" target="_blank">Ver enlace 1</a>
+                                <!-- <br><a href="{% url 'administrador:admin_estados_fuerza' %}" target="_blank">Ver enlace 2</a> -->
+                                <cite class="author">Dev. Team</cite>
+                            </blockquote>
+                        </div>

@@ -1,0 +1,642 @@
+/* DefiniciÃ³n de tipografÃ­a Diamante */
+@font-face {
+    font-family:'diamante-light';
+    font-style:normal;font-weight:300;
+    src:url(../fonts/diamantexlight-regular.otf);
+}
+
+@font-face {
+    font-family:'diamante-medium-regular';
+    font-style:normal;font-weight:400;
+    src:url(../fonts/diamanteserial-medium.ttf);
+}
+
+@font-face {
+    font-family:'diamante-bold';
+    font-style:normal;font-weight:700;
+    src:url(../fonts/diamanteserial-bold.ttf);
+}
+
+@font-face {
+    font-family:'diamante-extrabold';
+    font-style:normal;font-weight:900;
+    src:url(../fonts/diamanteextrabold-regular.otf);
+}
+
+@font-face {
+    font-family:'diamante-efregular';
+    font-style:normal;font-weight:300;
+    src:url(../fonts/diamanteef-regular.otf);
+}
+
+/* Fin de DefiniciÃ³n de tipografÃ­a Diamante */
+
+/* CSS Carlos Pacheco - IOT Technologies */
+.doubleListColumn {
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+    display: inline-block;
+}
+
+/* CSS JesÃºs Camarillo - IOT Technologies */
+
+body { font-family: 'Roboto', sans-serif; }
+
+.hidden-overflow { overflow: hidden; }
+
+.hover-red: { background-color: rgb(168, 22, 25); }
+
+.slick-slider .slide-img-bg {     
+    background-image: url('../images/originals/sesion-slide-01.jpg');     
+    background-position: center top; 
+    opacity: 1; 
+}
+
+.bg-dark-aguilas {   
+    background: #000000 !important;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to bottom, #434343, #000000) !important;  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to bottom, #434343, #000000) !important; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.scroll-area-xs {
+    height: 204px !important;
+}
+
+#googlemap { height: 100%; }  
+
+.nav-link .nav-link-icon { color: #9D292A !important; }
+
+span.txtCobertura {
+    color: #eb1414;
+    font-size: 64px;
+    position: relative;
+    top: 36px;
+}
+
+span.txtCoberturaOptima {
+    color: green;
+    font-size: 64px;
+    position: relative;
+    top: 36px;
+}
+
+.card-438 { # min-height: 438px; margin-bottom: 0px !important; }
+
+.card-438 .card-header { background-color: rgb(250, 250, 250); }
+
+.card-center-a { display: table; height: 140px; position: relative; overflow: hidden; margin: 0 auto; }
+
+.card-center-b { display: table-cell; vertical-align: middle; font-size: 50px; }
+ 
+.li-sin-borde { border-width: 0px !important; }
+
+.app-header__logo .logo-src { 
+    height: 25px;
+    width: 121px;
+}
+
+.app-sidebar.sidebar-text-light .vertical-nav-menu li a {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+}
+
+.listaAncho19rem { min-width: 19rem !important; }
+
+.listaAncho20rem { min-width: 20rem !important; }
+
+.listaAncho23rem { min-width: 23rem !important; }
+
+.a-derecha { margin-left: auto; }
+
+.popupCustom {
+    background: #f9f9f9;
+    color: #333;
+    /* overflow-x: hidden; */
+}
+.popupCustom img {
+    float: left;
+    margin-right: 10px;
+    padding-top: 4px;
+}
+.popupCustom h3 {
+    color: #9D292A;
+    padding-bottom: 0px;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+.popupCustom p {    
+    font-size: 15px;
+}
+
+#btnIconoModulo {
+    width: 32px;
+    height: 32px;
+    display: block;
+    background-image: url('/static/core/assets/images/icono-modulo.png');
+    background-size: cover;
+    position: relative;
+    top: 11px;
+}
+
+#btnIconoModulo:hover {    
+    background-image: url('/static/core/assets/images/icono-modulo-hover1.png');    
+}
+
+/* Popup Info Window Styling */
+
+.buHeader { 
+    display: block;
+    background-size: cover;
+    background-image: url('/static/core/assets/images/yazaki/yazaki-plant.jpg');
+    height: 200px;        
+}
+
+.infoh3 { color: #333; font-weight: normal; font-size: 18px; background-color: #f6f6f6; padding: 15px 10px; text-shadow: 0 1px #fff; }
+
+.infoh6 { color: green; font-weight: bold; font-size: 14px; position: relative; top: 10px; }
+
+.spantipo { color: #333; font-weight: bold; font-size: 14px; }
+
+.infop { color: #507bc6; font-weight: 400; font-size: 14px; position: relative; display: block; margin-top: 24px; }
+
+.infoUBH5_Wrapper { background-color: #434E9E; padding:10px 4px 1px 4px; cursor: pointer; }
+.infoUBH5_Wrapper span { color: #ffffb8; font-size: 12px; margin: 6px 3px; position: relative; display: block; line-height: 16px; }
+.infoUBH5 { color: #f8f8f8; font-weight: bold; font-size: 18px; }
+.infoContent p { font-size: 12px; line-height: 17px; }
+
+#map {
+height: 100%;
+}  
+.map_scroll_wrapper {
+    width: 100%;
+    height: 200px;
+    margin: 5px auto 0 auto;
+    position: relative;
+    overflow: auto;
+}
+.map_scroll_content {            
+    width: 100%;
+    height: 200px;
+}
+.map_scroll_wrapper::-webkit-scrollbar {
+    width: 10px;
+}        
+.map_scroll_wrapper::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px #f2f2f2; 
+    border-radius: 10px;
+}
+.map_scroll_wrapper::-webkit-scrollbar-thumb {
+    background: #f2f2f2; 
+    border-radius: 10px;
+}
+.map_scroll_wrapper::-webkit-scrollbar-thumb:hover {
+    background: #c2c2c2; 
+} 
+.gmaps_scroll_wrapper {
+    width: 100%;
+    height: 200px;
+    margin: 5px auto 0 auto;
+    position: relative;
+    overflow: auto;
+}
+.widget-content .widget-content-left .widget-subheading { opacity: 0.6; }
+
+.escondido { display: none; }
+
+.diamante-light { font-family: 'diamante-light', Arial, Tahoma; }
+
+.diamante-medium-regular { font-family: 'diamante-medium-regular', Arial, Tahoma; }
+
+.diamante-bold { font-family: 'diamante-bold', Arial, Tahoma; }
+
+.diamante-extrabold { font-family: 'diamante-extrabold', Arial, Tahoma; }
+
+.diamante-efregular { font-family: 'diamante-efregular', Arial, Tahoma; }
+
+button.btn { text-decoration: none !important; }
+
+.widget-content-wrapper button.btn { letter-spacing: 1px; }
+
+.septxt-1 { letter-spacing: 1px; }
+
+.septxt-2 { letter-spacing: 2px; }
+
+.color-white { color: white !important; }
+
+.color-white:hover { color: #f9f9f9; }
+
+a.color-white { color: white; }
+
+a.color-red:hover { color: rgb(168, 22, 25); }
+
+.bck-white { background-color: white; }
+
+.red { color: #9D292A; }
+
+.bck-red { background-image: linear-gradient(#9D292A, rgb(129, 25, 26)) !important; }
+
+.size12 { font-size: 12px; }
+
+.size16 { font-size: 16px; }
+
+.size18 { font-size: 18px; }
+
+.size20 { font-size: 20px; }
+
+.size28 { font-size: 28px; }
+
+.size32 { font-size: 32px; }
+
+.size48 { font-size: 48px; }
+
+.size128 { font-size: 128px; }
+
+.en-linea { display: inline-block !important; }
+
+.negrita { font-weight: bold; }
+
+.bold { font-weight: bold; }
+
+.size24expanded { font-size: 24px !important; letter-spacing: 1px; }
+
+.shadow-333 { text-shadow: 0 1px #333; }
+
+.bck-silver { background-image: url('../images/bck-silver.jpg'); background-repeat: no-repeat; background-size: cover; }
+
+.cbutton-red { background-color: #9D292A; border: 1px solid rgb(180, 44, 47); }
+
+.cbutton-red:hover { background-color: rgb(168, 22, 25); border: 1px solid rgb(180, 44, 47); }
+
+.escondertemp { display: none; }
+
+.ico-mm {
+    display: inline-block;    
+    width: 10px;
+    height: 11px;
+    background-size: 10px 11px;
+    background-color: #7A7E82;
+    background-repeat: no-repeat;
+    transition: background-color 300ms;  
+      
+}
+
+.ico-mm:hover {   
+    background-color: #D5D7D8;    
+}
+
+.ico-homicidio {    
+    -webkit-mask: url(../images/icons/delincuenciales/homicidio.svg);        
+}
+
+.ico-secuestro {    
+    -webkit-mask: url(../images/icons/delincuenciales/secuestro.svg);        
+}
+
+.ico-carjacking {    
+    -webkit-mask: url(../images/icons/delincuenciales/carjacking.svg);        
+}
+
+.ico-habitacion {    
+    -webkit-mask: url(../images/icons/delincuenciales/casa-habitacion.svg);        
+}
+
+.ico-transeuntes {    
+    -webkit-mask: url(../images/icons/delincuenciales/transeuntes.svg);        
+}
+
+.ico-autopartes {    
+    -webkit-mask: url(../images/icons/delincuenciales/autopartes.svg);        
+}
+
+.ico-asalto-negocio {    
+    -webkit-mask: url(../images/icons/delincuenciales/asalto-negocio.svg);        
+}
+
+.ico-tiendas {    
+    -webkit-mask: url(../images/icons/delincuenciales/tiendas.svg);        
+}
+
+.ico-aeropuerto {    
+    -webkit-mask: url(../images/icons/delincuenciales/aeropuerto.svg);        
+}
+
+.ico-hotel {    
+    -webkit-mask: url(../images/icons/delincuenciales/hotel.svg);        
+}
+
+.ico-mm-big {
+    display: inline-block;    
+    width: 34px;
+    height: 34px;
+    background-size: 34px 34px;
+    background-color: #7A7E82;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    transition: background-color 300ms;    
+}
+
+.ico-mm-big:hover {   
+    background-color: #D5D7D8;    
+}
+
+.ico-revision-vehiculos {    
+    -webkit-mask: url(../images/icons/revision-vehiculos.svg);        
+}
+
+.ico-es-trailers {    
+    -webkit-mask: url(../images/icons/es-trailers.svg);        
+}
+
+.ico-entrada-equipo {    
+    -webkit-mask: url(../images/icons/entrada-equipo.svg);        
+}
+
+.ico-entrada-quimicos {    
+    -webkit-mask: url(../images/icons/entrada-quimicos.svg);        
+}
+
+.ico-sin-gafete {    
+    -webkit-mask: url(../images/icons/sin-gafete.svg);        
+}
+
+.ico-area-restringida {    
+    -webkit-mask: url(../images/icons/area-restringida.svg);        
+}
+
+.ico-recibos {    
+    -webkit-mask: url(../images/icons/recibos.svg);        
+}
+
+.ico-k9 {    
+    -webkit-mask: url(../images/icons/k9.svg);        
+}
+
+.ico-geocercas {    
+    -webkit-mask: url(../images/icons/geocercas.svg);        
+}
+
+.ico-cargas {    
+    -webkit-mask: url(../images/icons/cargas.svg);        
+}
+
+.ico-movimientos {    
+    -webkit-mask: url(../images/icons/movimientos.svg);        
+}
+
+.ico-valor-mercancia {    
+    -webkit-mask: url(../images/icons/valor-mercancia.svg);        
+}
+
+.ico-origen-destino {    
+    -webkit-mask: url(../images/icons/origen-destino.svg);        
+}
+
+.ico-chofer {    
+    -webkit-mask: url(../images/icons/chofer2.svg);        
+}
+
+.ico-tiempovs {    
+    -webkit-mask: url(../images/icons/tiempovs.svg);        
+}
+
+.ico-peso-carga {    
+    -webkit-mask: url(../images/icons/peso-carga.svg);        
+}
+
+.ico-sello {    
+    -webkit-mask: url(../images/icons/sello.svg);        
+}
+
+.ico-tipo-carga {    
+    -webkit-mask: url(../images/icons/fragil.svg);        
+}
+
+.ico-rutas-riesgo {    
+    -webkit-mask: url(../images/icons/rutas-riesgo.svg);        
+}
+
+.ico-capacitacion {    
+    -webkit-mask: url(../images/icons/capacitacion.svg);        
+}
+
+.ico-vacantes {    
+    -webkit-mask: url(../images/icons/vacantes.svg);        
+}
+
+.ico-rotacion {    
+    -webkit-mask: url(../images/icons/rotacion.svg);        
+}
+
+.ico-asistencias {    
+    -webkit-mask: url(../images/icons/asistencias.svg);        
+}
+
+.opti-top-search::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: white;
+}
+
+.opti-top-search::-moz-placeholder { /* Firefox 19+ */
+    color: white;
+}
+.opti-top-search::-ms-input-placeholder { /* IE 10+ */
+    color: white;
+}
+.opti-top-search::-moz-placeholder { /* Firefox 18- */
+    color: white;
+}
+
+.bgp-azul { background-image: radial-gradient(circle 248px at center, #00399C 0%, #01328A 47%, #002F82 100%) !important }
+
+.bgp-amarillo { background-image: radial-gradient(circle 248px at center, #EDC54C 0%, #EBB920 47%, #E0AD13 100%) !important }
+
+.bgp-naranja { background-image: radial-gradient(circle 248px at center, #F69B34 0%, #FC8A08 47%, #D97402 100%) !important }
+
+.bgp-rojo { background-image: radial-gradient(circle 248px at center, #CB3233 0%, #B72F30 47%, #9D292A 100%) !important }
+
+.bgp-btn-rojo { color: white !important; background-image: radial-gradient(circle 248px at center, #CB3233 0%, #B72F30 47%, #9D292A 100%) !important; }
+
+.bgp-btn-rojo:hover { color: white !important; }
+
+.bgp-white { background-color: #FFFFFF; }
+
+.bgp-grislight { background-color: #F9F9F9; text-shadow: 0 1px white; }
+
+.bgp-color-azul { color: #002F82; }
+
+.bgp-color-amarillo { color: #E0AD13; }
+
+.bgp-color-naranja { color: #D97402; }
+
+.bgp-color-rojo { color: #9D292A; }
+
+.bgp-color-verde { color: #2b9800; }
+
+.bgp-color-amarillo-intenso { color: #feffc3 !important; opacity: 0.9; }
+
+.bgp-color-blanco { color: #ffffff; }
+
+.bgp-color-negro { color: #000000 !important; }
+
+.bgp-whitegrey { 
+    background-image: linear-gradient(to right top, #fdfbfc, #f9f7f9, #f6f4f6, #f1f0f4, #ededf1, #ededf1, #ecedf0, #ecedf0, #eff0f2, #f3f3f4, #f6f6f7, #f9f9f9);      
+}
+
+.bgp-white { 
+background-image: linear-gradient(to right top, #f6f6f6, #f8f8f8, #f9faf9, #fbfbfb, #fdfdfd, #fdfdfd, #fdfdfd, #fdfdfd, #fbfbfb, #f9faf9, #f8f8f8, #f6f6f6);
+}
+
+.module .overflow {
+    /* width: 324px; */
+    margin: 0 0 1em 0;
+    overflow: hidden;
+    --max-lines: 2;
+    position: relative;
+    max-height: calc(var(--lh) * var(--max-lines));
+    overflow: hidden;
+    padding-right: 1rem; /* space for ellipsis */
+}
+
+.module {
+    width: 324px;
+    margin: 0 0 1em 0;
+    overflow: hidden;
+}
+.module span {
+    margin: 0;
+}
+.line-clamp {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+}
+  
+.item-alerta:hover { color: #000000; }
+
+.truncate {
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+
+/* Colores para fondos de indices delincuenciales */
+
+.bck-casa-habitacion { background-color:#F5B400 !important }
+.bck-homicidio { background-color: #E65100 !important }
+.bck-secuestro { background-color: #000000 !important }
+.bck-carjacking { background-color: #3E5BA9 !important }
+.bck-asalto-negocios { background-color: #0097A7 !important }
+.bck-transeuntes { background-color: #009D57 !important }
+.bck-auto-partes { background-color: #A6194A !important }
+.bck-tiendas { background-color: #795044 !important }
+.bck-hotel { background-color: #cccccc !important }
+.bck-aeropuerto { background-color: #FF5252 !important }
+
+.padding-0 { padding: 0 !important; }
+
+/* Colores de submodulos de ANALISIS DE RIESGO - ARNES  */
+.bgp-seguridad-infraestructura { color: #D9F1FC !important; }
+
+.bgp-seguridad-electronica { color: #FFFDE9 !important; }
+
+.bgp-seguridad-operativa { color: #ECF4D7 !important; }
+
+/* Fin de color de submodulos */
+
+.darker969696 { color: #969696 !important; opacity: 1 !important; }
+
+.indicador { 
+    display: inline-block;
+    padding-right: 16px;
+}
+
+.wrap-indicador {
+    min-width: 100px; position: relative; font-size: 0.8rem; font-weight: 500; text-align: center;
+}
+
+.indicador i { 
+    font-size: 48px;
+}
+
+.widget-panel-texto {
+    font-weight: bold;
+    font-size: 2.5rem;
+    display: block;
+    line-height: 1;
+    margin: 1rem auto;
+    text-shadow: 1px 1px 3px #000;    
+}
+
+.mayus { text-transform: uppercase; }
+
+.pad-left20 { padding-left: 20px; }
+
+.ico-sombra { text-shadow: 1px 1px 3px #000;}
+
+.pad-panel-50 {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.pad-lista-iconos-delincuenciales {      
+        padding: 8px 4px;
+}
+
+.mar-top10 { margin-top: 10px; }
+
+.bottom5 { position: relative; bottom: 5px; }
+
+.mini-logo-panoptic {
+        display: inline-block;
+        padding: 0 20px 0 0;
+}
+
+.puntero { cursor: pointer; }
+
+.icod-bw {
+    -webkit-filter: none;
+    -moz-filter: none;
+    -ms-filter: none;
+    filter: none;
+    transition: filter 0.5s;
+}
+
+.icod-bw:hover {
+    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+, Firefox on Android */    
+    -webkit-filter: grayscale(100%);
+    -moz-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    filter: grayscale(100%);
+    filter: gray; /* IE 6-9 */
+}
+
+.hidden { display: none !important; }
+
+hr.style1 {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.50), rgba(255, 255, 255, 0));
+}
+
+/* Media Queries starting from here  */
+
+@media screen and (max-width: 600px) {
+    .hidden-overflow { overflow: auto; } 
+}
+
+@media screen and (min-width:601px){
+    
+    /* .django-plotly-dash-iframe {
+        height: 920px !important;
+    }  */
+}
+    
+@media screen and (max-width: 600px) {
+    /* .django-plotly-dash-iframe {
+        height: 1600px !important;
+    }  */
+}

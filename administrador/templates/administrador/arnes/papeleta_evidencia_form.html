@@ -1,0 +1,57 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Encuestas</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+    <a href="{% url 'administrador:admin_papeleta_detalle' papeleta.id %}" class="btn btn-primary">Volver</a>   
+    <h2>Subir evidencia</h2>
+    <main role="main">
+        <div class="container">
+            <div class="row mt-3">
+            <div class="col-md-9 mx-auto">
+                <div>
+
+                    <h3>Acerca del Cuestionario</h3>                
+                    <b>Nombre: </b>{{papeleta.encuesta.nombre}}<br>
+                    <b>Categoría: </b>{{papeleta.encuesta.categoria.nombre}}<br>
+                    <b>Cliente: </b>{{papeleta.planta.cliente}}<br>
+                    <b>Planta: </b>{{papeleta.planta.nombre}}<br>
+                    <br>
+                    <b>Pregunta: </b>{{respuesta.pregunta_text}}<br>
+                    <br>
+
+
+                    <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+                        <label class="label">Subir evidencia</label>
+                        <input type="file" name="evidenciafile" required="">
+                        <br>
+                        <br>
+                        <input type="submit" class="btn btn-primary" value="Guardar evidencia" />
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    </main>                
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

@@ -1,0 +1,173 @@
+{% extends 'administrador/bases/base_admin_cuentas.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">                
+                <i class="fa fa-user-circle size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Listado de Productos &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Productos
+                <div class="admin-page-title-subheading">
+                    Crear Producto                
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                           <li class="breadcrumb-item">
+                                <a>Detalles Producto</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Producto</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Crear Producto
+                            </li>
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>        
+    </div>
+</div>
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Registro de Producto
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="position-relative form-group">
+                                <label for="nombreInt" class="">Nombre</label>
+                                <input name="nombreInt" id="nombreInt" type="text" class="form-control" value="{{ product.Name }}">
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="descripcion" class="">Descripcion</label>
+                                <input name="descripcion" id="descripcion type="text" class="form-control" value="{{ product.Description }}" >
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="claveProducto" class="">Clave Producto (8 caracteres) <a href="http://200.57.3.89/PyS/catPyS.aspx" target="blank">Consulte aquí</a></label>
+                                <input name="claveProducto" id="claveProducto type="text" class="form-control" value="{{ product.CodeProdServ }}" >
+                            </div>
+                            <div class="position-relative form-group">
+                                <label for="unidad" class="">Tipo Unidad</label>
+                                <select name="unidad" id="unidad" class="form-control">
+                                    <!--<option value="H87">Pieza</option>
+                                    <option value="EA">Elemento</option>
+                                    <option value="E48">Unidad de Servicio</option>
+                                    <option value="ACT">Actividad</option>
+                                    <option value="KGM">Kilogramo</option>
+                                    <option value="E51">Trabajo</option>
+                                    <option value="A9">Tarifa</option>
+                                    <option value="MTR">Metro</option>
+                                    <option value="AB">Paquete a Granel</option>
+                                    <option value="BB">Caja base</option>
+                                    <option value="KT">Kit</option>
+                                    <option value="SET">Conjunto</option>
+                                    <option value="LTR">Litro</option>
+                                    <option value="XBX">Caja</option>
+                                    <option value="MON">Mes</option>
+                                    <option value="HUR">Hora</option>
+                                    <option value="MTK">Metro cuadrado</option>
+                                    <option value="11">Equipos</option>
+                                    <option value="MGM">Miligramo</option>
+                                    <option value="XPK">Paquete</option>
+                                    <option value="XKI">Kit</option>
+                                    <option value="AS">Variedad</option>
+                                    <option value="GRM">Gramo</option>
+                                    <option value="PR">Par</option>
+                                    <option value="DPC">Docenas de Piezas</option>
+                                    <option value="xun">Unidad</option>
+                                    <option value="DAY">Día</option>
+                                    <option value="XLT">Lote</option>
+                                    <option value="10">Grupos</option>
+                                    <option value="MLT">Mililitro</option>
+                                    <option value="E54">Viaje</option>-->
+                                    {% for id, value in unitCodes %}
+                                        {% if product.UnitCode == id %}
+                                        <option value={{ id }} selected>{{ value }}</option>
+                                        {% else %}
+                                        <option value={{ id }}>{{ value }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="text-left">
+                                <input type="submit" class="btn-transition btn btn-primary size16" value="Crear Producto de carta porte" />
+                            </div>
+                        </form>   
+                    </div>
+                </div>
+                <br><br>                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+        // No hay nada que ejecutar
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

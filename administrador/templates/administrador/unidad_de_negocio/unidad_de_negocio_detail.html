@@ -1,0 +1,212 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        #barChart{
+            background-color: white;
+            border-radius: 6px;
+          }          
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-industry size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>D & D Management &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Unidad de Negocio
+                <div class="admin-page-title-subheading">
+                   Ver Registro de Unidad de Negocio
+                </div>
+            </div>
+        </div> 
+
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> D & D Management</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:admin_un_index' %}">Registro de Unidad de Negocio</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Ver Registro de Unidad de Negocio
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+
+    </div> <!-- Page Title Wrapper -->
+</div>  <!-- app page title -->
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fas fa-chevron-right" aria-hidden="true"></i>
+                    Ver Tipo de Vehículo
+                </div>                                                        
+            </div>
+            <div class="card-body">       
+                <hr>
+                <a href="{%  url 'administrador:admin_un_index' %}" class="btn btn-primary size16">Volver a Historial de Unidades de Negocio</a>
+                <a href="{%  url 'administrador:unidad_de_negocio_create' %}" class="btn btn-success size16">Agregar Registro de Unidad de Negocios</a>
+                <hr>
+                <br>         
+                <div class="row mt-3 mb-5">
+                    <div class="col-md-9 mx-auto"> 
+                        <form id="paqueteria_detail_form"> 
+                            <div class="text-center pad-bot20">
+                                    {% if object.foto %}
+                                    <a href="{{ object.foto.url }}" data-fancybox data-caption="{{ object.nombre }} en {{ object.direccion }}">
+                                    <img src="{{ object.foto.url }}"  height="250" width="auto" alt="{{ object.nombre }}" />
+                                    </a>
+                                    {% else %} 
+                                    <a href="#">                                        
+                                    <img src="{% static 'core/assets/images/general-un.png' %}" height="250" width="auto"  alt="Unidad de negocio sin foto">      
+                                    </a>
+                                    {% endif %}                                   
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
+        
+                                    <div class="position-relative form-group">
+                                        <label for="nombre" class="">Nombre de la Unidad de Negocio</label>
+                                        <input name="nombre" id="nombre" type="text" class="form-control" readonly value="{{ object.nombre }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="tipo" class="">Tipo</label>
+                                        <input name="tipo" id="tipo" type="text" class="form-control" readonly value="{{ object.tipo }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="giro" class="">Giro</label>
+                                        <input name="giro" id="giro" type="text" class="form-control" readonly value="{{ object.giro }}">
+                                    </div>
+
+                                    <hr>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="direccion" class="">Dirección</label>
+                                        <input name="direccion" id="direccion" type="text" class="form-control" readonly value="{{ object.direccion }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="ciudad" class="">Ciudad</label>
+                                        <input name="ciudad" id="ciudad" type="text" class="form-control" readonly value="{{ object.ciudad }}">
+                                    </div>
+                                    <div class="position-relative form-group">
+                                        <label for="estado" class="">Estado</label>
+                                        <input name="estado" id="estado" type="text" class="form-control" readonly value="{{ object.estado }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="pais" class="">País</label>
+                                        <input name="pais" id="pais" type="text" class="form-control" readonly value="{{ object.pais }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="lat" class="">Latitud</label>
+                                        <input name="lat" id="lat" type="text" class="form-control" readonly value="{{ object.lat }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="lng" class="">Logitud</label>
+                                        <input name="lng" id="lng" type="text" class="form-control" readonly value="{{ object.lng }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="region" class="">Región</label>
+                                        <input name="region" id="region" type="text" class="form-control" readonly value="{{ object.region }}">
+                                    </div>        
+                                </div>                            
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-6">
+                                    <!-- Lado derecho   -->
+                                    <div class="position-relative form-group">
+                                        <label for="status" class="">Estatus</label>
+                                        <input name="status" id="status" type="text" class="form-control" readonly value="{{ object.status }}">
+                                    </div>                                    
+        
+                                    <div class="position-relative form-group">
+                                        <label for="cliente" class="">Cliente</label>
+                                        <input name="cliente" id="cliente" type="text" class="form-control mayus negrita" readonly value="{{ object.cliente }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="gradio" class="">Radio de Geocerca en Kms</label>
+                                        <input name="gradio" id="gradio" type="text" class="form-control" readonly value="{{ object.gradio }}">
+                                    </div>
+        
+                                    <div class="position-relative form-group">
+                                        <label for="sucursal" class="">Sucursal Asignada</label>
+                                        <input name="sucursal" id="sucursal" type="text" class="form-control" readonly value="{{ object.sucursal }}">
+                                    </div>            
+                                    <hr>
+                                    <div class="position-relative form-group">
+                                        <label for="mails_zona" class=""><b>Zona 0</b></label>
+                                        <textarea name="mails_zona" id="mails_zona"  title="Separe los correos electrónicos por comas por favor." class="form-control size12">{{object.mails_zona|default_if_none:""}}</textarea  readonly>
+                                    </div>
+                                    <div class="position-relative form-group">
+                                        <label for="mails_analisis_riesgo" class=""><b>Análisis de Riesgo</b></label>
+                                        <textarea name="mails_analisis_riesgo" id="mails_analisis_riesgo"  title="Separe los correos electrónicos por comas por favor." class="form-control size12"  readonly>{{object.mails_analisis_riesgo|default_if_none:""}}</textarea>
+                                     </div>
+                                     <div class="position-relative form-group">
+                                        <label for="mails_dd" class=""><b>D&D Management</b></label>
+                                        <textarea name="mails_dd" id="mails_dd"  title="Separe los correos electrónicos por comas por favor." class="form-control size12" readonly>{{object.mails_dd|default_if_none:""}}</textarea>
+                                     </div>
+                                     <div class="position-relative form-group">
+                                        <label for="mails_predictive" class=""><b>Predictive Analysis</b></label>
+                                        <textarea name="mails_predictive" id="mails_predictive" title="Separe los correos electrónicos por comas por favor." class="form-control size12" readonly>{{object.mails_predictive|default_if_none:""}}</textarea>
+                                     </div>
+                                </div>
+                            </div>                                
+                        </form>
+                    </div>
+                </div>                
+            </div>  
+        </div>
+    </div> 
+</div> 
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script>
+    jQuery(document).ready(function() {
+        // No hay nada que ejecutar
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

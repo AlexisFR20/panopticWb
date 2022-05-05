@@ -1,0 +1,229 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */       
+        #geomap_rondin {
+		    width: 100%;
+		    height: 400px;
+		}
+        #ui-id-1 {
+            display:block !important;
+            z-index: 9999;
+            cursor: pointer;
+        }        
+        .wickedpicker{z-index: 9999;}
+    </style>        
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">                
+                <i class="fas fa-plus-circle size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Sucursales &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Crear Sucursal
+                <div class="admin-page-title-subheading">
+                    Crear Sucursal
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'administrador:admin_sucursales_index' %}"> Sucursales</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Crear Sucursal</a>
+                            </li>                            
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>    
+    </div>
+</div>    
+<div class="row">
+    {% if  messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}         
+</div>
+<div class="row">        
+    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">             
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header">
+                <div class="card-header-title">
+                    <i class="cardhead fas fa-location-arrow size32 bgp-color-rojo" aria-hidden="true"></i>
+                    Crear Nueva Sucursal
+                </div>                
+            </div>           
+                
+            <div class="card-body" style="position: relative;">
+                <div class="main-card card">
+                    <div class="card-body minHeightBlock">
+                        <div class="container">
+                            <!-- Forma para crear rondin -->
+                            <form id="frm-crear-rondin" role="form" method="POST"> 
+                                {% csrf_token %}                                                         
+                                <div class="row">
+                                    <!-- Inicio de primer columna-->                                    
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                        <!-- Nombre de la Sucursal -->
+                                        <div class="form-group">
+                                            <label>Nombre de la Sucursal </label>
+                                            <input data-validation="length" data-validation-length="8-50" type="text" id="nombre" name="nombre" class="form-control mostrar" placeholder="Escriba un nombre para la sucursal" data-validation="required">
+                                        </div>  
+                                        
+                                        <!-- Domicilio de la Sucursal -->
+                                        <div class="form-group">
+                                            <label>Domicilio </label>
+                                            <input data-validation="length" data-validation-length="3-100" type="text" id="domicilio" name="domicilio" class="form-control mostrar" placeholder="Escriba una dirección válida para la sucursal">
+                                        </div> 
+
+                                        <!-- Telefono de la Sucursal -->
+                                        <div class="form-group">
+                                            <label>Telefono </label>
+                                            <input data-validation="length" type="text" id="telefono" name="telefono" class="form-control mostrar" placeholder="Escriba el teléfono(s) de la Sucursal">
+                                        </div> 
+                                    </div> 
+                                    <!-- Fin de primer columna-->
+
+                                    <!-- Inicio de segunda columna-->                                    
+                                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">    
+                                        <!-- Ciudad de la Sucursal -->                                         
+                                        <div class="position-relative form-group">                        
+                                            <label for="ciudad" class="">Ciudad</label>
+                                            <select id="ciudad" name="ciudad" data-ciudad-selected="{{ sucursal.ciudad }}" class="form-control">
+                                               <option value="0" >-- Seleccione ciudad -- </option>
+                                               {% for ciudad in ciudades %}
+                                               <option value="{{ ciudad.nombre }}">{{ ciudad.nombre }}</option>
+                                               {% endfor %}
+                                            </select>  
+                                        </div>                                     
+
+                                        <!-- Cliente asociado a la Unidad de Negocio -->                     
+                                        <div class="position-relative form-group">                        
+                                            <label for="estado">Estado</label>
+                                            <select id="estado" name="estado" class="form-control mostrar selector">
+                                                <option value="0" >-- Seleccione estado -- </option>
+                                                <option value="Aguascalientes">Aguascalientes</option>
+                                                <option value="Baja California">Baja California</option>
+                                                <option value="Baja California Sur">Baja California Sur</option>
+                                                <option value="Campeche">Campeche</option>
+                                                <option value="Chiapas">Chiapas</option>
+                                                <option value="Chihuahua">Chihuahua</option>
+                                                <option value="CDMX">Ciudad de México</option>
+                                                <option value="Coahuila">Coahuila</option>
+                                                <option value="Colima">Colima</option>
+                                                <option value="Durango">Durango</option>
+                                                <option value="Estado de México">Estado de México</option>
+                                                <option value="Guanajuato">Guanajuato</option>
+                                                <option value="Guerrero">Guerrero</option>
+                                                <option value="Hidalgo">Hidalgo</option>
+                                                <option value="Jalisco">Jalisco</option>
+                                                <option value="Michoacán">Michoacán</option>
+                                                <option value="Morelos">Morelos</option>
+                                                <option value="Nayarit">Nayarit</option>
+                                                <option value="Nuevo León">Nuevo León</option>
+                                                <option value="Oaxaca">Oaxaca</option>
+                                                <option value="Puebla">Puebla</option>
+                                                <option value="Querétaro">Querétaro</option>
+                                                <option value="Quintana Roo">Quintana Roo</option>
+                                                <option value="San Luis Potosí">San Luis Potosí</option>
+                                                <option value="Sinaloa">Sinaloa</option>
+                                                <option value="Sonora">Sonora</option>
+                                                <option value="Tabasco">Tabasco</option>
+                                                <option value="Tamaulipas">Tamaulipas</option>
+                                                <option value="Tlaxcala">Tlaxcala</option>
+                                                <option value="Veracruz">Veracruz</option>
+                                                <option value="Yucatán">Yucatán</option>
+                                                <option value="Zacatecas">Zacatecas</option>
+                                            </select>
+                                         </div>
+
+                                        <!-- Region de la Sucursal -->
+                                        <div class="position-relative form-group">
+                                            <label for="region" class="">Región</label>
+                                            <select id="region" name="region" class="form-control mostrar selector" data-validation="required">
+                                                <option value="" >-- Seleccione una Región -- </option>               
+                                                {% for region in regiones %}                                                       
+                                                <option value="{{ region.idnumerico }}">{{ region.nombre }}</option>
+                                                {% endfor %}                                                
+                                            </select>                                            
+                                        </div>                                                                                                              
+                                    </div>                                    
+                                    
+                                </div>
+                                <div class="row" style="padding-top: 80px;">   
+                                    <div class="col-md-12">                                       
+                                        <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-rondin-guardar" type="submit" title="Guardar rondín"><i class="fas fa-save btn-icon-wrapper"></i> </i><span>Guardar Sucursal</span></button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Fin de Forma para crear rondin-->
+                        </div>                        
+                    </div>
+                </div>
+                <div class="resize-triggers"><div class="expand-trigger"><div style="width: 502px; height: 432px;"></div></div><div class="contract-trigger"></div></div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+</div> <!--  end of row -->  
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    $('.scrollbar-container').each(function () {
+        const ps = new PerfectScrollbar($(this)[0], {
+            wheelSpeed: 2,
+            wheelPropagation: false,
+            minScrollbarLength: 20
+        });
+    });    
+    const ps = new PerfectScrollbar('.scrollbar-sidebar', {
+        wheelSpeed: 2,
+        wheelPropagation: true,
+        minScrollbarLength: 20
+    });
+</script>
+<!-- Ends to include JS list -->
+{% endblock js %}

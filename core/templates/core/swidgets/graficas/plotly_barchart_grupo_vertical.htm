@@ -1,0 +1,63 @@
+{% extends 'core/bases/base_graficas.html' %}
+
+{% block 'seo_header' %}
+    <title>Sistema Panoptic - Gráficas Plotly</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">
+    {% load static %}
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <img src="{% static 'core/assets/images/mini-logo-panoptic.png' %}" alt="Logo de Panoptic">                                    
+            </div>
+            <div> Gráfica Plotly: Barra Grupo Vertical
+                <div class="page-title-subheading">
+                    Ver https://plot.ly/python/bar-charts/
+                </div>
+            </div>
+        </div>                          
+    </div>
+</div>                                
+
+<div class="tabs-animation">            
+    
+    <div class="row">
+        <div class="col-md-12 col-lg-12 col-xl-12">
+            <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        <i class="header-icon bgp-color-rojo pe-7s-note2"></i>                                            
+                        Gráfica con Plotly | Barra Grupo Vertical
+                    </div>                                                    
+                </div>
+                <div class="card-body">             
+                    {% autoescape off %}
+                        {{ plot_div }}
+                    {% endautoescape %}              
+                </div>
+            </div>
+        </div>
+    </div>                                           
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js%}

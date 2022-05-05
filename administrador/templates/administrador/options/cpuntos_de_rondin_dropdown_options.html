@@ -1,0 +1,15 @@
+{% for punto in cpuntos_rondin %}
+<a id="{{ punto.id }}" data-punto-id="{{ punto.id }}" data-punto-activo="{{ punto.activo }}" data-punto-lat="{{ punto.lat }}" data-punto-lng="{{ punto.lng }}" class="mb-2 mr-2 btn btn-warning  btn-lg btn-block size16 mayus btn-click-punto btn-txt-left">                                 
+    <div class="left-ico">                                        
+        <i class="fas fa-qrcode btn-icon-wrapper size32"> </i>     
+    </div>
+    <div class="right-desc" style="padding-top: 5px;">
+        <sup class="negrita">{{forloop.counter}}</sup> 
+        <span class="punto_nom">{{ punto.nombre }}</span> 
+        <span class="punto_tareas escondido">{{ punto.tareas }}</span>
+    </div>                                                                
+</a>
+{% empty %}
+<p class="size24 text-center" style="line-height: 40px;">No se encontraron puntos para el rondin</p>
+{% endfor %}           
+<div id="planta_details" lat="{{ planta_lat }}" lng="{{ planta_lng }}" class="escondido"></div>

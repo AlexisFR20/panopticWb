@@ -1,0 +1,185 @@
+{% extends 'core/bases/base_pages.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->
+     {% load static %}    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+{% endblock css %}
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fa fa-bar-chart-o size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>ANÁLISIS DE RIESGO &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Registro de Capacitación
+                <div class="admin-page-title-subheading">
+                   Historial de Regsitro de Capacitación
+                </div>
+            </div>
+        </div> 
+        <div class="page-title-actions">
+            <nav class="" aria-label="admin breadcrumb">
+                <ol class="admin breadcrumb pull-right">
+                    <li class="breadcrumb-item">
+                        <a>
+                            <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a> Análisis de Riesgo</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'analytics:capacitaciones' %}"> Capacitaciones</a>
+                    </li>
+                    <li class="active breadcrumb-item" aria-current="page">
+                        Historial de Registro de Capacitación
+                    </li>
+                </ol>
+            </nav>     
+        </div> <!-- Page title actions -->
+    </div>
+</div>                                
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-xl-10">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Historial de Capacitaciones
+                </div>                                                        
+            </div>
+            <div class="card-body">     
+                {% if  messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}                   
+                <div id="historial">                    
+                    <p>Listado de capacitaciones más recientes.</p>
+                    <hr><br>
+                    <!--  Data Table Start -->
+                    <table id="tbl-capacitacion-historial" class="table table-striped table-bordered dt-responsive nowrap"  style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th>No. Orden</th>
+                                <th>Calificación</th>
+                                <th>Fecha de Aplicación</th>
+                                <th>Veces Aplicados</th>
+                                <th>Tiempo Dedicado</th>
+                                <th>Usuario Aguilas</th>
+                                <th>Puesto</th>
+                                <th>Cliente</th>
+                                <th>Sitio</th>
+                                <th>Curso</th>
+                                <th>Grado</th>
+                                <th>Categoria</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for concentracion in concentracion_list|dictsort:"id" reversed %}  <!--model_list -->
+                            <tr>
+                                <td>{{ concentracion.no_orden }}</td>
+                                <td align="center">{{ concentracion.calificacion|default_if_none:"ND" }}</td>
+                                <td>{{ concentracion.fecha_aplicacion|date:"SHORT_DATE_FORMAT" }} {{ concentracion.fecha_aplicacion|time:"H:i" }}</td>
+                                <td>{{ concentracion.veces_aplicados }}</td>
+                                <td>{{ concentracion.tiempo_dedicado }}</td>
+                                <td>{{ concentracion.user_aguilas }}</td>
+                                <td>{{ concentracion.puesto }}</td>
+                                <td>{{ concentracion.cliente }}</td>
+                                <td>{{ concentracion.sitio }}</td>
+                                <td>{{ concentracion.curso }}</td>
+                                <td>{{ concentracion.grado }}</td>
+                                <td>{{ concentracion.categoria }}</td>
+                                <td> 
+                                    <a href="{% url 'analytics:capacitacion_detail' concentracion.id  %}" title="Ver registro" class="btnsInDataTable btn-transition border-0 btn btn-outline-primary text-center"><i class="fas fa-eye size16"></i></a>    
+                                    
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>                          
+                        <tfoot>
+                            <tr>   
+                                <th>No. Orden</th>
+                                <th>Calificación</th>
+                                <th>Fecha de Aplicación</th>
+                                <th>Veces Aplicados</th>
+                                <th>Tiempo Dedicado</th>
+                                <th>Usuario Aguilas</th>
+                                <th>Puesto</th>
+                                <th>Cliente</th>
+                                <th>Sitio</th>
+                                <th>Curso</th>
+                                <th>Grado</th>
+                                <th>Categoria</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </tfoot>
+                    </table>        
+                    <!-- Data Table End -->
+                </div>
+                
+            </div>  
+        </div>
+    </div> 
+</div>       
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#tbl-capacitacion-historial').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+            {
+                extend: 'pdfHtml5',
+                orientation: 'landscape',
+                //download: 'open',
+                messageTop: 'Reporte de Capacitaciones',
+
+                /*customize: function ( doc ) {
+                    doc.content.splice( 1, 0, {
+                        margin: [ 0, 0, 0, 12 ],
+                        alignment: 'center',
+                        image: 'http://panoptic.iottechnologies.mx/static/core/assets/images/logo-panoptic-black.png'
+                    } );
+                }*/
+            }], 
+            "order": [[ 0, "desc" ]],
+            "pageLength":  18,    
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json"
+            }
+        });
+    });
+</script>   
+
+<!-- Ends to include JS list -->
+{% endblock js%}
+

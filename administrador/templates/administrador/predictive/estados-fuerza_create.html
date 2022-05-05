@@ -1,0 +1,358 @@
+{% extends 'administrador/bases/base_admin.html' %}
+
+{% block 'seo_header' %}
+    <title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+    <meta http-equiv="Content-Language" content="es-MX">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+    <meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+
+{% block css %}
+    <!-- Starts to include CSS list -->
+    {% for css in css_list %}
+        {% include 'core/includes/css/'|add:css|add:'.htm' %}
+    {% endfor %}
+    <!-- Ends to include CSS list -->    
+    {% load static %}
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #map {
+          height: 100%;
+        }
+        
+
+    </style>    
+    <link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+    <link id="bsdp-css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+
+{% endblock css %}-*
+
+{% block 'content' %}
+<div class="app-page-title">    
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="mini-logo-panoptic">
+                <i class="fas fa-users-cog size128 soundblue" aria-hidden="true"></i>                                   
+            </div>
+            <div>Predictive Analytics &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Estados de Fuerza
+                <div class="admin-page-title-subheading">
+                   Asignación de Estados de Fuerza
+                </div>
+            </div>
+        </div> 
+        <div class="container">
+            <div class="row"> 
+                <div class="col-lg-6">
+                </div>
+                <div class="col-lg-6">
+                    <nav class="" aria-label="admin breadcrumb">
+                        <ol class="admin breadcrumb pull-right">
+                            <li class="breadcrumb-item">
+                                <a>
+                                    <i aria-hidden="true" class="fa fa-home"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Predictive Analytics</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a> Estados de Fuerza</a>
+                            </li>
+                            <li class="active breadcrumb-item" aria-current="page">
+                                Crear
+                            </li>
+                        </ol>
+                    </nav>              
+                </div>
+            </div>        
+        </div>     
+    </div>
+</div>   
+
+<form method="POST">
+
+{% csrf_token %}
+
+<div class="row" >        
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-10 col-xl-8 offset-lg-1 offset-xl-2 ">
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Asignar Estado de Fuerza 
+                </div>                                                        
+            </div>
+            <div class="card-body">  
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <select  required="" id="cliente" name="cliente_id" class="form-control mostrar selector clienteSel" style="min-width: 144px;" data-validation="required">
+                        <option value="" >-- Cliente --</option>
+                        {% for cliente in clientes.all %}                                                   
+                        <option value="{{ cliente.id }}">{{ cliente }}</option>
+                        {% endfor %}
+                    </select>   
+                </div>  
+                
+                <div class="form-group">
+                    <label>Planta</label>
+                    <select  required="" name="planta_id" id="planta" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Unidad de Negocio --</option>
+                        {% for planta in plantas.all %}
+                        <option value="{{ planta.id }}" data-cliente-id="{{ planta.cliente_id }}" >{{ planta }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Sucursal</label>
+                    <select  required="" name="sucursal_id" id="sucursal" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Sucursal --</option>
+                        {% for sucursal in sucursales.all %}
+                        <option value="{{ sucursal.id }}" >{{ sucursal }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Puesto</label>
+                    <select  required="" name="role_id" id="role" class="form-control mostrar selector" data-validation="required">
+                        <option value="">-- Puesto o rol de usuario --</option>
+                        {% for rol in roles.all %}
+                        <option value="{{ rol.id }}" >{{ rol }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!--div class="form-group">
+                    <label>No. de orden</label>
+                    <input type="text" name="no_orden" class="form-control">
+                </div-->
+
+                <div class="form-group">
+                    <label>Semana</label>
+                    <div class='input-group date' id='datetimepicker1'>
+                        <input type='text' name="fecha_inicio" class="form-control" />
+                        <div class="input-group-append" data-target="#datepicker1" data-toggle="datepicker">
+                            <div class="input-group-text">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                
+            </div>  
+        </div>  
+        <div class="mb-3 card">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">                                            
+                    <i class="cardhead fa fa-list-alt" aria-hidden="true"></i>
+                    Horario y Personal
+                </div>                                                        
+            </div>
+            <div class="card-body">  
+                
+                <table class="table table-responsive table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th>Turno</th>
+                      <th>Lunes</th>
+                      <th>Martes</th>
+                      <th>Miércoles</th>
+                      <th>Jueves</th>
+                      <th>Viernes</th>
+                      <th>Sábado</th>
+                      <th>Domingo</th>
+                    </tr>
+                    
+                  </thead>
+                  <tbody>
+                    <tr>
+
+                      <th>
+                        Día
+                      </th>
+                      <td>
+                        <input class="form-control" type="number" name="ld" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="md" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="mid" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="jd" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="vd" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="sd" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="dd" required="">
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>
+                        Noche
+                      </th>
+                      <td>
+                        <input class="form-control" type="number" name="ln" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="mn" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="min" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="jn" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="vn" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="sn" required="">
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="dn" required="">
+                      </td>
+                    </tr>
+    
+                  </tbody>
+                </table>
+
+                <button class="user-panel-button btn-icon-vertical btn-transition btn btn-outline-primary" id="btn-rondin-guardar" type="submit" title="Guardar rondín"><i class="fas fa-save btn-icon-wrapper"></i> <span>Guardar Estado de Fuerza</span></button>
+            </div>  
+        </div>
+    </div>
+
+    </form>
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+        
+    </div>
+    
+</div>
+
+
+    
+
+
+
+
+{% endblock %}
+
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+    {% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<script>
+    jQuery(document).ready(function() {
+        
+      
+      $('#datetimepicker1').datepicker({
+          format: 'yyyy-mm-d',
+          defaultDate: new Date(),
+          autoclose: true,
+          daysOfWeekDisabled: [0,2,3,4,5,6],
+          daysOfWeekHighlighted: "1",
+          weekStart: "1"
+      }); 
+      
+
+
+      jQuery("#cliente").on('change', function (e) {
+            updatePlantaSelector(this);
+      });
+
+      updatePlantaSelector(document.getElementById("cliente"));
+
+      function updatePlantaSelector(selector){
+            var optionSelected = $("option:selected", selector);
+            var valueSelected = selector.value;
+
+            console.log("Cliente seleccionado", valueSelected)
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").hide();
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").addClass('hidden');
+            $("#planta option[data-cliente-id!=" + valueSelected + "]").removeClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").show();
+            $("#planta option[data-cliente-id=" + valueSelected + "]").addClass('visible');
+            $("#planta option[data-cliente-id=" + valueSelected + "]").removeClass('hidden');
+
+            //$("#planta option[value='']").show()
+            //$("#planta option[value='']").addClass('visible')
+            //$("#planta option[value='']").removeClass('hidden')
+
+            var val = $('#planta option.visible').first().attr("value");
+
+            $('#planta').val(val);
+
+      }
+      
+  
+      
+      $('input[name="dates"]').daterangepicker(
+        {
+          "timePicker": true,
+          startDate: moment().subtract(2, 'months').format("MM-DD-YYYY"),
+          endDate: moment().add('1', 'day').format("MM-DD-YYYY"),
+          ranges: {
+            'Hoy': [moment(), moment()],
+            'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
+            'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
+            'Este mes': [moment().startOf('month'), moment().endOf('month')],
+            'Último mes': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          },
+          "locale": {            
+              "applyLabel": "Aplicar",
+              "cancelLabel": "Cancelar",
+              "fromLabel": "Desde",
+              "toLabel": "Hasta",
+              "customRangeLabel": "Personalizar",
+              "daysOfWeek": [
+                  "Do",
+                  "Lu",
+                  "Ma",
+                  "Mi",
+                  "Ju",
+                  "Vi",
+                  "Sa"
+              ],
+              "monthNames": [
+                  "Enero",
+                  "Febrero",
+                  "Marzo",
+                  "Abril",
+                  "Mayo",
+                  "Junio",
+                  "Julio",
+                  "Agosto",
+                  "Setiembre",
+                  "Octubre",
+                  "Noviembre",
+                  "Diciembre"
+              ]
+           
+          }
+        },
+        function(start, end) {    
+          //console.log(start + " - " + end);
+          if ($('#planta').val() != "") {
+            //loadRondinReport();                             
+          } else {
+            alert('Seleccione la Unidad de Negocio / Cliente primero por favor.');
+          }
+        }
+      );    
+    
+    });
+    </script>
+  </script>
+<!-- Ends to include JS list -->
+{% endblock js %}

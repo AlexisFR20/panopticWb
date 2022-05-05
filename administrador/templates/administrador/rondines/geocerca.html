@@ -1,0 +1,173 @@
+{% extends 'administrador/bases/base_admin.html' %}
+{% block 'seo_header' %}
+<title>Panoptic |  Expertos en seguridad privada industrial, comercial y personal</title>
+<meta http-equiv="Content-Language" content="es-MX">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
+<meta name="description" content="Monitoreo Inteligente en seguridad privada para empresas y unidades de negocio">
+{% endblock %}
+{% block css %}
+<!-- Starts to include CSS list -->
+{% for css in css_list %}
+{% include 'core/includes/css/'|add:css|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include CSS list -->    
+{% load static %}
+<style>
+   /* Always set the map height explicitly to define the size of the div
+   * element that contains the map. */
+   #map {
+    height: 95%;
+   }        
+</style>
+<link rel="stylesheet" href="{% static 'core/assets/css/mapsinfoscroll.css' %}">
+{% endblock css %}-*
+{% block 'content' %}
+{% load static %}
+<div class="app-page-title">
+   <div class="page-title-wrapper">
+      <div class="page-title-heading">
+         <div class="mini-logo-panoptic">                
+            <i class="fa fa-user-circle size128 soundblue" aria-hidden="true"></i>                                   
+         </div>
+         <div>
+            Rondines &nbsp; <i class="fas fa-angle-double-right"></i> &nbsp; Geocerca
+            <div class="admin-page-title-subheading">
+               Edición de Geocerca de Rondin  <small></small>    
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         <div class="row">
+            <div class="col-lg-6">
+            </div>
+            <div class="col-lg-6">
+               <nav class="" aria-label="admin breadcrumb">
+                  <ol class="admin breadcrumb pull-right">
+                     <li class="breadcrumb-item">
+                        <a>
+                        <i aria-hidden="true" class="fa fa-home"></i>
+                        </a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a> Rondines</a>
+                     </li>
+                     <li class="breadcrumb-item">
+                        <a href="{% url 'administrador:admin_perfiles_global_index' %}"> Mostrar Gecerca</a>
+                     </li>                    
+                  </ol>
+               </nav>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="tabs-animation">
+   <div class="row" >
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+         <div class="mb-3 card">
+            <div class="card-body">
+               <div class="row">                  
+                  <div class="col-sm-12 col-md-12 col-lg-12">                     
+                     <div class="container-fluid">
+                        <div class="form-heading">Vista de geocerca en: <span class="bgp-color-verde">{{ planta.nombre }}</span></div>                           
+                       
+                           <div class="container-fluid">
+                              <div class="row">  
+                                 <div class="col-xs-12 col-md-12 col-lg-4">                                    
+                                    <!-- form start -->
+                                    <form  id="frm-ver" role="form" >
+                                       {% csrf_token %}
+                                       <!-- Nombre de la Unidad de Negocio -->
+                                       <div class="form-group">
+                                          <label>Nombre de la Unidad de Negocio</label>
+                                          <input type="text" id="nombre" name="nombre" class="form-control mostrar" placeholder="Nombre de la Unidad de negocio / Planta" value="{{ planta.nombre }} " readonly>
+                                       </div>
+
+                                       <!-- Dirección de la Unidad de Negocio -->
+                                       <div class="form-group">
+                                          <label>Dirección de la Unidad de Negocio</label>
+                                          <input type="text" id="direccion" name="direccion" class="form-control mostrar" placeholder="Dirección de la Unidad de negocio / Planta" value="{{ planta.direccion }} " readonly>
+                                       </div>
+
+                                       <!-- Domicilio -->
+                                       <div class="form-group">
+                                          <label>Ubicada en: </label>
+                                          <input type="text" id="ubicada" name="ubicada" class="form-control mostrar" placeholder="Dirección de la Unidad de negocio / Planta" value="{{ planta.ciudad }}, {{ planta.estado }}, {{ planta.pais }}" readonly>
+                                       </div>
+                                       <div class="row">
+                                          <div class="col-xs-6 col-md-6 col-lg-6">  
+                                             <!-- Región -->
+                                             <div class="form-group">
+                                                <label>Región</label>
+                                                <input type="text" id="region" name="region" class="form-control mostrar" placeholder="Indicar región" value="{{ planta.region }}" readonly>
+                                             </div>
+                                          </div>
+                                          <div class="col-xs-6 col-md-6 col-lg-6">  
+                                             <!-- Estatus -->
+                                             <div class="form-group">
+                                                <label>Estatus</label>
+                                                <input type="text" id="estatus" name="estatus" class="form-control mostrar" placeholder="Estatus presente" value="{{ planta.estatus }}" readonly>
+                                             </div>
+                                          </div>
+                                       </div>         
+                                        
+                                        <div class="row">
+                                          <div class="col-xs-6 col-md-6 col-lg-6">  
+                                             <!-- Latitud -->
+                                             <div class="form-group">
+                                                <label>Latitud</label>
+                                                <input type="text" id="lat" name="lat" class="form-control mostrar" placeholder="" value="{{ planta.lat }}" readonly>
+                                             </div>
+                                          </div>
+                                          <div class="col-xs-6 col-md-6 col-lg-6">  
+                                             <!-- Longitud -->
+                                             <div class="form-group">
+                                                <label>Longitud</label>
+                                                <input type="text" id="lng" name="lng" class="form-control mostrar" placeholder="" value="{{ planta.lng }}" readonly>
+                                             </div>
+                                          </div>
+                                       </div>      
+                                       
+                                       <input type="hidden" id="polyradio" name="polyradio" class="form-control" value="{{ planta.polyradio }}">                                       
+                                    
+                                       <div class="text-center">
+                                          {% if planta.foto %}                                       
+                                          <a href="{{ planta.foto.url }}" data-fancybox data-caption="{{ planta.nombre }} en {{ planta.direccion }}">
+                                             <img src="{{ planta.foto.url }}" class="img-thumbnail" height="400" width="auto" alt="{{ planta.nombre }}" />
+                                          </a>
+                                          {% else %} 
+                                          <a href="#">
+                                             <img src="{% static 'core/assets/images/general-un.png' %}" class="img-thumbnail" height="380" width="380"  alt="Unidad de negocio sin foto">      
+                                          </a>
+                                          {% endif %}                                              
+                                       </div>
+
+                                       <p id="latitud" data-lat="{{ planta.lat }}" class="escondido">Latitud: {{ planta.lat }}</p>
+                                       <p id="longitud" data-lng="{{ planta.lng }}" class="escondido">Longitud: {{ planta.lng }}</p>
+                                 
+                                    </form>
+                                 </div> <!-- Fin de panel izquierdo -->
+
+                                    <div class="col-xs-12 col-md-12 col-lg-8">                                              
+                                          <div id="map"></div>
+                                    </div> <!-- Fin de panel derecho -->
+                              </div>                                 
+                           </div> <!-- Fin de container -->
+                           <!-- /.box-body -->
+                        
+                     </div>                     
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock %}
+{% block js %}
+<!-- Starts to include JS list -->
+{% for js in js_list %}
+{% include 'core/includes/js/'|add:js|add:'.htm' %}
+{% endfor %}
+<!-- Ends to include JS list -->
+{% endblock js %}

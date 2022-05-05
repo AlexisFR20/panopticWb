@@ -1,0 +1,71 @@
+                        <ul class="vertical-nav-menu">
+                            <li class="app-sidebar__heading">Menu</li>
+                            <li class="">
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-home"></i>
+                                    Inicio General <b>CEO</b>        
+                                </a>                                
+                            </li>      
+                            <hr class="style1" />                                
+                            <!-- CEO View -->                                                    
+                            <div id="mnuUserCeo" >
+                              
+                            <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="{% url 'analytics:home' %}">Predictive Analytics</a></li>
+                            <li>
+                                <a href="{% url 'analytics:rondines_dashboard' %}">
+                                    <i class="metismenu-icon pe-7s-lintern">
+                                    </i>Rondínes
+                                </a>
+                            </li>                                                          
+                            <li>
+                                <a href="{% url 'analytics:visitantes_dashboard' %}">
+                                    <i class="metismenu-icon pe-7s-users"></i>
+                                    Visitas
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a href="{% url 'analytics:visitantes_dashboard' %}">
+                                            <i class="pe-7s-users"></i>
+                                            Visitantes
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'analytics:visitantes_dashboard' %}">
+                                            <i class="pe-7s-user"></i>
+                                            Proveedores
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'analytics:visitantes_dashboard' %}">
+                                            <i class="pe-7s-user-female"></i>
+                                            Contratistas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>                            
+                            <li>
+                                <a href="{% url 'analytics:paqueteria_dashboard' %}">
+                                    <i class="metismenu-icon pe-7s-box1"></i>
+                                    Paquetería
+                                </a>
+                            </li>                            
+                            <li>
+                                <a href="{% url 'analytics:empleadossingafete_dashboard' %}">
+                                    <i class="ico-mm-big ico-sin-gafete"></i>
+                                    Empleados Sin Gafete
+                                </a>
+                            </li>                      
+                            <li>
+                                <a href="{% url 'analytics:arearestringida_dashboard' %}">
+                                    <i class="ico-mm-big ico-area-restringida"></i>
+                                    Área Restringida
+                                </a>
+                            </li>                 
+                            <li>
+                                <a href="{% url 'analytics:recibos_dashboard' %}">
+                                    <i class="ico-mm-big ico-recibos"></i>
+                                    Recibos
+                                </a>
+                            </li>                            
+                        </ul>

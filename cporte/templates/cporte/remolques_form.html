@@ -1,0 +1,32 @@
+<h5>REMOLQUES</h5>
+<button id="btn-add-remolque" type="button" class="buttonAddMinus" style="margin-right: 25px;">
+    <i class="fas fa-plus-square fa-2x" aria-hidden="true"></i>
+</button>
+<button id="btn-del-remolque" type="button" class="buttonAddMinus">
+    <i class="fas fa-minus-square fa-2x" aria-hidden="true"></i>
+</button>
+<div class="row px-2" id="section-remolque">
+    <div class="col-md-12 card2 mb-2">
+        <div class="row mb-2">
+            <div class="col-md">
+                <h5 style="margin: 0">Remolque 1</h5>
+            </div>
+        </div>
+        <div class="row px-1">
+            <div class="d-flex col-md-12">
+                <div class="form-group col-md-3">
+                    <label class="label-ubicaciones">Tipo de remolque
+                    <select data-index="0" class="form-control" name="Complemento.CartaPorte20.Mercancias.Autotransporte.Remolques[0].SubTipoRem">
+                        {% for x in tipoRemolque %}
+                        <option value={{x.Clave}}>{{x.Descripcion}}</option>
+                        {% endfor %}
+                    </select>
+                </label></div>
+                <div class="form-group col-md-3">
+                    <label class="label-ubicaciones">Placa
+                    <input data-index="0" name="Complemento.CartaPorte20.Mercancias.Autotransporte.Remolques[0].Placa" class="form-control" placeholder="Placa">
+                </label></div>
+            </div>
+        </div>
+    </div>
+</div>

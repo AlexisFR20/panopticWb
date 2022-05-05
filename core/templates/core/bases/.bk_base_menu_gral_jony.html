@@ -1,0 +1,654 @@
+                        <ul class="vertical-nav-menu">
+                            <li class="app-sidebar__heading">Menu</li>
+                            <li class="">
+                                <a href="{% url 'ceo_global' %}">
+                                    <i class="metismenu-icon pe-7s-home"></i>
+                                    Inicio           
+                                </a>                                
+                            </li>  
+                            <li>
+                                <a href="{% url 'informe_total' %}">
+                                    <i class="metismenu-icon pe-7s-note2"></i>
+                                    Informe
+                                </a>
+                            </li>
+                            <li class="escondido">
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-map">
+                                    </i>Mapa de Calor
+                                </a>
+                            </li>                      
+                            <!-- CEO View -->                                                    
+                            <div id="mnuUserCeo" style="display: none">
+                                <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="#">CEO</a></li>  
+                                <li class="mm-active">
+                                    <a href="{% url 'ceo_global' %}">
+                                        <i class="metismenu-icon pe-7s-global"></i>
+                                        Global
+                                    </a>                                
+                                </li>   
+                                <!--                     
+                                <li class="mm-active">
+                                    <a href="{% url 'ceo_pais' %}">
+                                        <i class="metismenu-icon pe-7s-flag"></i>
+                                        Por País
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'ceo_master' %}">
+                                        <i class="metismenu-icon pe-7s-user"></i>
+                                        Master
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'ceo_detalle' %}">
+                                        <i class="metismenu-icon pe-7s-graph3"></i>
+                                        Detalle
+                                    </a>                                
+                                </li> 
+                                -->
+                            </div> 
+                            <!-- VICE View -->                            
+                            <div id="mnuUserVice" style="display: none">
+                                <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="#">VICEPRESIDENTE</a></li>  
+                                <li class="mm-active">
+                                    <a href="{% url 'vice_global' %}">
+                                        <i class="metismenu-icon pe-7s-global"></i>
+                                        Global
+                                    </a>                                
+                                </li>   
+                                <!--                     
+                                <li class="mm-active">
+                                    <a href="{% url 'vice_pais' %}">
+                                        <i class="metismenu-icon pe-7s-flag"></i>
+                                        Por País
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'vice_master' %}">
+                                        <i class="metismenu-icon pe-7s-user"></i>
+                                        Master
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'vice_detalle' %}">
+                                        <i class="metismenu-icon pe-7s-graph3"></i>
+                                        Detalle
+                                    </a>                                
+                                </li>  
+                                -->
+                            </div>
+                            <!-- VICE LA View -->                                                    
+                            <div id="mnuUserViceLa" style="display: none">
+                                <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="#">VICEPRESIDENTE LA</a></li>  
+                                <li class="mm-active">
+                                    <a href="{% url 'vicela_global' %}">
+                                        <i class="metismenu-icon pe-7s-global"></i>
+                                        Global
+                                    </a>                                
+                                </li>                        
+                                <!--
+                                <li class="mm-active">
+                                    <a href="{% url 'vicela_pais' %}">
+                                        <i class="metismenu-icon pe-7s-flag"></i>
+                                        Por País
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'vicela_master' %}">
+                                        <i class="metismenu-icon pe-7s-user"></i>
+                                        Master
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'vicela_detalle' %}">
+                                        <i class="metismenu-icon pe-7s-graph3"></i>
+                                        Detalle
+                                    </a>                                
+                                </li>
+                                -->
+                            </div>
+                            <!-- GERENTE REGIONAL View -->                                                    
+                            <div id="mnuUserGteReg" style="display: none">
+                                <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="#">GERENTE REGIONAL</a></li>  
+                                <li class="mm-active">
+                                    <a href="{% url 'gtereg_global' %}">
+                                        <i class="metismenu-icon pe-7s-global"></i>
+                                        Global
+                                    </a>                                
+                                </li>      
+                                <!--                  
+                                <li class="mm-active">
+                                    <a href="{% url 'gtereg_pais' %}">
+                                        <i class="metismenu-icon pe-7s-flag"></i>
+                                        Por País
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'gtereg_master' %}">
+                                        <i class="metismenu-icon pe-7s-user"></i>
+                                        Master
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'gtereg_detalle' %}">
+                                        <i class="metismenu-icon pe-7s-graph3"></i>
+                                        Detalle
+                                    </a>                                
+                                </li>
+                                -->
+                            </div>
+                            <!-- GERENTE DE PLANTA View -->                                                    
+                            <div id="mnuUserGtePlanta" style="display: none">
+                                <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="#">GERENTE DE PLANTA</a></li>  
+                                <li class="mm-active">
+                                    <a href="{% url 'gteplanta_global' %}">
+                                        <i class="metismenu-icon pe-7s-global"></i>
+                                        Global
+                                    </a>                                
+                                </li>      
+                                <!--                  
+                                <li class="mm-active">
+                                    <a href="{% url 'gteplanta_pais' %}">
+                                        <i class="metismenu-icon pe-7s-flag"></i>
+                                        Por País
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'gteplanta_master' %}">
+                                        <i class="metismenu-icon pe-7s-user"></i>
+                                        Master
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'gteplanta_detalle' %}">
+                                        <i class="metismenu-icon pe-7s-graph3"></i>
+                                        Detalle
+                                    </a>                                
+                                </li>
+                                -->
+                            </div>
+                            <!-- GERENTE DE PLANTAS PLUS View -->                                                    
+                            <div id="mnuUserGtePlus" style="display: none">
+                                <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a href="#">GERENTE DE PLANTAS PLUS</a></li>  
+                                <li class="mm-active">
+                                    <a href="{% url 'gteplus_global' %}">
+                                        <i class="metismenu-icon pe-7s-global"></i>
+                                        Global
+                                    </a>                                
+                                </li>    
+                                <!--                    
+                                <li class="mm-active">
+                                    <a href="{% url 'gteplus_pais' %}">
+                                        <i class="metismenu-icon pe-7s-flag"></i>
+                                        Por País
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'gteplus_master' %}">
+                                        <i class="metismenu-icon pe-7s-user"></i>
+                                        Master
+                                    </a>                                
+                                </li>                 
+                                <li class="mm-active">
+                                    <a href="{% url 'gteplus_detalle' %}">
+                                        <i class="metismenu-icon pe-7s-graph3"></i>
+                                        Detalle
+                                    </a>                                
+                                </li>
+                                -->
+                            </div>							
+                            {% if permisoZona0 %}							
+                            <li class="app-sidebar__heading diamante-bold septxt-2 size18">
+                                <a class="shineazul" href="{% url 'entorno:zona0' %}">Zona 0</a></li>  
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-note2 "></i>
+                                    Índice Delictivo
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul id="id_type_incidents">
+                                    <!--li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-homicidio"></i>
+                                            Homicidio
+                                            <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                        </a>
+                                        <ul>
+                                            <li>
+                                                <a href="#">
+                                                    <i class="metismenu-icon">
+                                                    </i>Opción 1
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <i class="metismenu-icon">
+                                                    </i>Opción 2
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#">
+                                                    <i class="metismenu-icon">
+                                                    </i>Opción 3
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-secuestro"></i>
+                                            Secuestro
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-carjacking"></i>
+                                            Carjacking
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-habitacion"></i>
+                                            Casa - Habitación
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-transeuntes"></i>
+                                            Transeúntes
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-autopartes"></i>
+                                            Auto Partes
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-asalto-negocio"></i>
+                                            Asaltos a Negocios
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-tiendas"></i>
+                                            Tiendas Establecidas
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-aeropuerto"></i>
+                                            Aeropuerto
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-hotel"></i>
+                                            Hotel
+                                        </a>
+                                    </li-->
+                                    
+                                </ul>
+                            </li>
+
+                           <!-- <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-shield "></i>
+                                    Alertas                                    
+                                </a>                                
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-shield "></i>
+                                    Ubicaciones                                    
+                                </a>                                
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-shield "></i>
+                                    Eventos                                    
+                                </a>                                
+                            </li>-->
+
+                            <!--li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-map "></i>
+                                    Mapa de Calor                                    
+                                </a>                                
+                            </li-->
+                            {% endif %}
+                             {% if permisoAnalisisRiesgo %}
+                            <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a class="shineamarillo" href="{% url 'arnes:roadmap' %}">Análisis de Riesgo</a></li>
+                            <li>
+                                <a href="{% url 'arnes:list_papeletas' %}">
+                                    <i class="metismenu-icon pe-7s-note">
+                                    </i>Cuestionarios respondidos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'arnes:roadmap' %}">
+                                    <i class="metismenu-icon pe-7s-helm">
+                                    </i>Road Map
+                                </a>
+                            </li>
+                            <li hidden="">
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-star">
+                                    </i>Recomendaciones
+                                </a>
+                            </li>
+                            
+                            <li>
+                                <a href="{% url 'arnes:resultados_analisis_riesgo' %}">
+                                    <i class="metismenu-icon pe-7s-note">
+                                    </i>Resultados de análisis de riesgo
+                                </a>
+                            </li>
+                            <li hidden="">
+                                <a href="#" class="bgp-seguridad-infraestructura">
+                                    <i class="metismenu-icon pe-7s-culture"></i>
+                                    Seguridad Infraestructura
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li><a href="#">Perímetro Exterior</a></li>
+                                    <li><a href="#">Perímetro Interior</a></li>
+                                    <li><a href="#">Muros Perimetrales</a></li>
+                                    <li><a href="#">Perimetro del Edificio</a></li>
+                                    <li><a href="#">Interior del Edificio</a></li>
+                                </ul>
+                            </li>
+                            <li hidden="">
+                                <a href="#" class="bgp-seguridad-operativa">
+                                    <i class="metismenu-icon pe-7s-albums"></i>
+                                    Seguridad Operativa
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li><a href="#">Procedimientos</a></li>
+                                    <li><a href="#">Recurso Humano</a></li>
+                                    <li><a href="#">Certificaciones</a></li>                                    
+                                </ul>
+                            </li>
+                            <li hidden="">
+                                <a href="#" class="bgp-seguridad-electronica">
+                                    <i class="metismenu-icon pe-7s-unlock"></i>
+                                    Seguridad Electrónica
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li><a href="#">CCTV</a></li>
+                                    <li><a href="#">Alarma de Intrusión</a></li>
+                                    <li><a href="#">Controles de Acceso</a></li>                                    
+                                </ul>
+                            </li>
+                            <li hidden="">
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-car">
+                                    </i>Logística
+                                </a>
+                            </li>      
+                            {% endif %} 
+                            {% if permisoPredictive %}                    
+                            <li class="app-sidebar__heading diamante-bold septxt-2 size18"><a class="shinerojo" href="{% url 'analytics:home' %}">Predictive Analytics</a></li>
+                            <li>
+                                <a href="{% url 'analytics:rondines_dashboard' %}">
+                                    <i class="metismenu-icon pe-7s-lintern ">
+                                    </i>Rondínes
+                                </a>
+                            </li>  
+                            <li>
+                                <a href="{% url 'analytics:rev18puntos' %}">
+                                    <i class="metismenu-icon fas fa-clipboard-list ">
+                                    </i>18 Puntos
+                                </a>
+                            </li>   
+                            <li>
+                                <a href="{% url 'analytics:capacitaciones' %}">
+                                    <i class="ico-mm-big ico-capacitacion "></i>
+                                    Capacitaciones
+                                </a>
+                            </li>  
+                            <li>
+                                <a href="{% url 'analytics:estados_fuerza' %}">
+                                    <i class="ico-mm-big ico-capacitacion"></i>
+                                    Estado de Fuerza y Cobertura
+                                </a>
+                            </li> 
+                            <li>
+                                <a href="{% url 'analytics:vacante_list' %}">
+                                    <i class="ico-mm-big ico-vacantes"></i>
+                                    Vacantes
+                                </a>
+                            </li>                                                           
+                            <li>
+                                <a href="{% url 'analytics:baja_list' %}">
+                                    <i class="ico-mm-big ico-rotacion"></i>
+                                    Bajas
+                                </a>
+                            </li>  
+
+                            <li>
+                                <a href="{% url 'analytics:falta_list' %}">
+                                    <i class="ico-mm-big ico-asistencias"></i>
+                                    Faltas / Inasistencias
+                                </a>
+                            </li>                                                                                        
+                            <li>
+                                <a href="{% url 'analytics:logros_dashboard' %}">
+                                    <i class="metismenu-icon pe-7s-cup"></i>
+                                    Logros
+                                </a>
+                            </li>                                                        
+                            <li>
+                                <a href="{% url 'analytics:visitantes_dashboard' %}">
+                                    <i class="metismenu-icon pe-7s-users"></i>
+                                    Visitantes
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left escondido"></i>
+                                </a>
+                                <ul class="escondido">
+                                    <li>
+                                        <a href="{% url 'analytics:visitantes_dashboard' %}">
+                                            <i class="pe-7s-users"></i>
+                                            Visitantes
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'analytics:visitantes_dashboard' %}">
+                                            <i class="pe-7s-user"></i>
+                                            Proveedores
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{% url 'analytics:visitantes_dashboard' %}">
+                                            <i class="pe-7s-user-female"></i>
+                                            Contratistas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="escondido">
+                                <a href="#">
+                                    <i class="ico-mm-big ico-revision-vehiculos"></i>
+                                    Revisión de Vehículos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'analytics:es_trailers_dashboard' %}">
+                                    <i class="ico-mm-big ico-es-trailers"></i>
+                                    E-S de Trailers
+                                </a>
+                            </li>
+                            <li class="escondido">
+                                <a href="#">
+                                    <i class="ico-mm-big ico-entrada-equipo"></i>
+                                    Entrada de Equipo
+                                </a>
+                            </li>
+                            <li class="escondido">
+                                <a href="#">
+                                    <i class="ico-mm-big ico-entrada-quimicos"></i>
+                                    Entrada de Químicos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'analytics:paqueteria_dashboard' %}">
+                                    <i class="metismenu-icon pe-7s-box1"></i>
+                                    Paquetería
+                                </a>
+                            </li>                            
+                            <li>
+                                <a href="{% url 'analytics:empleadossingafete_dashboard' %}">
+                                    <i class="ico-mm-big ico-sin-gafete"></i>
+                                    Empleados Sin Gafete
+                                </a>
+                            </li>                          
+                            <li>
+                                <a href="{% url 'analytics:arearestringida_dashboard' %}">
+                                    <i class="ico-mm-big ico-area-restringida"></i>
+                                    Área Restringida
+                                </a>
+                            </li>                        
+                            <li>
+                                <a href="{% url 'analytics:recibos_dashboard' %}">
+                                    <i class="ico-mm-big ico-recibos"></i>
+                                    Recibos de Almacén
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if permisoDD %}
+                            <li class="app-sidebar__heading diamante-bold septxt-2 size18">
+                                <a class="shinenaranja" href="{% url 'ddmanagement:home' %}">D & D Management</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'analytics:controlp_dashboard' %}">
+                                    <i class="ico-mm-big ico-control-patios"></i>
+                                    Control de Patios
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    &nbsp;
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    &nbsp;        
+                                </a>
+			    </li>
+                            <!--<li>
+                                <a href="#">
+                                    <i class="metismenu-icon fa pe-7s-help2"></i>
+                                    Centro de Atención
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-k9"></i>
+                                    Puntos de Revisión K9
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-geocercas"></i>
+                                    Administración de Geocercas
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-cargas"></i>
+                                    Cargas en Tiempo Real
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-movimientos"></i>
+                                    Movimientos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-valor-mercancia"></i>
+                                    Valor de Mercancía
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon fa fa-info" aria-hidden="true"></i>
+                                    Información de Cargas
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-origen-destino"></i>
+                                    Orígen y Destino
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="metismenu-icon pe-7s-date"></i>
+                                    Fecha de Movimientos
+                                    <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                                </a>
+                                <ul>
+                                    <li>
+                                        <a href="#">
+                                            <i class="pe-7s-search"></i>
+                                            Por marca, modelo año
+                                        </a>
+                                    </li>                                    
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-chofer"></i>
+                                            Datos de Chofer
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="ico-mm ico-origen-destino"></i>
+                                            Orígen y Destino
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#">
+                                            <i class="pe-7s-box1"></i>
+                                            Tiempo de Movimiento
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-tiempovs"></i>
+                                    Tiempo Estimado VS Real
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-peso-carga"></i>
+                                    Peso de Carga
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-sello"></i>
+                                    Sellos (Número-Serial)
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-tipo-carga"></i>
+                                    Tipo de Carga (Frágil / Crítica)
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <i class="ico-mm-big ico-rutas-riesgo"></i>
+                                    Rutas de Riesgo
+                                </a>
+                            </li>-->
+                            {% endif %}
+                            
+                        </ul>
