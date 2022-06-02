@@ -195,7 +195,9 @@ def informe_total(request):
 def ceo_global(request):
     if request.user.role.alias_rol=='coordinador' or request.user.role.alias_rol=='jefe_grupo' or request.user.role.alias_rol=='guardia' or request.user.role.alias_rol=='chofer':        
         messages.error(request, 'Solo tiene acceso mediante la aplicación móvil si tiene cuenta activa.')
-        return redirect('login')   
+        return redirect('login')
+    elif request.user.role.alias_rol == 'VISITANTES':
+        return redirect('/analytics/previsitantes')
         
     css_list = ['basic', 'slick', 'metismenu', 'mapbox', 'perfectscrollbar','custom-admin', 'custom-home']
     #js_list = ['js_basic', 'js_slick', 'js_metismenu', 'js_charts', 'js_perfectscrollbar', 'js-custom-home', 'js_maps_global', 'js_moment']

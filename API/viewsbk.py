@@ -317,17 +317,14 @@ def api_fvisitantes(request):
         previsitante.pre = 0
         previsitante.gafete = request.POST.get("gafete")
         previsitante.entrada = request.POST.get("entrada")
-        if 'ine_frontal' in request.FILES:
-            previsitante.ine_frontal = request.FILES["ine_frontal"]
-        if 'ine_posterior' in request.FILES:
-            previsitante.ine_posterior = request.FILES["ine_posterior"]
+        previsitante.ine_frontal = request.FILES["ine_frontal"]
+        previsitante.ine_posterior = request.FILES["ine_posterior"]
 
         try:
             previsitante.save()
             json = {'response': '201'}
             return Response(json,status = status.HTTP_201_CREATED)
         except Exception as e:
-            print(e)
             json = {'response': '400'}
             return Response(json,status = status.HTTP_400_BAD_REQUEST)
     else:

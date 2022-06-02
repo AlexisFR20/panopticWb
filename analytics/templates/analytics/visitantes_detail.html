@@ -98,7 +98,14 @@
                                     <td>{{ visitante.empresa }}</td>
                                     <td>{{ visitante.anfitrion }}</td>
                                     <td>{{ visitante.confirmo_anfitrion|yesno:"SI,NO" }}</td>
-				    <td><a href="{{ visitante.ine_frontal.url }}" data-fancybox data-caption="INE Frontal"><img src={{ visitante.ine_frontal.url }} class="rounded" height="30" width="30" alt="INE Frontal"></img></a><span style="font-size: 30px"> / </span><a href="{{ visitante.ine_posterior.url }}" data-fancybox data-caption="INE Posterior"><img src={{ visitante.ine_posterior.url }} class="rounded" height="30" width="30" alt="INE Posterior"></img></a></td>
+				                    <td>
+                                        {% if visitante.ine_frontal and visitante.ine_posterior %}
+                                        <a href="{{ visitante.ine_frontal.url|default_if_none:'https://www.pbxsangoma.com/front/template/default/public/image/icon/none-img.png' }}" data-fancybox data-caption="INE Frontal">
+                                            <img src={{ visitante.ine_frontal.url|default_if_none:"https://www.pbxsangoma.com/front/template/default/public/image/icon/none-img.png" }} class="rounded" height="30" width="30" alt="INE Frontal">
+                                            </img>
+                                        </a>
+                                        <span style="font-size: 30px"> / </span><a href="{{ visitante.ine_posterior.url|default_if_none:"https://www.pbxsangoma.com/front/template/default/public/image/icon/none-img.png" }}" data-fancybox data-caption="INE Posterior"><img src={{ visitante.ine_posterior.url|default_if_none:"https://www.pbxsangoma.com/front/template/default/public/image/icon/none-img.png" }} class="rounded" height="30" width="30" alt="INE Posterior"></img></a></td>
+                                        {% endif %}
                                     <td>{{ visitante.gafete }}</td>
                                     <td>{{ visitante.entrada }}</td>
                                     <td>{{ visitante.salida }}</td>
